@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>פאנל מנהל | מנגיסטו בלאו</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { sans: ['Heebo', 'system-ui', 'sans-serif'] },
+    colors: { ink:'#0A1128', ink2:'#111C3D', gold:'#C9A227', gold2:'#E8C766', mint:'#2ED3A7', cloud:'#F6F7FB' },
+  }}
+}
+</script>
+<style>.grain{background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:22px 22px}</style>
+</head>
+<body class="font-sans bg-cloud text-ink antialiased">
+
+<!-- LOGIN -->
+<div id="loginView" class="hidden min-h-[100dvh] grid place-items-center bg-ink grain px-5">
+  <div class="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
+    <div class="flex items-center gap-3">
+      <span class="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-gold2 to-gold font-black text-ink">מב</span>
+      <div>
+        <div class="font-black text-lg">פאנל מנהל</div>
+        <div class="text-xs text-ink/50">גישה לפניות שהתקבלו מהאתר</div>
+      </div>
+    </div>
+
+    <form id="loginForm" class="mt-7 space-y-4">
+      <div>
+        <label for="loginEmail" class="block text-sm font-semibold mb-1.5">אימייל</label>
+        <input id="loginEmail" type="email" required dir="ltr" value="admin@mengistu-blau.co.il"
+          class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm text-right outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
+      </div>
+      <div>
+        <label for="loginPass" class="block text-sm font-semibold mb-1.5">סיסמה</label>
+        <input id="loginPass" type="password" required dir="ltr" placeholder="••••••"
+          class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm text-right outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
+      </div>
+      <button id="loginBtn" type="submit"
+        class="w-full rounded-xl bg-ink py-3.5 font-black text-white hover:bg-ink2 transition disabled:opacity-60">
+        כניסה
+      </button>
+    </form>
+
+    <div class="my-5 flex items-center gap-3 text-xs text-ink/35">
+      <span class="h-px flex-1 bg-ink/10"></span>או<span class="h-px flex-1 bg-ink/10"></span>
+    </div>
+
+    <button id="googleBtn"
+      class="w-full flex items-center justify-center gap-3 rounded-xl border border-ink/15 bg-white py-3.5 font-bold hover:bg-cloud transition">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/>
+        <path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.9-3c-1.1.7-2.5 1.2-4 1.2-3.1 0-5.7-2.1-6.6-4.9H1.4v3.1C3.4 21.3 7.4 24 12 24z"/>
+        <path fill="#FBBC05" d="M5.4 14.4c-.2-.7-.4-1.5-.4-2.4s.1-1.6.4-2.4V6.5H1.4C.5 8.2 0 10 0 12s.5 3.8 1.4 5.5l4-3.1z"/>
+        <path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4C17.9 1.2 15.2 0 12 0 7.4 0 3.4 2.7 1.4 6.5l4 3.1c.9-2.8 3.5-4.8 6.6-4.8z"/>
+      </svg>
+      התחברות עם Google
+    </button>
+
+    <p id="loginError" class="hidden mt-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-center text-sm text-red-700"></p>
+    <a href="index.html" class="mt-6 block text-center text-xs text-ink/40 hover:text-gold transition">חזרה לאתר →</a>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="panelView" class="hidden min-h-[100dvh]">
+  <header class="bg-ink grain">
+    <div class="mx-auto max-w-7xl px-5 sm:px-8 py-5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-gold2 to-gold font-black text-ink">מב</span>
+        <div class="leading-tight">
+          <div class="font-bold text-white">פאנל מנהל</div>
+          <div id="whoami" class="text-[11px] text-gold2/80" dir="ltr"></div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="rounded-full border border-white/15 px-4 py-2 text-sm text-white/70 hover:border-gold/50 hover:text-gold2 transition">לאתר</a>
+        <button id="logoutBtn" class="rounded-full bg-gold px-4 py-2 text-sm font-bold text-ink hover:bg-gold2 transition">יציאה</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-5 sm:px-8 py-8">
+    <div class="grid gap-4 sm:grid-cols-3">
+      <div class="rounded-2xl bg-white p-5 shadow-sm"><div id="statTotal" class="text-3xl font-black">0</div><div class="text-sm text-ink/50">סה״כ פניות</div></div>
+      <div class="rounded-2xl bg-white p-5 shadow-sm"><div id="statToday" class="text-3xl font-black text-mint">0</div><div class="text-sm text-ink/50">היום</div></div>
+      <div class="rounded-2xl bg-white p-5 shadow-sm"><div id="statWeek" class="text-3xl font-black text-gold">0</div><div class="text-sm text-ink/50">7 ימים אחרונים</div></div>
+    </div>
+
+    <div class="mt-6 flex flex-wrap items-center gap-3">
+      <input id="search" type="search" placeholder="חיפוש לפי שם, אימייל או טלפון"
+        class="flex-1 min-w-[220px] rounded-xl border border-ink/15 bg-white px-4 py-3 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
+      <button id="refreshBtn" class="rounded-xl border border-ink/15 bg-white px-5 py-3 text-sm font-bold hover:bg-cloud transition">רענון</button>
+      <button id="csvBtn" class="rounded-xl bg-ink px-5 py-3 text-sm font-bold text-white hover:bg-ink2 transition">ייצוא CSV</button>
+    </div>
+
+    <div class="mt-6 overflow-x-auto rounded-2xl bg-white shadow-sm">
+      <table class="w-full min-w-[860px] text-sm">
+        <thead class="bg-cloud text-ink/60">
+          <tr>
+            <th class="px-4 py-3 text-right font-semibold">תאריך</th>
+            <th class="px-4 py-3 text-right font-semibold">שם</th>
+            <th class="px-4 py-3 text-right font-semibold">אימייל</th>
+            <th class="px-4 py-3 text-right font-semibold">טלפון</th>
+            <th class="px-4 py-3 text-right font-semibold">סכום</th>
+            <th class="px-4 py-3 text-right font-semibold">הודעה</th>
+          </tr>
+        </thead>
+        <tbody id="rows" class="divide-y divide-ink/5"></tbody>
+      </table>
+      <p id="empty" class="hidden px-4 py-14 text-center text-ink/40">אין עדיין פניות.</p>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { SUPABASE_URL, SUPABASE_KEY } from './supabase-config.js';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const el = (id) => document.getElementById(id);
+const loginView = el('loginView');
+const panelView = el('panelView');
+const loginError = el('loginError');
+let leads = [];
+
+function showError(msg) {
+  loginError.textContent = msg;
+  loginError.classList.remove('hidden');
+}
+
+async function route() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    panelView.classList.add('hidden');
+    loginView.classList.remove('hidden');
+    return;
+  }
+  el('whoami').textContent = session.user.email ?? '';
+  loginView.classList.add('hidden');
+  panelView.classList.remove('hidden');
+  await loadLeads();
+}
+
+async function loadLeads() {
+  const { data, error } = await supabase
+    .from('leads')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    // התחברת, אבל המשתמש לא ברשימת המנהלים — RLS חוסם
+    await supabase.auth.signOut();
+    loginView.classList.remove('hidden');
+    panelView.classList.add('hidden');
+    showError('החשבון הזה אינו מורשה לצפות בפניות.');
+    return;
+  }
+  leads = data ?? [];
+  render();
+}
+
+function render() {
+  const q = el('search').value.trim().toLowerCase();
+  const list = q
+    ? leads.filter((l) => [l.name, l.email, l.phone].join(' ').toLowerCase().includes(q))
+    : leads;
+
+  const now = Date.now();
+  const since = (h) => leads.filter((l) => now - new Date(l.created_at).getTime() < h * 3600e3).length;
+  el('statTotal').textContent = leads.length;
+  el('statToday').textContent = since(24);
+  el('statWeek').textContent = since(24 * 7);
+
+  el('rows').innerHTML = list.map((l) => `
+    <tr class="hover:bg-cloud/60">
+      <td class="px-4 py-3 whitespace-nowrap text-ink/60">${new Date(l.created_at).toLocaleString('he-IL')}</td>
+      <td class="px-4 py-3 font-semibold">${esc(l.name)}</td>
+      <td class="px-4 py-3" dir="ltr"><a class="text-gold hover:underline" href="mailto:${esc(l.email)}">${esc(l.email)}</a></td>
+      <td class="px-4 py-3" dir="ltr"><a class="text-gold hover:underline" href="tel:${esc(l.phone)}">${esc(l.phone)}</a></td>
+      <td class="px-4 py-3 whitespace-nowrap">${esc(l.amount ?? '')}</td>
+      <td class="px-4 py-3 text-ink/60 max-w-md">${esc(l.message ?? '')}</td>
+    </tr>`).join('');
+
+  el('empty').classList.toggle('hidden', list.length > 0);
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+el('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  loginError.classList.add('hidden');
+  el('loginBtn').disabled = true;
+  el('loginBtn').textContent = 'מתחבר…';
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: el('loginEmail').value.trim(),
+    password: el('loginPass').value,
+  });
+
+  el('loginBtn').disabled = false;
+  el('loginBtn').textContent = 'כניסה';
+  if (error) { showError('אימייל או סיסמה שגויים.'); return; }
+  await route();
+});
+
+el('googleBtn').addEventListener('click', async () => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href.split('#')[0] },
+  });
+  if (error) showError('התחברות Google אינה מוגדרת עדיין בפרויקט Supabase.');
+});
+
+el('logoutBtn').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  location.reload();
+});
+
+el('refreshBtn').addEventListener('click', loadLeads);
+el('search').addEventListener('input', render);
+
+el('csvBtn').addEventListener('click', () => {
+  const head = ['תאריך', 'שם', 'אימייל', 'טלפון', 'סכום', 'הודעה'];
+  const body = leads.map((l) => [
+    new Date(l.created_at).toLocaleString('he-IL'), l.name, l.email, l.phone, l.amount ?? '', (l.message ?? '').replace(/\n/g, ' '),
+  ]);
+  const csv = '﻿' + [head, ...body]
+    .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+supabase.auth.onAuthStateChange(() => route());
+route();
+</script>
+</body>
+</html>
