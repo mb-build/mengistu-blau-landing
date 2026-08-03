@@ -94,6 +94,12 @@ tailwind.config = {
       <div class="rounded-2xl bg-white p-5 shadow-sm"><div id="statWeek" class="text-3xl font-black text-gold">0</div><div class="text-sm text-ink/50">7 ימים אחרונים</div></div>
     </div>
 
+    <div class="mt-8 flex items-center gap-2 border-b border-ink/10">
+      <button id="tabLeads" data-tab="leads" class="tab-btn px-5 py-3 text-sm font-bold border-b-2 border-gold text-ink">פניות מהטופס</button>
+      <button id="tabUsers" data-tab="users" class="tab-btn px-5 py-3 text-sm font-bold border-b-2 border-transparent text-ink/45 hover:text-ink">משתמשים רשומים</button>
+    </div>
+
+    <div id="leadsPane">
     <div class="mt-6 flex flex-wrap items-center gap-3">
       <input id="search" type="search" placeholder="חיפוש לפי שם, אימייל או טלפון"
         class="flex-1 min-w-[220px] rounded-xl border border-ink/15 bg-white px-4 py-3 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
@@ -116,6 +122,26 @@ tailwind.config = {
         <tbody id="rows" class="divide-y divide-ink/5"></tbody>
       </table>
       <p id="empty" class="hidden px-4 py-14 text-center text-ink/40">אין עדיין פניות.</p>
+    </div>
+    </div>
+
+    <div id="usersPane" class="hidden">
+      <div class="mt-6 overflow-x-auto rounded-2xl bg-white shadow-sm">
+        <table class="w-full min-w-[720px] text-sm">
+          <thead class="bg-cloud text-ink/60">
+            <tr>
+              <th class="px-4 py-3 text-right font-semibold">אימייל</th>
+              <th class="px-4 py-3 text-right font-semibold">שיטת התחברות</th>
+              <th class="px-4 py-3 text-right font-semibold">נרשם בתאריך</th>
+              <th class="px-4 py-3 text-right font-semibold">כניסה אחרונה</th>
+              <th class="px-4 py-3 text-right font-semibold">הרשאה</th>
+            </tr>
+          </thead>
+          <tbody id="userRows" class="divide-y divide-ink/5"></tbody>
+        </table>
+        <p id="usersEmpty" class="hidden px-4 py-14 text-center text-ink/40">אין משתמשים רשומים.</p>
+      </div>
+      <p class="mt-3 text-xs text-ink/40">משתמש מסומן כ״מנהל״ רק אם האימייל שלו נמצא ברשימת ההיתר. משתמש רגיל שנרשם לא יראה שום פנייה.</p>
     </div>
   </main>
 </div>
@@ -148,7 +174,41 @@ async function route() {
   loginView.classList.add('hidden');
   panelView.classList.remove('hidden');
   await loadLeads();
+  await loadUsers();
 }
+
+async function loadUsers() {
+  const { data, error } = await supabase.rpc('list_users');
+  const rows = error ? [] : (data ?? []);
+
+  el('userRows').innerHTML = rows.map((u) => `
+    <tr class="hover:bg-cloud/60">
+      <td class="px-4 py-3 font-semibold" dir="ltr">${esc(u.email ?? '')}</td>
+      <td class="px-4 py-3 text-ink/60">${u.provider === 'google' ? 'Google' : 'אימייל וסיסמה'}</td>
+      <td class="px-4 py-3 whitespace-nowrap text-ink/60">${new Date(u.created_at).toLocaleString('he-IL')}</td>
+      <td class="px-4 py-3 whitespace-nowrap text-ink/60">${u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString('he-IL') : '—'}</td>
+      <td class="px-4 py-3">${u.is_admin
+        ? '<span class="rounded-full bg-gold/15 px-3 py-1 text-xs font-bold text-gold">מנהל</span>'
+        : '<span class="rounded-full bg-ink/5 px-3 py-1 text-xs text-ink/50">משתמש</span>'}</td>
+    </tr>`).join('');
+
+  el('usersEmpty').classList.toggle('hidden', rows.length > 0);
+}
+
+document.querySelectorAll('.tab-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const isLeads = btn.dataset.tab === 'leads';
+    el('leadsPane').classList.toggle('hidden', !isLeads);
+    el('usersPane').classList.toggle('hidden', isLeads);
+    document.querySelectorAll('.tab-btn').forEach((b) => {
+      const active = b === btn;
+      b.classList.toggle('border-gold', active);
+      b.classList.toggle('text-ink', active);
+      b.classList.toggle('border-transparent', !active);
+      b.classList.toggle('text-ink/45', !active);
+    });
+  });
+});
 
 async function loadLeads() {
   const { data, error } = await supabase
@@ -228,7 +288,7 @@ el('logoutBtn').addEventListener('click', async () => {
   location.reload();
 });
 
-el('refreshBtn').addEventListener('click', loadLeads);
+el('refreshBtn').addEventListener('click', async () => { await loadLeads(); await loadUsers(); });
 el('search').addEventListener('input', render);
 
 el('csvBtn').addEventListener('click', () => {
