@@ -170,6 +170,16 @@ async function route() {
     loginView.classList.remove('hidden');
     return;
   }
+  // מחובר — אבל מורשה רק אם האימייל נמצא ברשימת המנהלים
+  const { data: isAdmin, error } = await supabase.rpc('is_admin');
+  if (error || !isAdmin) {
+    await supabase.auth.signOut();
+    panelView.classList.add('hidden');
+    loginView.classList.remove('hidden');
+    showError('החשבון הזה אינו מורשה לצפות בפניות.');
+    return;
+  }
+
   el('whoami').textContent = session.user.email ?? '';
   loginView.classList.add('hidden');
   panelView.classList.remove('hidden');
