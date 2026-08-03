@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>מנגיסטו בלאו | ייעוץ השקעות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Heebo', 'system-ui', 'sans-serif'] },
+      colors: {
+        ink:   '#0A1128',
+        ink2:  '#111C3D',
+        gold:  '#C9A227',
+        gold2: '#E8C766',
+        mint:  '#2ED3A7',
+        cloud: '#F6F7FB',
+      },
+      keyframes: {
+        floaty: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } },
+        rise:   { '0%': { opacity: 0, transform: 'translateY(24px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+      },
+      animation: { floaty: 'floaty 6s ease-in-out infinite', rise: 'rise .7s ease-out both' },
+    }
+  }
+}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { -webkit-font-smoothing: antialiased; }
+  .grain { background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px); background-size: 22px 22px; }
+  .glow { box-shadow: 0 0 0 1px rgba(201,162,39,.25), 0 30px 80px -30px rgba(201,162,39,.45); }
+</style>
+</head>
+<body class="font-sans bg-cloud text-ink antialiased overflow-x-hidden">
+
+<!-- NAV -->
+<header class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-ink/80 border-b border-white/10">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+    <a href="#top" class="flex items-center gap-3 shrink-0">
+      <span class="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-gold2 to-gold text-ink font-black text-lg">מב</span>
+      <span class="leading-tight">
+        <span class="block text-white font-bold text-base sm:text-lg">מנגיסטו בלאו</span>
+        <span class="block text-gold2/80 text-[11px] sm:text-xs tracking-wide">ייעוץ וליווי השקעות</span>
+      </span>
+    </a>
+    <nav class="hidden lg:flex items-center gap-8 text-sm text-white/70">
+      <a href="#tracks" class="hover:text-gold2 transition">מסלולי השקעה</a>
+      <a href="#process" class="hover:text-gold2 transition">איך זה עובד</a>
+      <a href="#about" class="hover:text-gold2 transition">על מנגיסטו</a>
+      <a href="#faq" class="hover:text-gold2 transition">שאלות נפוצות</a>
+    </nav>
+    <a href="#lead" class="shrink-0 rounded-full bg-gold px-4 sm:px-6 py-2.5 text-sm font-bold text-ink hover:bg-gold2 transition">
+      לשיחת אבחון חינם
+    </a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="top" class="relative min-h-[100dvh] flex items-center bg-ink grain overflow-hidden pt-28 pb-16">
+  <div class="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-gold/20 blur-[120px]"></div>
+  <div class="absolute bottom-[-160px] right-[-120px] h-[460px] w-[460px] rounded-full bg-mint/10 blur-[120px]"></div>
+
+  <div class="relative mx-auto max-w-7xl w-full px-5 sm:px-8 grid lg:grid-cols-[1.15fr_.85fr] gap-12 lg:gap-16 items-center">
+    <div class="animate-rise">
+      <div class="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 text-xs sm:text-sm text-gold2 font-medium">
+        <span class="h-2 w-2 rounded-full bg-mint animate-pulse"></span>
+        נותרו 7 מקומות לשיחות אבחון החודש
+      </div>
+
+      <h1 class="mt-6 text-white font-black leading-[1.08] text-[clamp(2.25rem,6vw,4.25rem)]">
+        הכסף שלך יושב בעו״ש
+        <span class="block bg-gradient-to-l from-gold2 via-gold to-gold2 bg-clip-text text-transparent">ומאבד ערך בכל חודש.</span>
+      </h1>
+
+      <p class="mt-6 max-w-xl text-white/70 text-[clamp(1rem,2.2vw,1.25rem)] leading-relaxed">
+        מנגיסטו בלאו בונה איתך תוכנית השקעה אישית — מסלול ברור, מותאם לסכום, לגיל ולרמת הסיכון שלך.
+        בלי ז׳רגון, בלי הבטחות באוויר. רק החלטות שאתה מבין ויכול לעמוד מאחוריהן.
+      </p>
+
+      <ul class="mt-8 grid sm:grid-cols-2 gap-3 max-w-xl">
+        <li class="flex items-center gap-3 text-white/85 text-sm sm:text-base"><span class="grid place-items-center h-6 w-6 rounded-full bg-mint/20 text-mint text-xs">✓</span>מפה מלאה של הכסף שלך תוך 45 דקות</li>
+        <li class="flex items-center gap-3 text-white/85 text-sm sm:text-base"><span class="grid place-items-center h-6 w-6 rounded-full bg-mint/20 text-mint text-xs">✓</span>התאמה מדויקת לרמת הסיכון שלך</li>
+        <li class="flex items-center gap-3 text-white/85 text-sm sm:text-base"><span class="grid place-items-center h-6 w-6 rounded-full bg-mint/20 text-mint text-xs">✓</span>ליווי צמוד — לא מסמך שנשכח במגירה</li>
+        <li class="flex items-center gap-3 text-white/85 text-sm sm:text-base"><span class="grid place-items-center h-6 w-6 rounded-full bg-mint/20 text-mint text-xs">✓</span>שקיפות מלאה בעמלות ובעלויות</li>
+      </ul>
+
+      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+        <div><div class="text-gold2 font-black text-3xl">12+</div><div class="text-white/50 text-xs">שנות ניסיון בשוק ההון</div></div>
+        <div class="hidden sm:block h-10 w-px bg-white/15"></div>
+        <div><div class="text-gold2 font-black text-3xl">1,400+</div><div class="text-white/50 text-xs">משקיעים שקיבלו תוכנית</div></div>
+        <div class="hidden sm:block h-10 w-px bg-white/15"></div>
+        <div><div class="text-gold2 font-black text-3xl">₪380M</div><div class="text-white/50 text-xs">היקף נכסים מלווה</div></div>
+      </div>
+    </div>
+
+    <!-- LEAD FORM -->
+    <div id="lead" class="animate-rise lg:animate-floaty">
+      <div class="rounded-3xl bg-white p-6 sm:p-8 glow">
+        <h2 class="text-xl sm:text-2xl font-black">שיחת אבחון — ללא עלות</h2>
+        <p class="mt-2 text-ink/60 text-sm leading-relaxed">משאירים פרטים, מנגיסטו חוזר אישית תוך יום עסקים אחד עם שלוש נקודות שאפשר לשפר כבר עכשיו.</p>
+
+        <form id="leadForm" class="mt-6 space-y-4" novalidate>
+          <div>
+            <label for="name" class="block text-sm font-semibold mb-1.5">שם מלא</label>
+            <input id="name" name="name" required placeholder="ישראל ישראלי"
+              class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label for="email" class="block text-sm font-semibold mb-1.5">אימייל</label>
+              <input id="email" name="email" type="email" required placeholder="you@mail.com" dir="ltr"
+                class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm text-right outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-semibold mb-1.5">טלפון</label>
+              <input id="phone" name="phone" type="tel" required placeholder="050-0000000" dir="ltr"
+                class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm text-right outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
+            </div>
+          </div>
+          <div>
+            <label for="amount" class="block text-sm font-semibold mb-1.5">סכום להשקעה</label>
+            <select id="amount" name="amount"
+              class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition">
+              <option>עד ₪50,000</option>
+              <option>₪50,000 – ₪250,000</option>
+              <option>₪250,000 – ₪1,000,000</option>
+              <option>מעל ₪1,000,000</option>
+            </select>
+          </div>
+          <div>
+            <label for="msg" class="block text-sm font-semibold mb-1.5">מה הכי מטריד אותך כרגע? <span class="font-normal text-ink/40">(אופציונלי)</span></label>
+            <textarea id="msg" name="msg" rows="3" placeholder="למשל: יש לי כסף שיושב בבנק ואני לא יודע מה לעשות איתו"
+              class="w-full resize-none rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition"></textarea>
+          </div>
+
+          <button type="submit"
+            class="w-full rounded-xl bg-ink py-4 font-black text-white hover:bg-ink2 active:scale-[.99] transition disabled:opacity-60">
+            קבעו לי שיחת אבחון
+          </button>
+          <p id="formNote" class="text-center text-xs text-ink/45">הפרטים נשמרים אצלנו בלבד. אפס ספאם, אפס טלמרקטינג.</p>
+        </form>
+
+        <div id="leadSuccess" class="hidden mt-6 rounded-2xl bg-mint/10 border border-mint/30 p-6 text-center">
+          <div class="mx-auto grid place-items-center h-14 w-14 rounded-full bg-mint/20 text-mint text-2xl">✓</div>
+          <h3 class="mt-4 font-black text-lg">הפרטים התקבלו</h3>
+          <p class="mt-2 text-sm text-ink/65">מנגיסטו יחזור אליך תוך יום עסקים אחד. בינתיים — שווה לרדת ולקרוא על מסלולי ההשקעה.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAIN -->
+<section class="bg-white py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="max-w-3xl">
+      <span class="text-gold font-bold text-sm tracking-widest">הבעיה האמיתית</span>
+      <h2 class="mt-3 font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)]">
+        רוב האנשים לא מפסידים כסף בגלל השקעה גרועה.<br class="hidden sm:block" />
+        <span class="text-ink/45">הם מפסידים בגלל חוסר החלטה.</span>
+      </h2>
+    </div>
+
+    <div class="mt-14 grid md:grid-cols-3 gap-6">
+      <div class="rounded-3xl border border-ink/10 p-8 hover:border-gold/50 hover:shadow-xl transition">
+        <div class="text-4xl">🏦</div>
+        <h3 class="mt-5 font-black text-xl">הכסף שוכב ולא עובד</h3>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">עו״ש ופיקדונות נשחקים מול האינפלציה. כל שנה שהכסף לא מושקע היא שנה שלא תחזור — ריבית דריבית לא סולחת על דחיינות.</p>
+      </div>
+      <div class="rounded-3xl border border-ink/10 p-8 hover:border-gold/50 hover:shadow-xl transition">
+        <div class="text-4xl">🌪️</div>
+        <h3 class="mt-5 font-black text-xl">יותר מדי דעות, אפס כיוון</h3>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">יוטיוב אומר קריפטו, הבנקאי אומר קרן, החבר אומר נדל״ן. בלי מסגרת שמתאימה דווקא לך, כל עצה היא רק עוד רעש.</p>
+      </div>
+      <div class="rounded-3xl border border-ink/10 p-8 hover:border-gold/50 hover:shadow-xl transition">
+        <div class="text-4xl">💸</div>
+        <h3 class="mt-5 font-black text-xl">עמלות שאוכלות בשקט</h3>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">דמי ניהול של אחוז וחצי נשמעים זניחים — עד שמחשבים אותם על עשרים שנה. רוב המשקיעים לא יודעים כמה הם באמת משלמים.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRACKS -->
+<section id="tracks" class="bg-ink grain py-20 sm:py-28 relative overflow-hidden">
+  <div class="absolute top-1/3 -right-40 h-[420px] w-[420px] rounded-full bg-gold/15 blur-[130px]"></div>
+  <div class="relative mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="max-w-3xl">
+      <span class="text-gold2 font-bold text-sm tracking-widest">מסלולי השקעה</span>
+      <h2 class="mt-3 text-white font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)]">מסלול אחד לא מתאים לכולם.</h2>
+      <p class="mt-4 text-white/60 text-lg">מנגיסטו מרכיב עבורך תמהיל מתוך ארבעה עולמות — לפי אופק הזמן, הנזילות שאתה צריך והסיכון שאתה באמת מסוגל לישון איתו בלילה.</p>
+    </div>
+
+    <div class="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <article class="group rounded-3xl border border-white/10 bg-white/[.04] p-7 hover:bg-white/[.08] hover:border-gold/40 transition">
+        <div class="h-12 w-12 grid place-items-center rounded-2xl bg-gold/15 text-2xl">📈</div>
+        <h3 class="mt-5 text-white font-black text-lg">שוק ההון</h3>
+        <p class="mt-3 text-white/55 text-sm leading-relaxed">תיק מדדי רחב, חשיפה גלובלית ופיזור אמיתי. הליבה של רוב התוכניות — פשוט, זול ומשעמם במובן הטוב.</p>
+        <div class="mt-5 pt-5 border-t border-white/10 text-xs text-gold2">אופק מומלץ: 5+ שנים</div>
+      </article>
+      <article class="group rounded-3xl border border-white/10 bg-white/[.04] p-7 hover:bg-white/[.08] hover:border-gold/40 transition">
+        <div class="h-12 w-12 grid place-items-center rounded-2xl bg-gold/15 text-2xl">🏢</div>
+        <h3 class="mt-5 text-white font-black text-lg">נדל״ן מניב</h3>
+        <p class="mt-3 text-white/55 text-sm leading-relaxed">מקרנות ריט ועד עסקאות משותפות בארץ ובחו״ל. תזרים חודשי לצד עליית ערך — עם בדיקת היתכנות לפני כל שקל.</p>
+        <div class="mt-5 pt-5 border-t border-white/10 text-xs text-gold2">אופק מומלץ: 7+ שנים</div>
+      </article>
+      <article class="group rounded-3xl border border-white/10 bg-white/[.04] p-7 hover:bg-white/[.08] hover:border-gold/40 transition">
+        <div class="h-12 w-12 grid place-items-center rounded-2xl bg-gold/15 text-2xl">🛡️</div>
+        <h3 class="mt-5 text-white font-black text-lg">אג״ח וסולידי</h3>
+        <p class="mt-3 text-white/55 text-sm leading-relaxed">הכרית שמאפשרת לך לא לברוח בירידות. אג״ח ממשלתי, קונצרני מדורג וקרנות כספיות — לכסף שצריך להישאר יציב.</p>
+        <div class="mt-5 pt-5 border-t border-white/10 text-xs text-gold2">אופק מומלץ: 1–3 שנים</div>
+      </article>
+      <article class="group rounded-3xl border border-white/10 bg-white/[.04] p-7 hover:bg-white/[.08] hover:border-gold/40 transition">
+        <div class="h-12 w-12 grid place-items-center rounded-2xl bg-gold/15 text-2xl">🚀</div>
+        <h3 class="mt-5 text-white font-black text-lg">אלטרנטיבי</h3>
+        <p class="mt-3 text-white/55 text-sm leading-relaxed">קרנות פרייבט אקוויטי, הלוואות חוץ־בנקאיות וסטארטאפים. נתח קטן ומחושב מהתיק — שם לוקחים סיכון מודע.</p>
+        <div class="mt-5 pt-5 border-t border-white/10 text-xs text-gold2">אופק מומלץ: 5–10 שנים</div>
+      </article>
+    </div>
+
+    <p class="mt-8 text-white/35 text-xs max-w-3xl leading-relaxed">
+      * האמור אינו מהווה ייעוץ השקעות אישי ואינו תחליף לייעוץ המתחשב בנתונים ובצרכים המיוחדים של כל אדם. אין באמור התחייבות לתשואה כלשהי. כל השקעה כרוכה בסיכון, לרבות אובדן חלק מהקרן.
+    </p>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process" class="bg-cloud py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="max-w-3xl">
+      <span class="text-gold font-bold text-sm tracking-widest">איך זה עובד</span>
+      <h2 class="mt-3 font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)]">שלושה צעדים מבלבול לתוכנית</h2>
+    </div>
+    <div class="mt-14 grid md:grid-cols-3 gap-6">
+      <div class="relative rounded-3xl bg-white p-8 shadow-sm">
+        <span class="absolute -top-5 right-8 grid place-items-center h-12 w-12 rounded-2xl bg-ink text-gold2 font-black text-lg">01</span>
+        <h3 class="mt-6 font-black text-xl">שיחת אבחון (45 דק׳)</h3>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">מיפוי מלא: כמה יש, מאיפה זה מגיע, למה זה מיועד ומתי תצטרך אותו. בלי מכירה — רק הבנה.</p>
+      </div>
+      <div class="relative rounded-3xl bg-white p-8 shadow-sm">
+        <span class="absolute -top-5 right-8 grid place-items-center h-12 w-12 rounded-2xl bg-ink text-gold2 font-black text-lg">02</span>
+        <h3 class="mt-6 font-black text-xl">תוכנית כתובה</h3>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">מסמך אחד, בעברית פשוטה: התמהיל המדויק, הסכומים, העמלות הצפויות ותרחישי הקיצון — כדי שתדע למה לצפות.</p>
+      </div>
+      <div class="relative rounded-3xl bg-white p-8 shadow-sm">
+        <span class="absolute -top-5 right-8 grid place-items-center h-12 w-12 rounded-2xl bg-ink text-gold2 font-black text-lg">03</span>
+        <h3 class="mt-6 font-black text-xl">ביצוע וליווי</h3>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">עוברים יחד על ההוצאה לפועל, ואז נפגשים רבעונית לאיזון ועדכון. אתה לא נשאר לבד מול המסך.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="bg-white py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8 grid lg:grid-cols-2 gap-14 items-center">
+    <div class="relative">
+      <div class="aspect-[4/5] w-full max-w-md mx-auto lg:mx-0 rounded-[2rem] bg-gradient-to-br from-ink to-ink2 grain grid place-items-center overflow-hidden">
+        <span class="text-[clamp(4rem,12vw,8rem)] font-black bg-gradient-to-l from-gold2 to-gold bg-clip-text text-transparent">מב</span>
+      </div>
+      <div class="absolute -bottom-6 left-4 lg:left-auto lg:-right-6 rounded-2xl bg-gold px-6 py-4 shadow-xl">
+        <div class="font-black text-ink text-2xl">12+</div>
+        <div class="text-ink/70 text-xs font-medium">שנות ניסיון</div>
+      </div>
+    </div>
+    <div>
+      <span class="text-gold font-bold text-sm tracking-widest">על מנגיסטו</span>
+      <h2 class="mt-3 font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)]">״הכסף שלך לא צריך יועץ מרשים. הוא צריך תוכנית ברורה.״</h2>
+      <div class="mt-6 space-y-4 text-ink/65 leading-relaxed">
+        <p>מנגיסטו בלאו מלווה משקיעים פרטיים, משפחות ובעלי עסקים בבניית תוכניות השקעה — מהשקל הראשון ועד תיקים בני מיליונים. הגישה שלו פשוטה: קודם מבינים את החיים שלך, רק אחר כך בוחרים מכשיר פיננסי.</p>
+        <p>הוא לא מוכר מוצרים ולא מבטיח תשואות. הוא בונה מסגרת שאתה מבין לעומק, מסביר בדיוק מה הסיכון בכל צעד, ונשאר איתך גם כשהשוק יורד — כי שם נקבעות התוצאות האמיתיות.</p>
+      </div>
+      <div class="mt-8 grid sm:grid-cols-2 gap-4">
+        <div class="rounded-2xl bg-cloud p-5"><div class="font-black">ניסיון מוסדי</div><div class="mt-1 text-sm text-ink/55">רקע בניהול תיקים ובשוק ההון הישראלי והגלובלי</div></div>
+        <div class="rounded-2xl bg-cloud p-5"><div class="font-black">שקיפות מלאה</div><div class="mt-1 text-sm text-ink/55">כל עמלה, כל עלות וכל ניגוד עניינים — על השולחן</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="bg-ink2 py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <h2 class="text-white font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)] max-w-2xl">מה אומרים אחרי השיחה הראשונה</h2>
+    <div class="mt-12 grid md:grid-cols-3 gap-6">
+      <figure class="rounded-3xl bg-white/[.05] border border-white/10 p-7">
+        <div class="text-gold2 text-lg">★★★★★</div>
+        <blockquote class="mt-4 text-white/80 leading-relaxed text-sm">״שנתיים הכסף שלנו ישב בבנק כי פחדנו לטעות. מנגיסטו פירק את זה לצעדים קטנים שהבנתי, והיום יש לנו תוכנית שאני לא מפחדת להסתכל עליה.״</blockquote>
+        <figcaption class="mt-5 text-white/45 text-xs">שירה כ׳ · מנהלת מוצר, תל אביב</figcaption>
+      </figure>
+      <figure class="rounded-3xl bg-white/[.05] border border-white/10 p-7">
+        <div class="text-gold2 text-lg">★★★★★</div>
+        <blockquote class="mt-4 text-white/80 leading-relaxed text-sm">״הדבר הראשון שהוא עשה זה להראות לי כמה אני משלם עמלות. רק התיקון הזה שינה לי את התמונה — ומשם בנינו תיק הגיוני.״</blockquote>
+        <figcaption class="mt-5 text-white/45 text-xs">אבי ט׳ · בעל עסק, חיפה</figcaption>
+      </figure>
+      <figure class="rounded-3xl bg-white/[.05] border border-white/10 p-7">
+        <div class="text-gold2 text-lg">★★★★★</div>
+        <blockquote class="mt-4 text-white/80 leading-relaxed text-sm">״בירידה הגדולה רציתי למכור הכל. שיחה אחת איתו הרגיעה אותי והחזירה אותי לתוכנית. זה השווה יותר מכל טיפ שקיבלתי אי פעם.״</blockquote>
+        <figcaption class="mt-5 text-white/45 text-xs">רונן מ׳ · מהנדס, ראשל״צ</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="bg-white py-20 sm:py-28">
+  <div class="mx-auto max-w-3xl px-5 sm:px-8">
+    <h2 class="font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)] text-center">שאלות ששואלים לפני שמתחילים</h2>
+    <div class="mt-12 divide-y divide-ink/10 border-y border-ink/10">
+      <details class="group py-5">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">כמה כסף צריך כדי להתחיל?<span class="text-gold text-xl transition group-open:rotate-45">+</span></summary>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">אין רף מינימום. ההבדל בין ₪20,000 ל־₪2,000,000 הוא בתמהיל ובכלים, לא בשאלה אם כדאי להתחיל. ככל שמתחילים מוקדם — לזמן יש יותר עבודה לעשות.</p>
+      </details>
+      <details class="group py-5">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">האם מובטחת לי תשואה?<span class="text-gold text-xl transition group-open:rotate-45">+</span></summary>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">לא, ואף אחד לא יכול להבטיח. מה שכן מובטח: תדע בדיוק מה רמת הסיכון שלקחת, מה התרחיש הגרוע שאתה חשוף אליו, ולמה בחרנו בכל רכיב בתיק.</p>
+      </details>
+      <details class="group py-5">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">שיחת האבחון באמת בחינם?<span class="text-gold text-xl transition group-open:rotate-45">+</span></summary>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">כן, 45 דקות ללא עלות וללא התחייבות. גם אם לא נמשיך יחד — תצא עם מפה ברורה של המצב ושלוש נקודות שאפשר לשפר בעצמך.</p>
+      </details>
+      <details class="group py-5">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">אני כבר מושקע דרך הבנק. יש טעם?<span class="text-gold text-xl transition group-open:rotate-45">+</span></summary>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">דווקא אז. רוב הבדיקות מגלות כפילויות, פיזור מדומה ודמי ניהול גבוהים מהנדרש. לפעמים השיפור הגדול ביותר הוא בתיק שכבר קיים.</p>
+      </details>
+      <details class="group py-5">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">מה קורה כשהשוק יורד?<span class="text-gold text-xl transition group-open:rotate-45">+</span></summary>
+        <p class="mt-3 text-ink/60 text-sm leading-relaxed">מתכוננים לזה מראש. בתוכנית כתוב מה עושים בכל תרחיש, וברגע האמת יש עם מי לדבר לפני שמקבלים החלטה רגשית שעולה כסף.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="relative bg-ink grain py-20 sm:py-28 overflow-hidden">
+  <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-l from-transparent via-gold to-transparent"></div>
+  <div class="absolute -bottom-40 left-1/2 -translate-x-1/2 h-[420px] w-[720px] rounded-full bg-gold/15 blur-[130px]"></div>
+  <div class="relative mx-auto max-w-3xl px-5 sm:px-8 text-center">
+    <h2 class="text-white font-black leading-tight text-[clamp(1.9rem,5vw,3.25rem)]">בעוד שנה תרצה שהתחלת היום.</h2>
+    <p class="mt-5 text-white/65 text-lg">45 דקות. ללא עלות. בלי התחייבות. עם מפה ברורה ביד.</p>
+    <a href="#lead" class="mt-9 inline-flex items-center gap-2 rounded-full bg-gold px-9 py-4 font-black text-ink hover:bg-gold2 transition">
+      לקביעת שיחת אבחון
+      <span>←</span>
+    </a>
+    <p class="mt-5 text-white/35 text-xs">נותרו 7 מקומות לחודש הקרוב</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-ink2 border-t border-white/10 py-12">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8 grid gap-8 md:grid-cols-3 items-start">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-gold2 to-gold text-ink font-black">מב</span>
+        <span class="text-white font-bold">מנגיסטו בלאו</span>
+      </div>
+      <p class="mt-4 text-white/45 text-sm leading-relaxed">ייעוץ וליווי השקעות אישי — תוכנית שאתה מבין, ומלווה שנשאר גם כשקשה.</p>
+    </div>
+    <div class="text-sm">
+      <div class="text-white font-bold">יצירת קשר</div>
+      <ul class="mt-3 space-y-2 text-white/50">
+        <li><a href="mailto:hello@mengistu-blau.co.il" class="hover:text-gold2 transition" dir="ltr">hello@mengistu-blau.co.il</a></li>
+        <li><a href="tel:+972500000000" class="hover:text-gold2 transition" dir="ltr">050-000-0000</a></li>
+        <li>א׳–ה׳ 09:00–18:00</li>
+      </ul>
+    </div>
+    <div class="text-xs text-white/35 leading-relaxed">
+      האמור באתר זה הוא מידע שיווקי כללי בלבד ואינו מהווה ייעוץ השקעות, שיווק השקעות או ייעוץ מס, ואינו מתחשב בנתוניו ובצרכיו של כל אדם. אין באמור התחייבות לתשואה. כל השקעה כרוכה בסיכון, לרבות אובדן חלק מהקרן או כולה.
+      <div class="mt-4">© <span id="yr"></span> מנגיסטו בלאו. כל הזכויות שמורות.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  document.getElementById('leadForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!this.checkValidity()) { this.reportValidity(); return; }
+    this.classList.add('hidden');
+    document.getElementById('leadSuccess').classList.remove('hidden');
+  });
+</script>
+</body>
+</html>
