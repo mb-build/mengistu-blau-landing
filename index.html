@@ -397,7 +397,7 @@ tailwind.config = {
 <script src="supabase-config.js"></script>
 <script>
   const db = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY, {
-    auth: { persistSession: false },
+    auth: { persistSession: false, lock: window.SUPABASE_MEMORY_LOCK },
   });
 
   const loadedAt = Date.now();
