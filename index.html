@@ -94,6 +94,38 @@ tailwind.config = {
   .track { transform-style: preserve-3d; transition: transform .4s cubic-bezier(.2,.7,.3,1), background-color .4s; }
   .track:hover { transform: perspective(900px) translateZ(14px) rotateX(1.6deg); }
 
+  /* ===== מערכת עומק משותפת לכל האזורים =====
+     --sy הוא מיקום האזור ביחס למרכז המסך (1- עד 1), מוזן מהגלילה.
+     כל אובייקט תלת־ממדי נוטה לפיו, כך שהעומק מגיב לקריאה ולא לעכבר. */
+  .d3s   { perspective: 1250px; perspective-origin: 50% 50%; }
+  .rot3  { transform-style: preserve-3d; transform: rotateX(calc(var(--sy, 0) * 7deg)); will-change: transform; }
+  .iso   { transform-style: preserve-3d; transform: rotateX(54deg) rotateZ(-26deg) translateZ(calc(var(--sy, 0) * 18px)); }
+
+  /* לוח בעל עובי אמיתי — פאה אחורית במרחק Z */
+  .plate { position: relative; transform-style: preserve-3d; }
+  .plate::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    transform: translateZ(-18px);
+    background: rgba(11,18,32,.07);
+  }
+  .plate-ink::after { background: rgba(233,206,138,.09); }
+
+  /* הבלטה מוצקה — מדמה חיתוך בחומר */
+  .extrude { box-shadow: 3px 3px 0 rgba(11,18,32,.05), 6px 6px 0 rgba(11,18,32,.04), 9px 9px 0 rgba(11,18,32,.03), 14px 14px 30px rgba(11,18,32,.09); }
+  .extrude-ink { box-shadow: 3px 3px 0 rgba(233,206,138,.07), 6px 6px 0 rgba(233,206,138,.05), 9px 9px 0 rgba(233,206,138,.035); }
+
+  /* עמוד תלת־ממדי לתמהיל התיק */
+  .slab { position: absolute; transform-style: preserve-3d; border-radius: 3px; }
+  .slab > i { position: absolute; display: block; border-radius: inherit; }
+
+  /* מטבעות דוהים — האזור של השחיקה */
+  .disc.dim { background: radial-gradient(ellipse at 34% 30%, #D8D3C7, #B3ACA0 58%, #8E8880); }
+  .disc.dim-edge { background: #7E7972; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rot3, .iso { transform: none !important; }
+  }
+
   /* --- קישור ניווט עם קו שנפתח --- */
   .navlink { position: relative; }
   .navlink::after {
@@ -236,8 +268,11 @@ tailwind.config = {
 </section>
 
 <!-- ============ 2. האתגר ============ -->
-<section id="problem" class="relative py-24 sm:py-32">
-  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+<section id="problem" class="d3s relative py-24 sm:py-32" data-3d>
+  <!-- תלת־ממד: ערימות שנשחקות — הכסף שיושב ומאבד ערך -->
+  <div id="erode" class="iso pointer-events-none absolute left-[4%] top-1/2 hidden h-[1px] w-[320px] -translate-y-1/2 opacity-70 xl:block" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-6xl px-5 sm:px-8">
     <div class="rule rv mb-16 text-accent"><i></i></div>
     <p class="rv mark text-xs font-bold tracking-[.3em] text-accent">האתגר</p>
     <h2 class="rv mt-5 max-w-3xl text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">
@@ -248,17 +283,17 @@ tailwind.config = {
     </p>
 
     <div class="mt-16 grid gap-px overflow-hidden rounded-2xl bg-ink/10 md:grid-cols-3">
-      <article class="rv card bg-canvas p-8 hover:bg-canvas2">
+      <article class="rv card plate extrude bg-canvas p-8 hover:bg-canvas2">
         <span class="text-sm font-black text-accent">01</span>
         <h3 class="mt-4 text-xl font-black">כסף שממתין</h3>
         <p class="mt-3 leading-relaxed text-muted">כל שנה בעו״ש היא שנה שהאינפלציה גובה. ריבית דריבית לא מחכה לאף אחד.</p>
       </article>
-      <article class="rv card bg-canvas p-8 hover:bg-canvas2">
+      <article class="rv card plate extrude bg-canvas p-8 hover:bg-canvas2">
         <span class="text-sm font-black text-accent">02</span>
         <h3 class="mt-4 text-xl font-black">יותר מדי כיוונים</h3>
         <p class="mt-3 leading-relaxed text-muted">כל אחד ממליץ על משהו אחר. בלי מסגרת שמתאימה לך, כל עצה היא רק רעש.</p>
       </article>
-      <article class="rv card bg-canvas p-8 hover:bg-canvas2">
+      <article class="rv card plate extrude bg-canvas p-8 hover:bg-canvas2">
         <span class="text-sm font-black text-accent">03</span>
         <h3 class="mt-4 text-xl font-black">עלויות שלא רואים</h3>
         <p class="mt-3 leading-relaxed text-muted">אחוז וחצי דמי ניהול נשמע זניח — עד שמותחים אותו על עשרים שנה.</p>
@@ -267,7 +302,7 @@ tailwind.config = {
   </div>
 </section>
 
-<div class="fade-to-ink h-32"></div>
+<div class="fade-to-ink h-14"></div>
 
 <!-- ============ 3. התהליך ============ -->
 <section id="process" class="dotgrid relative bg-ink py-24 text-canvas sm:py-32">
@@ -280,19 +315,19 @@ tailwind.config = {
       בלי מונחים שאתה לא מבין, ובלי מסמך שנשכח במגירה.
     </p>
 
-    <ol class="mt-16 grid gap-12 md:grid-cols-3 md:gap-8">
+    <ol class="d3s rot3 mt-16 grid gap-12 md:grid-cols-3 md:gap-8" data-3d>
       <li class="rv stepline relative">
-        <span class="grid h-16 w-16 place-items-center rounded-full border border-accent2/30 text-xl font-black text-accent2">01</span>
+        <span class="plate plate-ink extrude-ink grid h-16 w-16 place-items-center rounded-full border border-accent2/30 text-xl font-black text-accent2">01</span>
         <h3 class="mt-6 text-xl font-black">מיפוי</h3>
         <p class="mt-3 leading-relaxed text-canvas/55">45 דקות: כמה יש, למה זה מיועד, ומתי תצטרך את זה. בלי מכירה.</p>
       </li>
       <li class="rv stepline relative">
-        <span class="grid h-16 w-16 place-items-center rounded-full border border-accent2/30 text-xl font-black text-accent2">02</span>
+        <span class="plate plate-ink extrude-ink grid h-16 w-16 place-items-center rounded-full border border-accent2/30 text-xl font-black text-accent2">02</span>
         <h3 class="mt-6 text-xl font-black">תוכנית</h3>
         <p class="mt-3 leading-relaxed text-canvas/55">מסמך אחד בעברית פשוטה: התמהיל, הסכומים, העלויות ותרחישי הקיצון.</p>
       </li>
       <li class="rv relative">
-        <span class="grid h-16 w-16 place-items-center rounded-full border border-accent2/30 text-xl font-black text-accent2">03</span>
+        <span class="plate plate-ink extrude-ink grid h-16 w-16 place-items-center rounded-full border border-accent2/30 text-xl font-black text-accent2">03</span>
         <h3 class="mt-6 text-xl font-black">ליווי</h3>
         <p class="mt-3 leading-relaxed text-canvas/55">מבצעים יחד, ונפגשים רבעונית לאיזון. לא נשארים לבד מול המסך.</p>
       </li>
@@ -300,7 +335,7 @@ tailwind.config = {
   </div>
 </section>
 
-<div class="fade-from-ink h-32"></div>
+<div class="fade-from-ink h-14"></div>
 
 <!-- ============ 4. המסלולים ============ -->
 <section id="tracks" class="py-24 sm:py-32">
@@ -312,6 +347,11 @@ tailwind.config = {
     <p class="rv mt-5 max-w-2xl text-lg text-muted">
       ארבעה עולמות. הפרופורציה ביניהם היא כל ההבדל.
     </p>
+
+    <!-- תלת־ממד: תמהיל התיק כארבע שכבות בעלות נפח -->
+    <div class="d3s rv mt-14 hidden justify-center lg:flex" data-3d aria-hidden="true">
+      <div id="mix" class="iso relative h-[190px] w-[260px]"></div>
+    </div>
 
     <div class="mt-16 divide-y divide-ink/10 border-y border-ink/10">
       <div class="rv track group grid gap-2 py-8 hover:bg-canvas2 sm:grid-cols-[minmax(0,14rem)_1fr_auto] sm:items-baseline sm:gap-8 sm:px-4">
@@ -345,9 +385,13 @@ tailwind.config = {
 <!-- ============ 5. מנגיסטו ============ -->
 <section id="about" class="bg-canvas2 py-24 sm:py-32">
   <div class="mx-auto grid max-w-6xl items-center gap-14 px-5 sm:px-8 lg:grid-cols-[minmax(0,22rem)_1fr]">
-    <div class="rv">
-      <div class="aspect-[4/5] w-full max-w-xs rounded-2xl bg-ink grid place-items-center">
-        <span class="text-7xl font-black text-accent2">מב</span>
+    <div class="rv d3s" data-3d>
+      <div class="rot3 relative w-full max-w-xs">
+        <span class="absolute inset-0 -translate-x-4 translate-y-4 rounded-2xl border border-accent/25" aria-hidden="true"></span>
+        <span class="absolute inset-0 -translate-x-2 translate-y-2 rounded-2xl bg-accent/15" aria-hidden="true"></span>
+        <div class="plate extrude relative grid aspect-[4/5] w-full place-items-center rounded-2xl bg-ink">
+          <span class="text-7xl font-black text-accent2">מב</span>
+        </div>
       </div>
     </div>
     <div>
@@ -368,22 +412,22 @@ tailwind.config = {
   </div>
 </section>
 
-<div class="fade-to-ink h-32"></div>
+<div class="fade-to-ink h-14"></div>
 
 <!-- ============ 6. עדויות ============ -->
 <section class="dotgrid bg-ink py-24 text-canvas sm:py-32">
   <div class="mx-auto max-w-6xl px-5 sm:px-8">
     <p class="rv mark text-xs font-bold tracking-[.3em] text-accent2">אחרי השיחה הראשונה</p>
-    <div class="mt-14 grid gap-12 md:grid-cols-3">
-      <figure class="rv">
+    <div class="d3s rot3 mt-14 grid gap-12 md:grid-cols-3" data-3d>
+      <figure class="rv plate plate-ink rounded-2xl border border-canvas/10 p-7">
         <blockquote class="text-lg leading-relaxed">״פירק את זה לצעדים שהבנתי. היום יש לנו תוכנית שאני לא מפחדת להסתכל עליה.״</blockquote>
         <figcaption class="mt-5 text-sm text-canvas/45">שירה כ׳ · תל אביב</figcaption>
       </figure>
-      <figure class="rv">
+      <figure class="rv plate plate-ink rounded-2xl border border-canvas/10 p-7">
         <blockquote class="text-lg leading-relaxed">״הדבר הראשון שהוא הראה לי זה כמה אני משלם עמלות. רק זה שינה את התמונה.״</blockquote>
         <figcaption class="mt-5 text-sm text-canvas/45">אבי ט׳ · חיפה</figcaption>
       </figure>
-      <figure class="rv">
+      <figure class="rv plate plate-ink rounded-2xl border border-canvas/10 p-7">
         <blockquote class="text-lg leading-relaxed">״בירידה רציתי למכור הכל. שיחה אחת החזירה אותי לתוכנית.״</blockquote>
         <figcaption class="mt-5 text-sm text-canvas/45">רונן מ׳ · ראשל״צ</figcaption>
       </figure>
@@ -391,7 +435,7 @@ tailwind.config = {
   </div>
 </section>
 
-<div class="fade-from-ink h-32"></div>
+<div class="fade-from-ink h-14"></div>
 
 <!-- ============ 7. יצירת קשר ============ -->
 <section id="contact" class="py-24 sm:py-32">
@@ -411,7 +455,8 @@ tailwind.config = {
       </ul>
     </div>
 
-    <div class="rv rounded-2xl border border-ink/10 bg-canvas2 p-6 sm:p-9">
+    <div class="rv d3s" data-3d>
+     <div class="rot3 plate extrude rounded-2xl border border-ink/10 bg-canvas2 p-6 sm:p-9">
       <form id="leadForm" novalidate class="space-y-5">
         <div>
           <label for="name" class="mb-2 block text-sm font-bold">שם מלא</label>
@@ -462,6 +507,7 @@ tailwind.config = {
         <h3 class="mt-5 text-xl font-black">הפרטים התקבלו</h3>
         <p class="mt-2 text-muted">מנגיסטו יחזור אליך תוך יום עסקים אחד.</p>
       </div>
+     </div>
     </div>
   </div>
 </section>
@@ -602,6 +648,71 @@ tailwind.config = {
       }
       host.appendChild(stack);
     });
+  })();
+
+  /* --- ערימות נשחקות: אותה שפה, כיוון הפוך --- */
+  (() => {
+    const host = $('erode');
+    if (!host) return;
+    const W = 82, H = 29, T = 11;
+    [10, 6, 3].forEach((count, c) => {
+      const stack = document.createElement('div');
+      stack.className = 'stack';
+      stack.style.cssText = `width:${W}px;height:${H}px;left:${c * 92}px`;
+      for (let i = 0; i < count; i++) {
+        const z = i * T;
+        stack.insertAdjacentHTML('beforeend',
+          `<span class="disc dim-edge" style="width:${W}px;height:${H}px;top:0;transform:translateZ(${z - 4}px)"></span>` +
+          `<span class="disc dim" style="width:${W}px;height:${H}px;top:0;transform:translateZ(${z}px)"></span>`);
+      }
+      host.appendChild(stack);
+    });
+  })();
+
+  /* --- תמהיל התיק כארבע שכבות בעלות נפח --- */
+  (() => {
+    const host = $('mix');
+    if (!host) return;
+    const layers = [
+      { h: 54, c: '#B4892B', s: '#8A6A19' },
+      { h: 34, c: '#C9A227', s: '#9C7A1C' },
+      { h: 26, c: '#DFC06A', s: '#AE9134' },
+      { h: 16, c: '#0B1220', s: '#000000' },
+    ];
+    const W = 190, D = 78;
+    let y = 0;
+    layers.forEach((L, i) => {
+      const slab = document.createElement('div');
+      slab.className = 'slab';
+      slab.style.cssText = `width:${W}px;height:${D}px;left:35px;top:35px;transform:translateZ(${y}px)`;
+      slab.innerHTML =
+        `<i style="inset:0;background:${L.c};box-shadow:0 0 0 1px rgba(0,0,0,.12)"></i>` +
+        `<i style="left:0;top:0;width:${L.h}px;height:${D}px;transform-origin:left center;transform:rotateY(-90deg);background:${L.s}"></i>` +
+        `<i style="left:0;top:0;width:${W}px;height:${L.h}px;transform-origin:center top;transform:rotateX(90deg);background:${L.s};filter:brightness(1.25)"></i>`;
+      host.appendChild(slab);
+      y += L.h;
+    });
+  })();
+
+  /* --- עומק מונע גלילה: כל אזור מדווח את מיקומו --- */
+  (() => {
+    const zones = [...document.querySelectorAll('[data-3d]')];
+    if (!zones.length || reduced) return;
+    let ticking = false;
+    const update = () => {
+      const mid = innerHeight / 2;
+      zones.forEach((z) => {
+        const r = z.getBoundingClientRect();
+        const p = ((r.top + r.height / 2) - mid) / innerHeight;
+        z.style.setProperty('--sy', Math.max(-1, Math.min(1, p)).toFixed(3));
+      });
+      ticking = false;
+    };
+    addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    addEventListener('resize', update, { passive: true });
+    update();
   })();
 
   /* --- הגרף מצטייר כשמגיעים אליו --- */
