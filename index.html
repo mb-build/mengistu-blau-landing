@@ -5,469 +5,468 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://uneexjwwyloqnszropsg.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="description" content="מנגיסטו בלאו — ייעוץ וליווי השקעות. תוכנית אישית שאתה מבין, מותאמת לסכום, לזמן ולרמת הסיכון שלך.">
 <title>מנגיסטו בלאו | ייעוץ השקעות</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <script src="vendor/tailwind-3.4.17.js"></script>
 <script>
+/* ===== מערכת הצבע: 70 / 30 / 10 =====
+   70%  canvas  — שמנת חמה, הרקע השולט של האתר
+   30%  ink     — כחול־פחם, עוגן לאזורי מפתח וטיפוגרפיה
+   10%  accent  — זהב, אך ורק להדגשה: קריאה לפעולה, מספרים, סימני מעבר   */
 tailwind.config = {
   theme: {
     extend: {
       fontFamily: { sans: ['Heebo', 'system-ui', 'sans-serif'] },
       colors: {
-        ink:   '#0A1128',
-        ink2:  '#111C3D',
-        gold:  '#C9A227',
-        gold2: '#E8C766',
-        mint:  '#2ED3A7',
-        cloud: '#F6F7FB',
+        canvas:  '#F7F5F0',
+        canvas2: '#EFEBE2',
+        ink:     '#0B1220',
+        ink2:    '#161F31',
+        muted:   '#5B6674',
+        accent:  '#B4892B',
+        accent2: '#E9CE8A',
       },
-      keyframes: {
-        floaty: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } },
-        rise:   { '0%': { opacity: 0, transform: 'translateY(24px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
-      },
-      animation: { floaty: 'floaty 6s ease-in-out infinite', rise: 'rise .7s ease-out both' },
-    }
-  }
+    },
+  },
 }
 </script>
 <style>
   html { scroll-behavior: smooth; }
   body { -webkit-font-smoothing: antialiased; }
-  .grain { background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px); background-size: 22px 22px; }
-  .glow { box-shadow: 0 0 0 1px rgba(201,162,39,.25), 0 30px 80px -30px rgba(201,162,39,.45); }
 
-  /* ===== סצנה תלת־ממדית ===== */
-  .scene { perspective: 1500px; perspective-origin: 50% 42%; }
-  .d3 { transform-style: preserve-3d; }
-  .par { will-change: transform; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+  /* --- חשיפה הדרגתית בגלילה ---
+     ההסתרה חלה רק כשיש JS פעיל. בלי JS, או אם משהו נכשל,
+     התוכן פשוט גלוי — עדיף עמוד בלי אנימציה מאשר עמוד ריק. */
+  .js .rv { opacity: 0; transform: translateY(26px); transition: opacity .8s cubic-bezier(.2,.7,.3,1), transform .8s cubic-bezier(.2,.7,.3,1); }
+  .js .rv.in { opacity: 1; transform: none; }
 
-  /* רצפת רשת נסוגה לעומק */
-  .floor {
-    position: absolute; left: 50%; bottom: -18%; width: 260%; height: 85vh;
-    transform: translateX(-50%) rotateX(74deg);
-    transform-origin: 50% 100%;
-    background-image:
-      linear-gradient(to right,  rgba(201,162,39,.20) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(201,162,39,.20) 1px, transparent 1px);
-    background-size: 96px 96px;
-    -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 0%, #000 5%, transparent 72%);
-            mask-image: radial-gradient(ellipse 60% 70% at 50% 0%, #000 5%, transparent 72%);
-    animation: floorRun 9s linear infinite;
+  /* --- מעבר רך בין אזור בהיר לכהה --- */
+  .fade-to-ink   { background: linear-gradient(to bottom, #F7F5F0, #0B1220); }
+  .fade-from-ink { background: linear-gradient(to bottom, #0B1220, #F7F5F0); }
+
+  /* --- קו זהב דק שמסמן מעבר --- */
+  .hair { height: 1px; background: linear-gradient(to left, transparent, #B4892B, transparent); }
+
+  /* --- קישוט: טבעות עדינות ברקע --- */
+  .halo { background: radial-gradient(circle, rgba(180,137,43,.10), transparent 62%); }
+
+  /* --- קישור ניווט עם קו שנפתח --- */
+  .navlink { position: relative; }
+  .navlink::after {
+    content: ''; position: absolute; inset-inline-start: 0; bottom: -6px;
+    height: 1.5px; width: 0; background: #E9CE8A; transition: width .35s cubic-bezier(.2,.7,.3,1);
   }
-  @keyframes floorRun { to { background-position: 0 96px, 0 96px; } }
+  .navlink:hover::after, .navlink[aria-current="true"]::after { width: 100%; }
 
-  /* קופסה תלת־ממדית אמיתית — חמש פאות */
-  .box3d { position: absolute; transform-style: preserve-3d; bottom: 0; }
-  .box3d > i { position: absolute; display: block; }
-  .box3d .fx { inset: 0; background: linear-gradient(180deg, rgba(232,199,102,.95), rgba(201,162,39,.55)); }
-  .box3d .bx { inset: 0; background: rgba(140,110,25,.45); }
-  .box3d .lx, .box3d .rx { top: 0; height: 100%; background: linear-gradient(180deg, rgba(201,162,39,.7), rgba(120,95,20,.45)); }
-  .box3d .tx { left: 0; width: 100%; background: linear-gradient(180deg, #F6E3A8, #E8C766); }
-  .box3d.mintbar .fx { background: linear-gradient(180deg, rgba(46,211,167,.9), rgba(46,211,167,.35)); }
-  .box3d.mintbar .lx, .box3d.mintbar .rx { background: linear-gradient(180deg, rgba(46,211,167,.6), rgba(20,120,95,.4)); }
-  .box3d.mintbar .tx { background: linear-gradient(180deg, #9BF3DC, #2ED3A7); }
+  /* --- כרטיס שמתרומם --- */
+  .card { transition: transform .45s cubic-bezier(.2,.7,.3,1), box-shadow .45s, border-color .45s; }
+  .card:hover { transform: translateY(-6px); }
 
-  .orb {
-    position: absolute; border-radius: 50%;
-    background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.75), rgba(232,199,102,.55) 30%, rgba(201,162,39,.18) 62%, transparent 72%);
-    filter: blur(.3px);
-    animation: bob var(--bob, 7s) ease-in-out infinite;
+  /* --- פס התקדמות גלילה --- */
+  #bar { transform-origin: right center; transform: scaleX(0); transition: transform .12s linear; }
+
+  /* --- קו מקשר בין שלבי התהליך --- */
+  .stepline::before {
+    content: ''; position: absolute; inset-inline-start: 100%; top: 2.15rem;
+    width: 100%; height: 1px; background: linear-gradient(to left, rgba(180,137,43,.5), transparent);
   }
-  @keyframes bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-22px) } }
-
-  .ring {
-    position: absolute; border-radius: 50%;
-    border: 1px solid rgba(201,162,39,.35);
-    box-shadow: inset 0 0 40px rgba(201,162,39,.18), 0 0 40px rgba(201,162,39,.12);
-    animation: ringSpin var(--rs, 26s) linear infinite;
-  }
-  @keyframes ringSpin { to { transform: rotateZ(360deg); } }
-
-  /* כרטיס הטופס — הטיה ובוהק */
-  .tilt { will-change: transform; transition: transform .45s cubic-bezier(.2,.8,.2,1); }
-  .tilt-inner { position: relative; transform-style: preserve-3d; }
-  .tilt-glare {
-    position: absolute; inset: 0; border-radius: 1.5rem; pointer-events: none;
-    background: radial-gradient(600px circle at var(--gx,50%) var(--gy,0%), rgba(255,255,255,.55), transparent 42%);
-    opacity: 0; transition: opacity .4s ease;
-  }
-  .scene:hover .tilt-glare { opacity: .5; }
-
-  .lift { transform: translateZ(0); }
+  @media (max-width: 767px) { .stepline::before { display: none; } }
 
   @media (prefers-reduced-motion: reduce) {
-    .par, .tilt { transition: none !important; transform: none !important; }
-    .floor, .orb, .ring, .box3d { animation: none !important; }
+    html { scroll-behavior: auto; }
+    .rv { opacity: 1; transform: none; transition: none; }
+    .card:hover { transform: none; }
   }
 </style>
 </head>
-<body class="font-sans bg-cloud text-ink antialiased overflow-x-hidden">
+<body class="font-sans bg-canvas text-ink antialiased overflow-x-hidden">
 
-<!-- NAV -->
-<header class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-ink/80 border-b border-white/10">
-  <div class="mx-auto max-w-7xl px-5 sm:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
-    <a href="#top" class="flex items-center gap-3 shrink-0">
-      <span class="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-gold2 to-gold text-ink font-black text-lg">מב</span>
+<div id="bar" class="fixed inset-x-0 top-0 z-[60] h-[3px] bg-accent"></div>
+
+<!-- ============ ניווט ============ -->
+<header id="nav" class="fixed inset-x-0 top-0 z-50 transition-colors duration-500">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 h-20 flex items-center justify-between gap-6">
+    <a href="#top" class="flex shrink-0 items-center gap-3">
+      <span class="grid h-10 w-10 place-items-center rounded-full bg-ink text-accent2 font-black">מב</span>
       <span class="leading-tight">
-        <span class="block text-white font-bold text-base sm:text-lg">מנגיסטו בלאו</span>
-        <span class="block text-gold2/80 text-[11px] sm:text-xs tracking-wide">ייעוץ וליווי השקעות</span>
+        <span id="brandName" class="block font-bold transition-colors">מנגיסטו בלאו</span>
+        <span id="brandRole" class="block text-[11px] tracking-widest text-muted transition-colors">ייעוץ וליווי השקעות</span>
       </span>
     </a>
-    <nav class="hidden lg:flex items-center gap-8 text-sm text-white/70">
-      <a href="#tracks" class="hover:text-gold2 transition">מסלולי השקעה</a>
-      <a href="#process" class="hover:text-gold2 transition">איך זה עובד</a>
-      <a href="#about" class="hover:text-gold2 transition">על מנגיסטו</a>
-      <a href="#faq" class="hover:text-gold2 transition">שאלות נפוצות</a>
+
+    <nav id="navlinks" class="hidden lg:flex items-center gap-9 text-sm">
+      <a href="#problem" class="navlink transition-colors">האתגר</a>
+      <a href="#process" class="navlink transition-colors">התהליך</a>
+      <a href="#tracks"  class="navlink transition-colors">המסלולים</a>
+      <a href="#about"   class="navlink transition-colors">מנגיסטו</a>
+      <a href="#faq"     class="navlink transition-colors">שאלות</a>
     </nav>
-    <div class="flex shrink-0 items-center gap-2 sm:gap-3">
-      <a href="#lead" class="rounded-full bg-gold px-4 sm:px-6 py-2.5 text-sm font-bold text-ink hover:bg-gold2 transition">
-        לשיחת אבחון חינם
+
+    <div class="flex shrink-0 items-center gap-2">
+      <a href="#contact" class="rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-canvas hover:bg-accent hover:text-ink transition-colors">
+        שיחת אבחון
       </a>
-      <a href="admin.html" title="כניסת מנהל"
-         class="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-white/60 hover:border-gold/50 hover:text-gold2 transition">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
-          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      <a href="admin.html" title="כניסת מנהל" id="lockBtn"
+         class="grid h-9 w-9 place-items-center rounded-full border border-ink/15 text-ink/40 hover:border-accent hover:text-accent transition-colors">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-4 w-4">
+          <rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
       </a>
     </div>
   </div>
 </header>
 
-<!-- HERO -->
-<section id="top" class="scene relative min-h-[100dvh] flex items-center bg-ink grain overflow-hidden pt-28 pb-16">
-  <!-- שכבות עומק דקורטיביות -->
-  <div class="d3 absolute inset-0 pointer-events-none select-none" aria-hidden="true">
-    <div class="par absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-gold/20 blur-[120px]" data-depth="10"></div>
-    <div class="par absolute bottom-[-160px] right-[-120px] h-[460px] w-[460px] rounded-full bg-mint/10 blur-[120px]" data-depth="16"></div>
+<!-- ============ 1. הבטחה ============ -->
+<section id="top" class="relative min-h-[100dvh] flex items-center overflow-hidden pt-28 pb-20">
+  <div class="halo pointer-events-none absolute -top-32 right-[-10%] h-[620px] w-[620px] rounded-full"></div>
+  <div class="halo pointer-events-none absolute bottom-[-20%] left-[-15%] h-[520px] w-[520px] rounded-full"></div>
 
-    <div class="par d3 absolute inset-0" data-depth="6"><div class="floor"></div></div>
+  <div class="relative mx-auto w-full max-w-6xl px-5 sm:px-8">
+    <p class="rv text-xs font-bold tracking-[.3em] text-accent">ייעוץ וליווי השקעות</p>
 
-    <div id="bars3d" class="par d3 absolute left-[6%] bottom-[14%] hidden md:block" data-depth="34"></div>
+    <h1 class="rv mt-6 max-w-4xl text-[clamp(2.5rem,7vw,5.25rem)] font-black leading-[1.02] tracking-tight">
+      הכסף שלך צריך תוכנית.
+      <span class="block text-muted">לא עוד דעה.</span>
+    </h1>
 
-    <div class="par orb absolute right-[14%] top-[22%] h-24 w-24" style="--bob:8s" data-depth="52"></div>
-    <div class="par orb absolute left-[38%] top-[16%] h-12 w-12" style="--bob:6s" data-depth="70"></div>
-    <div class="par orb absolute left-[18%] bottom-[34%] h-16 w-16" style="--bob:9s" data-depth="44"></div>
+    <p class="rv mt-8 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
+      מנגיסטו בלאו בונה איתך מסלול השקעה אחד, ברור, מותאם לסכום שלך, לזמן שיש לך ולסיכון שאתה באמת מוכן לקחת.
+    </p>
 
-    <div class="par ring absolute right-[6%] bottom-[16%] h-[320px] w-[320px]" style="--rs:34s" data-depth="24"></div>
-    <div class="par ring absolute right-[10%] bottom-[22%] h-[210px] w-[210px]" style="--rs:22s" data-depth="38"></div>
-  </div>
-
-  <div class="relative mx-auto max-w-7xl w-full px-5 sm:px-8 grid lg:grid-cols-[1.15fr_.85fr] gap-12 lg:gap-16 items-center d3">
-    <div class="par animate-rise" data-depth="22">
-      <div class="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 text-xs sm:text-sm text-gold2 font-medium">
-        <span class="h-2 w-2 rounded-full bg-mint animate-pulse"></span>
-        נותרו 7 מקומות לשיחות אבחון החודש
-      </div>
-
-      <h1 class="mt-6 text-white font-black leading-[1.08] text-[clamp(2.25rem,6vw,4.25rem)]">
-        הכסף שלך יושב בעו״ש
-        <span class="block bg-gradient-to-l from-gold2 via-gold to-gold2 bg-clip-text text-transparent">ומאבד ערך בכל חודש.</span>
-      </h1>
-
-      <p class="mt-6 max-w-xl text-white/70 text-[clamp(1rem,2.2vw,1.25rem)] leading-relaxed">
-        מנגיסטו בלאו בונה איתך תוכנית השקעה אישית — מסלול ברור, מותאם לסכום, לגיל ולרמת הסיכון שלך.
-        בלי ז׳רגון, בלי הבטחות באוויר. רק החלטות שאתה מבין ויכול לעמוד מאחוריהן.
-      </p>
-
-      <ul class="mt-8 grid sm:grid-cols-2 gap-3 max-w-xl">
-        <li class="flex items-center gap-3 text-white/85 text-sm sm:text-base"><span class="grid place-items-center h-6 w-6 rounded-full bg-mint/20 text-mint text-xs">✓</span>מפה מלאה של הכסף שלך תוך 45 דקות</li>
-        <li class="flex items-center gap-3 text-white/85 text-sm sm:text-base"><span class="grid place-items-center h-6 w-6 rounded-full bg-mint/20 text-mint text-xs">✓</span>התאמה מדויקת לרמת הסיכון שלך</li>
-        <li class="flex items-center gap-3 text-white/85 text-sm sm:text-base"><span class="grid place-items-center h-6 w-6 rounded-full bg-mint/20 text-mint text-xs">✓</span>ליווי צמוד — לא מסמך שנשכח במגירה</li>
-        <li class="flex items-center gap-3 text-white/85 text-sm sm:text-base"><span class="grid place-items-center h-6 w-6 rounded-full bg-mint/20 text-mint text-xs">✓</span>שקיפות מלאה בעמלות ובעלויות</li>
-      </ul>
-
-      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-        <div><div class="text-gold2 font-black text-3xl">12+</div><div class="text-white/50 text-xs">שנות ניסיון בשוק ההון</div></div>
-        <div class="hidden sm:block h-10 w-px bg-white/15"></div>
-        <div><div class="text-gold2 font-black text-3xl">1,400+</div><div class="text-white/50 text-xs">משקיעים שקיבלו תוכנית</div></div>
-        <div class="hidden sm:block h-10 w-px bg-white/15"></div>
-        <div><div class="text-gold2 font-black text-3xl">₪380M</div><div class="text-white/50 text-xs">היקף נכסים מלווה</div></div>
-      </div>
+    <div class="rv mt-10 flex flex-wrap items-center gap-4">
+      <a href="#contact" class="group inline-flex items-center gap-3 rounded-full bg-ink px-8 py-4 font-bold text-canvas transition-colors hover:bg-accent hover:text-ink">
+        לשיחת אבחון ללא עלות
+        <span class="transition-transform group-hover:-translate-x-1">←</span>
+      </a>
+      <a href="#problem" class="text-sm font-semibold text-muted underline-offset-8 hover:text-ink hover:underline transition-colors">
+        קודם תסביר לי למה
+      </a>
     </div>
 
-    <!-- LEAD FORM -->
-    <div id="lead" class="tilt d3 animate-rise">
-      <div class="tilt-inner rounded-3xl bg-white p-6 sm:p-8 glow">
-        <div class="tilt-glare"></div>
-        <h2 class="text-xl sm:text-2xl font-black">שיחת אבחון — ללא עלות</h2>
-        <p class="mt-2 text-ink/60 text-sm leading-relaxed">משאירים פרטים, מנגיסטו חוזר אישית תוך יום עסקים אחד עם שלוש נקודות שאפשר לשפר כבר עכשיו.</p>
-
-        <form id="leadForm" class="mt-6 space-y-4" novalidate>
-          <div>
-            <label for="name" class="block text-sm font-semibold mb-1.5">שם מלא</label>
-            <input id="name" name="name" required placeholder="ישראל ישראלי"
-              class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
-          </div>
-          <div class="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label for="email" class="block text-sm font-semibold mb-1.5">אימייל</label>
-              <input id="email" name="email" type="email" required placeholder="you@mail.com" dir="ltr"
-                class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm text-right outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
-            </div>
-            <div>
-              <label for="phone" class="block text-sm font-semibold mb-1.5">טלפון</label>
-              <input id="phone" name="phone" type="tel" required placeholder="050-0000000" dir="ltr"
-                class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm text-right outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
-            </div>
-          </div>
-          <div>
-            <label for="amount" class="block text-sm font-semibold mb-1.5">סכום להשקעה</label>
-            <select id="amount" name="amount"
-              class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition">
-              <option>עד ₪50,000</option>
-              <option>₪50,000 – ₪250,000</option>
-              <option>₪250,000 – ₪1,000,000</option>
-              <option>מעל ₪1,000,000</option>
-            </select>
-          </div>
-          <div>
-            <label for="msg" class="block text-sm font-semibold mb-1.5">מה הכי מטריד אותך כרגע? <span class="font-normal text-ink/40">(אופציונלי)</span></label>
-            <textarea id="msg" name="msg" rows="3" placeholder="למשל: יש לי כסף שיושב בבנק ואני לא יודע מה לעשות איתו"
-              class="w-full resize-none rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition"></textarea>
-          </div>
-
-          <div class="absolute h-0 w-0 overflow-hidden" aria-hidden="true">
-            <label for="company">אל תמלא שדה זה</label>
-            <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
-          </div>
-
-          <button id="leadSubmit" type="submit"
-            class="w-full rounded-xl bg-ink py-4 font-black text-white hover:bg-ink2 active:scale-[.99] transition disabled:opacity-60">
-            קבעו לי שיחת אבחון
-          </button>
-          <p id="leadError" class="hidden rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-center text-sm text-red-700"></p>
-          <p id="formNote" class="text-center text-xs text-ink/45">הפרטים נשמרים אצלנו בלבד. אפס ספאם, אפס טלמרקטינג.</p>
-        </form>
-
-        <div id="leadSuccess" class="hidden mt-6 rounded-2xl bg-mint/10 border border-mint/30 p-6 text-center">
-          <div class="mx-auto grid place-items-center h-14 w-14 rounded-full bg-mint/20 text-mint text-2xl">✓</div>
-          <h3 class="mt-4 font-black text-lg">הפרטים התקבלו</h3>
-          <p class="mt-2 text-sm text-ink/65">מנגיסטו יחזור אליך תוך יום עסקים אחד. בינתיים — שווה לרדת ולקרוא על מסלולי ההשקעה.</p>
-        </div>
+    <dl class="rv mt-20 grid max-w-2xl grid-cols-3 gap-6 border-t border-ink/10 pt-8">
+      <div>
+        <dt class="text-3xl font-black text-accent sm:text-4xl" data-count="12" data-suffix="+">0</dt>
+        <dd class="mt-1 text-xs text-muted sm:text-sm">שנות ניסיון</dd>
       </div>
+      <div>
+        <dt class="text-3xl font-black text-accent sm:text-4xl" data-count="1400" data-suffix="+">0</dt>
+        <dd class="mt-1 text-xs text-muted sm:text-sm">תוכניות שנבנו</dd>
+      </div>
+      <div>
+        <dt class="text-3xl font-black text-accent sm:text-4xl" data-count="380" data-prefix="₪" data-suffix="M">0</dt>
+        <dd class="mt-1 text-xs text-muted sm:text-sm">נכסים בליווי</dd>
+      </div>
+    </dl>
+  </div>
+
+  <a href="#problem" aria-label="המשך" class="absolute inset-x-0 bottom-8 mx-auto grid h-10 w-6 place-items-start justify-center rounded-full border border-ink/20 pt-2">
+    <span class="block h-2 w-1 animate-bounce rounded-full bg-accent"></span>
+  </a>
+</section>
+
+<!-- ============ 2. האתגר ============ -->
+<section id="problem" class="relative py-24 sm:py-32">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <p class="rv text-xs font-bold tracking-[.3em] text-accent">האתגר</p>
+    <h2 class="rv mt-5 max-w-3xl text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">
+      רוב האנשים לא מפסידים כסף מהשקעה גרועה.
+    </h2>
+    <p class="rv mt-5 max-w-2xl text-lg text-muted">
+      הם מפסידים מחוסר החלטה — ומהזמן שעובר בזמן שמתלבטים.
+    </p>
+
+    <div class="mt-16 grid gap-px overflow-hidden rounded-2xl bg-ink/10 md:grid-cols-3">
+      <article class="rv card bg-canvas p-8 hover:bg-canvas2">
+        <span class="text-sm font-black text-accent">01</span>
+        <h3 class="mt-4 text-xl font-black">כסף שממתין</h3>
+        <p class="mt-3 leading-relaxed text-muted">כל שנה בעו״ש היא שנה שהאינפלציה גובה. ריבית דריבית לא מחכה לאף אחד.</p>
+      </article>
+      <article class="rv card bg-canvas p-8 hover:bg-canvas2">
+        <span class="text-sm font-black text-accent">02</span>
+        <h3 class="mt-4 text-xl font-black">יותר מדי כיוונים</h3>
+        <p class="mt-3 leading-relaxed text-muted">כל אחד ממליץ על משהו אחר. בלי מסגרת שמתאימה לך, כל עצה היא רק רעש.</p>
+      </article>
+      <article class="rv card bg-canvas p-8 hover:bg-canvas2">
+        <span class="text-sm font-black text-accent">03</span>
+        <h3 class="mt-4 text-xl font-black">עלויות שלא רואים</h3>
+        <p class="mt-3 leading-relaxed text-muted">אחוז וחצי דמי ניהול נשמע זניח — עד שמותחים אותו על עשרים שנה.</p>
+      </article>
     </div>
   </div>
 </section>
 
-<!-- PAIN -->
-<section class="bg-white py-20 sm:py-28">
-  <div class="mx-auto max-w-7xl px-5 sm:px-8">
-    <div class="max-w-3xl">
-      <span class="text-gold font-bold text-sm tracking-widest">הבעיה האמיתית</span>
-      <h2 class="mt-3 font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)]">
-        רוב האנשים לא מפסידים כסף בגלל השקעה גרועה.<br class="hidden sm:block" />
-        <span class="text-ink/45">הם מפסידים בגלל חוסר החלטה.</span>
-      </h2>
-    </div>
+<div class="fade-to-ink h-32"></div>
 
-    <div class="mt-14 grid md:grid-cols-3 gap-6">
-      <div class="rounded-3xl border border-ink/10 p-8 hover:border-gold/50 hover:shadow-xl transition">
-        <div class="text-4xl">🏦</div>
-        <h3 class="mt-5 font-black text-xl">הכסף שוכב ולא עובד</h3>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">עו״ש ופיקדונות נשחקים מול האינפלציה. כל שנה שהכסף לא מושקע היא שנה שלא תחזור — ריבית דריבית לא סולחת על דחיינות.</p>
-      </div>
-      <div class="rounded-3xl border border-ink/10 p-8 hover:border-gold/50 hover:shadow-xl transition">
-        <div class="text-4xl">🌪️</div>
-        <h3 class="mt-5 font-black text-xl">יותר מדי דעות, אפס כיוון</h3>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">יוטיוב אומר קריפטו, הבנקאי אומר קרן, החבר אומר נדל״ן. בלי מסגרת שמתאימה דווקא לך, כל עצה היא רק עוד רעש.</p>
-      </div>
-      <div class="rounded-3xl border border-ink/10 p-8 hover:border-gold/50 hover:shadow-xl transition">
-        <div class="text-4xl">💸</div>
-        <h3 class="mt-5 font-black text-xl">עמלות שאוכלות בשקט</h3>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">דמי ניהול של אחוז וחצי נשמעים זניחים — עד שמחשבים אותם על עשרים שנה. רוב המשקיעים לא יודעים כמה הם באמת משלמים.</p>
-      </div>
-    </div>
+<!-- ============ 3. התהליך ============ -->
+<section id="process" class="relative bg-ink py-24 text-canvas sm:py-32">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <p class="rv text-xs font-bold tracking-[.3em] text-accent2">התהליך</p>
+    <h2 class="rv mt-5 max-w-3xl text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">
+      שלושה מפגשים מבלבול לתוכנית.
+    </h2>
+    <p class="rv mt-5 max-w-2xl text-lg text-canvas/55">
+      בלי מונחים שאתה לא מבין, ובלי מסמך שנשכח במגירה.
+    </p>
+
+    <ol class="mt-16 grid gap-12 md:grid-cols-3 md:gap-8">
+      <li class="rv stepline relative">
+        <span class="grid h-16 w-16 place-items-center rounded-full border border-accent2/30 text-xl font-black text-accent2">01</span>
+        <h3 class="mt-6 text-xl font-black">מיפוי</h3>
+        <p class="mt-3 leading-relaxed text-canvas/55">45 דקות: כמה יש, למה זה מיועד, ומתי תצטרך את זה. בלי מכירה.</p>
+      </li>
+      <li class="rv stepline relative">
+        <span class="grid h-16 w-16 place-items-center rounded-full border border-accent2/30 text-xl font-black text-accent2">02</span>
+        <h3 class="mt-6 text-xl font-black">תוכנית</h3>
+        <p class="mt-3 leading-relaxed text-canvas/55">מסמך אחד בעברית פשוטה: התמהיל, הסכומים, העלויות ותרחישי הקיצון.</p>
+      </li>
+      <li class="rv relative">
+        <span class="grid h-16 w-16 place-items-center rounded-full border border-accent2/30 text-xl font-black text-accent2">03</span>
+        <h3 class="mt-6 text-xl font-black">ליווי</h3>
+        <p class="mt-3 leading-relaxed text-canvas/55">מבצעים יחד, ונפגשים רבעונית לאיזון. לא נשארים לבד מול המסך.</p>
+      </li>
+    </ol>
   </div>
 </section>
 
-<!-- TRACKS -->
-<section id="tracks" class="bg-ink grain py-20 sm:py-28 relative overflow-hidden">
-  <div class="absolute top-1/3 -right-40 h-[420px] w-[420px] rounded-full bg-gold/15 blur-[130px]"></div>
-  <div class="relative mx-auto max-w-7xl px-5 sm:px-8">
-    <div class="max-w-3xl">
-      <span class="text-gold2 font-bold text-sm tracking-widest">מסלולי השקעה</span>
-      <h2 class="mt-3 text-white font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)]">מסלול אחד לא מתאים לכולם.</h2>
-      <p class="mt-4 text-white/60 text-lg">מנגיסטו מרכיב עבורך תמהיל מתוך ארבעה עולמות — לפי אופק הזמן, הנזילות שאתה צריך והסיכון שאתה באמת מסוגל לישון איתו בלילה.</p>
+<div class="fade-from-ink h-32"></div>
+
+<!-- ============ 4. המסלולים ============ -->
+<section id="tracks" class="py-24 sm:py-32">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <p class="rv text-xs font-bold tracking-[.3em] text-accent">המסלולים</p>
+    <h2 class="rv mt-5 max-w-3xl text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">
+      התמהיל נבנה ממך, לא מתבנית.
+    </h2>
+    <p class="rv mt-5 max-w-2xl text-lg text-muted">
+      ארבעה עולמות. הפרופורציה ביניהם היא כל ההבדל.
+    </p>
+
+    <div class="mt-16 divide-y divide-ink/10 border-y border-ink/10">
+      <div class="rv group grid gap-2 py-8 transition-colors hover:bg-canvas2 sm:grid-cols-[minmax(0,14rem)_1fr_auto] sm:items-baseline sm:gap-8 sm:px-4">
+        <h3 class="text-xl font-black">שוק ההון</h3>
+        <p class="text-muted">תיק מדדי רחב עם פיזור גלובלי אמיתי. הליבה של רוב התוכניות.</p>
+        <span class="text-sm font-semibold text-accent">5+ שנים</span>
+      </div>
+      <div class="rv group grid gap-2 py-8 transition-colors hover:bg-canvas2 sm:grid-cols-[minmax(0,14rem)_1fr_auto] sm:items-baseline sm:gap-8 sm:px-4">
+        <h3 class="text-xl font-black">נדל״ן מניב</h3>
+        <p class="text-muted">תזרים חודשי לצד עליית ערך, עם בדיקת היתכנות לפני כל שקל.</p>
+        <span class="text-sm font-semibold text-accent">7+ שנים</span>
+      </div>
+      <div class="rv group grid gap-2 py-8 transition-colors hover:bg-canvas2 sm:grid-cols-[minmax(0,14rem)_1fr_auto] sm:items-baseline sm:gap-8 sm:px-4">
+        <h3 class="text-xl font-black">אג״ח וסולידי</h3>
+        <p class="text-muted">הכרית שמאפשרת לך לא לברוח בירידות. לכסף שצריך להישאר יציב.</p>
+        <span class="text-sm font-semibold text-accent">1–3 שנים</span>
+      </div>
+      <div class="rv group grid gap-2 py-8 transition-colors hover:bg-canvas2 sm:grid-cols-[minmax(0,14rem)_1fr_auto] sm:items-baseline sm:gap-8 sm:px-4">
+        <h3 class="text-xl font-black">אלטרנטיבי</h3>
+        <p class="text-muted">נתח קטן ומחושב מהתיק — שם לוקחים סיכון מודע, בעיניים פקוחות.</p>
+        <span class="text-sm font-semibold text-accent">5–10 שנים</span>
+      </div>
     </div>
 
-    <div class="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      <article class="group rounded-3xl border border-white/10 bg-white/[.04] p-7 hover:bg-white/[.08] hover:border-gold/40 transition">
-        <div class="h-12 w-12 grid place-items-center rounded-2xl bg-gold/15 text-2xl">📈</div>
-        <h3 class="mt-5 text-white font-black text-lg">שוק ההון</h3>
-        <p class="mt-3 text-white/55 text-sm leading-relaxed">תיק מדדי רחב, חשיפה גלובלית ופיזור אמיתי. הליבה של רוב התוכניות — פשוט, זול ומשעמם במובן הטוב.</p>
-        <div class="mt-5 pt-5 border-t border-white/10 text-xs text-gold2">אופק מומלץ: 5+ שנים</div>
-      </article>
-      <article class="group rounded-3xl border border-white/10 bg-white/[.04] p-7 hover:bg-white/[.08] hover:border-gold/40 transition">
-        <div class="h-12 w-12 grid place-items-center rounded-2xl bg-gold/15 text-2xl">🏢</div>
-        <h3 class="mt-5 text-white font-black text-lg">נדל״ן מניב</h3>
-        <p class="mt-3 text-white/55 text-sm leading-relaxed">מקרנות ריט ועד עסקאות משותפות בארץ ובחו״ל. תזרים חודשי לצד עליית ערך — עם בדיקת היתכנות לפני כל שקל.</p>
-        <div class="mt-5 pt-5 border-t border-white/10 text-xs text-gold2">אופק מומלץ: 7+ שנים</div>
-      </article>
-      <article class="group rounded-3xl border border-white/10 bg-white/[.04] p-7 hover:bg-white/[.08] hover:border-gold/40 transition">
-        <div class="h-12 w-12 grid place-items-center rounded-2xl bg-gold/15 text-2xl">🛡️</div>
-        <h3 class="mt-5 text-white font-black text-lg">אג״ח וסולידי</h3>
-        <p class="mt-3 text-white/55 text-sm leading-relaxed">הכרית שמאפשרת לך לא לברוח בירידות. אג״ח ממשלתי, קונצרני מדורג וקרנות כספיות — לכסף שצריך להישאר יציב.</p>
-        <div class="mt-5 pt-5 border-t border-white/10 text-xs text-gold2">אופק מומלץ: 1–3 שנים</div>
-      </article>
-      <article class="group rounded-3xl border border-white/10 bg-white/[.04] p-7 hover:bg-white/[.08] hover:border-gold/40 transition">
-        <div class="h-12 w-12 grid place-items-center rounded-2xl bg-gold/15 text-2xl">🚀</div>
-        <h3 class="mt-5 text-white font-black text-lg">אלטרנטיבי</h3>
-        <p class="mt-3 text-white/55 text-sm leading-relaxed">קרנות פרייבט אקוויטי, הלוואות חוץ־בנקאיות וסטארטאפים. נתח קטן ומחושב מהתיק — שם לוקחים סיכון מודע.</p>
-        <div class="mt-5 pt-5 border-t border-white/10 text-xs text-gold2">אופק מומלץ: 5–10 שנים</div>
-      </article>
-    </div>
-
-    <p class="mt-8 text-white/35 text-xs max-w-3xl leading-relaxed">
-      * האמור אינו מהווה ייעוץ השקעות אישי ואינו תחליף לייעוץ המתחשב בנתונים ובצרכים המיוחדים של כל אדם. אין באמור התחייבות לתשואה כלשהי. כל השקעה כרוכה בסיכון, לרבות אובדן חלק מהקרן.
+    <p class="rv mt-8 max-w-3xl text-xs leading-relaxed text-muted">
+      האמור אינו מהווה ייעוץ השקעות אישי ואינו מתחשב בנתוניו ובצרכיו של כל אדם. אין באמור התחייבות לתשואה. כל השקעה כרוכה בסיכון, לרבות אובדן חלק מהקרן.
     </p>
   </div>
 </section>
 
-<!-- PROCESS -->
-<section id="process" class="bg-cloud py-20 sm:py-28">
-  <div class="mx-auto max-w-7xl px-5 sm:px-8">
-    <div class="max-w-3xl">
-      <span class="text-gold font-bold text-sm tracking-widest">איך זה עובד</span>
-      <h2 class="mt-3 font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)]">שלושה צעדים מבלבול לתוכנית</h2>
-    </div>
-    <div class="mt-14 grid md:grid-cols-3 gap-6">
-      <div class="relative rounded-3xl bg-white p-8 shadow-sm">
-        <span class="absolute -top-5 right-8 grid place-items-center h-12 w-12 rounded-2xl bg-ink text-gold2 font-black text-lg">01</span>
-        <h3 class="mt-6 font-black text-xl">שיחת אבחון (45 דק׳)</h3>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">מיפוי מלא: כמה יש, מאיפה זה מגיע, למה זה מיועד ומתי תצטרך אותו. בלי מכירה — רק הבנה.</p>
-      </div>
-      <div class="relative rounded-3xl bg-white p-8 shadow-sm">
-        <span class="absolute -top-5 right-8 grid place-items-center h-12 w-12 rounded-2xl bg-ink text-gold2 font-black text-lg">02</span>
-        <h3 class="mt-6 font-black text-xl">תוכנית כתובה</h3>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">מסמך אחד, בעברית פשוטה: התמהיל המדויק, הסכומים, העמלות הצפויות ותרחישי הקיצון — כדי שתדע למה לצפות.</p>
-      </div>
-      <div class="relative rounded-3xl bg-white p-8 shadow-sm">
-        <span class="absolute -top-5 right-8 grid place-items-center h-12 w-12 rounded-2xl bg-ink text-gold2 font-black text-lg">03</span>
-        <h3 class="mt-6 font-black text-xl">ביצוע וליווי</h3>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">עוברים יחד על ההוצאה לפועל, ואז נפגשים רבעונית לאיזון ועדכון. אתה לא נשאר לבד מול המסך.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section id="about" class="bg-white py-20 sm:py-28">
-  <div class="mx-auto max-w-7xl px-5 sm:px-8 grid lg:grid-cols-2 gap-14 items-center">
-    <div class="relative">
-      <div class="aspect-[4/5] w-full max-w-md mx-auto lg:mx-0 rounded-[2rem] bg-gradient-to-br from-ink to-ink2 grain grid place-items-center overflow-hidden">
-        <span class="text-[clamp(4rem,12vw,8rem)] font-black bg-gradient-to-l from-gold2 to-gold bg-clip-text text-transparent">מב</span>
-      </div>
-      <div class="absolute -bottom-6 left-4 lg:left-auto lg:-right-6 rounded-2xl bg-gold px-6 py-4 shadow-xl">
-        <div class="font-black text-ink text-2xl">12+</div>
-        <div class="text-ink/70 text-xs font-medium">שנות ניסיון</div>
+<!-- ============ 5. מנגיסטו ============ -->
+<section id="about" class="bg-canvas2 py-24 sm:py-32">
+  <div class="mx-auto grid max-w-6xl items-center gap-14 px-5 sm:px-8 lg:grid-cols-[minmax(0,22rem)_1fr]">
+    <div class="rv">
+      <div class="aspect-[4/5] w-full max-w-xs rounded-2xl bg-ink grid place-items-center">
+        <span class="text-7xl font-black text-accent2">מב</span>
       </div>
     </div>
     <div>
-      <span class="text-gold font-bold text-sm tracking-widest">על מנגיסטו</span>
-      <h2 class="mt-3 font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)]">״הכסף שלך לא צריך יועץ מרשים. הוא צריך תוכנית ברורה.״</h2>
-      <div class="mt-6 space-y-4 text-ink/65 leading-relaxed">
-        <p>מנגיסטו בלאו מלווה משקיעים פרטיים, משפחות ובעלי עסקים בבניית תוכניות השקעה — מהשקל הראשון ועד תיקים בני מיליונים. הגישה שלו פשוטה: קודם מבינים את החיים שלך, רק אחר כך בוחרים מכשיר פיננסי.</p>
-        <p>הוא לא מוכר מוצרים ולא מבטיח תשואות. הוא בונה מסגרת שאתה מבין לעומק, מסביר בדיוק מה הסיכון בכל צעד, ונשאר איתך גם כשהשוק יורד — כי שם נקבעות התוצאות האמיתיות.</p>
+      <p class="rv text-xs font-bold tracking-[.3em] text-accent">מנגיסטו בלאו</p>
+      <h2 class="rv mt-5 text-[clamp(1.6rem,3.6vw,2.75rem)] font-black leading-tight">
+        קודם מבינים את החיים שלך. רק אחר כך בוחרים מכשיר פיננסי.
+      </h2>
+      <div class="rv mt-6 space-y-4 text-lg leading-relaxed text-muted">
+        <p>מלווה משקיעים פרטיים, משפחות ובעלי עסקים — מהשקל הראשון ועד תיקים בני מיליונים.</p>
+        <p>לא מוכר מוצרים ולא מבטיח תשואות. בונה מסגרת שאתה מבין לעומק, ונשאר איתך גם כשהשוק יורד — כי שם נקבעות התוצאות.</p>
       </div>
-      <div class="mt-8 grid sm:grid-cols-2 gap-4">
-        <div class="rounded-2xl bg-cloud p-5"><div class="font-black">ניסיון מוסדי</div><div class="mt-1 text-sm text-ink/55">רקע בניהול תיקים ובשוק ההון הישראלי והגלובלי</div></div>
-        <div class="rounded-2xl bg-cloud p-5"><div class="font-black">שקיפות מלאה</div><div class="mt-1 text-sm text-ink/55">כל עמלה, כל עלות וכל ניגוד עניינים — על השולחן</div></div>
+      <div class="rv mt-8 flex flex-wrap gap-x-10 gap-y-4 border-t border-ink/10 pt-6 text-sm">
+        <span class="font-semibold">ניסיון מוסדי בניהול תיקים</span>
+        <span class="font-semibold">שקיפות מלאה בעמלות</span>
+        <span class="font-semibold">ליווי אישי, לא מוקד</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
-<section class="bg-ink2 py-20 sm:py-28">
-  <div class="mx-auto max-w-7xl px-5 sm:px-8">
-    <h2 class="text-white font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)] max-w-2xl">מה אומרים אחרי השיחה הראשונה</h2>
-    <div class="mt-12 grid md:grid-cols-3 gap-6">
-      <figure class="rounded-3xl bg-white/[.05] border border-white/10 p-7">
-        <div class="text-gold2 text-lg">★★★★★</div>
-        <blockquote class="mt-4 text-white/80 leading-relaxed text-sm">״שנתיים הכסף שלנו ישב בבנק כי פחדנו לטעות. מנגיסטו פירק את זה לצעדים קטנים שהבנתי, והיום יש לנו תוכנית שאני לא מפחדת להסתכל עליה.״</blockquote>
-        <figcaption class="mt-5 text-white/45 text-xs">שירה כ׳ · מנהלת מוצר, תל אביב</figcaption>
+<div class="fade-to-ink h-32"></div>
+
+<!-- ============ 6. עדויות ============ -->
+<section class="bg-ink py-24 text-canvas sm:py-32">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <p class="rv text-xs font-bold tracking-[.3em] text-accent2">אחרי השיחה הראשונה</p>
+    <div class="mt-14 grid gap-12 md:grid-cols-3">
+      <figure class="rv">
+        <blockquote class="text-lg leading-relaxed">״פירק את זה לצעדים שהבנתי. היום יש לנו תוכנית שאני לא מפחדת להסתכל עליה.״</blockquote>
+        <figcaption class="mt-5 text-sm text-canvas/45">שירה כ׳ · תל אביב</figcaption>
       </figure>
-      <figure class="rounded-3xl bg-white/[.05] border border-white/10 p-7">
-        <div class="text-gold2 text-lg">★★★★★</div>
-        <blockquote class="mt-4 text-white/80 leading-relaxed text-sm">״הדבר הראשון שהוא עשה זה להראות לי כמה אני משלם עמלות. רק התיקון הזה שינה לי את התמונה — ומשם בנינו תיק הגיוני.״</blockquote>
-        <figcaption class="mt-5 text-white/45 text-xs">אבי ט׳ · בעל עסק, חיפה</figcaption>
+      <figure class="rv">
+        <blockquote class="text-lg leading-relaxed">״הדבר הראשון שהוא הראה לי זה כמה אני משלם עמלות. רק זה שינה את התמונה.״</blockquote>
+        <figcaption class="mt-5 text-sm text-canvas/45">אבי ט׳ · חיפה</figcaption>
       </figure>
-      <figure class="rounded-3xl bg-white/[.05] border border-white/10 p-7">
-        <div class="text-gold2 text-lg">★★★★★</div>
-        <blockquote class="mt-4 text-white/80 leading-relaxed text-sm">״בירידה הגדולה רציתי למכור הכל. שיחה אחת איתו הרגיעה אותי והחזירה אותי לתוכנית. זה השווה יותר מכל טיפ שקיבלתי אי פעם.״</blockquote>
-        <figcaption class="mt-5 text-white/45 text-xs">רונן מ׳ · מהנדס, ראשל״צ</figcaption>
+      <figure class="rv">
+        <blockquote class="text-lg leading-relaxed">״בירידה רציתי למכור הכל. שיחה אחת החזירה אותי לתוכנית.״</blockquote>
+        <figcaption class="mt-5 text-sm text-canvas/45">רונן מ׳ · ראשל״צ</figcaption>
       </figure>
     </div>
   </div>
 </section>
 
-<!-- FAQ -->
-<section id="faq" class="bg-white py-20 sm:py-28">
-  <div class="mx-auto max-w-3xl px-5 sm:px-8">
-    <h2 class="font-black leading-tight text-[clamp(1.75rem,4.5vw,3rem)] text-center">שאלות ששואלים לפני שמתחילים</h2>
-    <div class="mt-12 divide-y divide-ink/10 border-y border-ink/10">
-      <details class="group py-5">
-        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">כמה כסף צריך כדי להתחיל?<span class="text-gold text-xl transition group-open:rotate-45">+</span></summary>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">אין רף מינימום. ההבדל בין ₪20,000 ל־₪2,000,000 הוא בתמהיל ובכלים, לא בשאלה אם כדאי להתחיל. ככל שמתחילים מוקדם — לזמן יש יותר עבודה לעשות.</p>
-      </details>
-      <details class="group py-5">
-        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">האם מובטחת לי תשואה?<span class="text-gold text-xl transition group-open:rotate-45">+</span></summary>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">לא, ואף אחד לא יכול להבטיח. מה שכן מובטח: תדע בדיוק מה רמת הסיכון שלקחת, מה התרחיש הגרוע שאתה חשוף אליו, ולמה בחרנו בכל רכיב בתיק.</p>
-      </details>
-      <details class="group py-5">
-        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">שיחת האבחון באמת בחינם?<span class="text-gold text-xl transition group-open:rotate-45">+</span></summary>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">כן, 45 דקות ללא עלות וללא התחייבות. גם אם לא נמשיך יחד — תצא עם מפה ברורה של המצב ושלוש נקודות שאפשר לשפר בעצמך.</p>
-      </details>
-      <details class="group py-5">
-        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">אני כבר מושקע דרך הבנק. יש טעם?<span class="text-gold text-xl transition group-open:rotate-45">+</span></summary>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">דווקא אז. רוב הבדיקות מגלות כפילויות, פיזור מדומה ודמי ניהול גבוהים מהנדרש. לפעמים השיפור הגדול ביותר הוא בתיק שכבר קיים.</p>
-      </details>
-      <details class="group py-5">
-        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">מה קורה כשהשוק יורד?<span class="text-gold text-xl transition group-open:rotate-45">+</span></summary>
-        <p class="mt-3 text-ink/60 text-sm leading-relaxed">מתכוננים לזה מראש. בתוכנית כתוב מה עושים בכל תרחיש, וברגע האמת יש עם מי לדבר לפני שמקבלים החלטה רגשית שעולה כסף.</p>
-      </details>
-    </div>
-  </div>
-</section>
+<div class="fade-from-ink h-32"></div>
 
-<!-- FINAL CTA -->
-<section class="relative bg-ink grain py-20 sm:py-28 overflow-hidden">
-  <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-l from-transparent via-gold to-transparent"></div>
-  <div class="absolute -bottom-40 left-1/2 -translate-x-1/2 h-[420px] w-[720px] rounded-full bg-gold/15 blur-[130px]"></div>
-  <div class="relative mx-auto max-w-3xl px-5 sm:px-8 text-center">
-    <h2 class="text-white font-black leading-tight text-[clamp(1.9rem,5vw,3.25rem)]">בעוד שנה תרצה שהתחלת היום.</h2>
-    <p class="mt-5 text-white/65 text-lg">45 דקות. ללא עלות. בלי התחייבות. עם מפה ברורה ביד.</p>
-    <a href="#lead" class="mt-9 inline-flex items-center gap-2 rounded-full bg-gold px-9 py-4 font-black text-ink hover:bg-gold2 transition">
-      לקביעת שיחת אבחון
-      <span>←</span>
-    </a>
-    <p class="mt-5 text-white/35 text-xs">נותרו 7 מקומות לחודש הקרוב</p>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="bg-ink2 border-t border-white/10 py-12">
-  <div class="mx-auto max-w-7xl px-5 sm:px-8 grid gap-8 md:grid-cols-3 items-start">
+<!-- ============ 7. יצירת קשר ============ -->
+<section id="contact" class="py-24 sm:py-32">
+  <div class="mx-auto grid max-w-6xl gap-14 px-5 sm:px-8 lg:grid-cols-[1fr_minmax(0,30rem)]">
     <div>
-      <div class="flex items-center gap-3">
-        <span class="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-gold2 to-gold text-ink font-black">מב</span>
-        <span class="text-white font-bold">מנגיסטו בלאו</span>
-      </div>
-      <p class="mt-4 text-white/45 text-sm leading-relaxed">ייעוץ וליווי השקעות אישי — תוכנית שאתה מבין, ומלווה שנשאר גם כשקשה.</p>
-    </div>
-    <div class="text-sm">
-      <div class="text-white font-bold">יצירת קשר</div>
-      <ul class="mt-3 space-y-2 text-white/50">
-        <li><a href="mailto:hello@mengistu-blau.co.il" class="hover:text-gold2 transition" dir="ltr">hello@mengistu-blau.co.il</a></li>
-        <li><a href="tel:+972500000000" class="hover:text-gold2 transition" dir="ltr">050-000-0000</a></li>
-        <li>א׳–ה׳ 09:00–18:00</li>
+      <p class="rv text-xs font-bold tracking-[.3em] text-accent">הצעד הראשון</p>
+      <h2 class="rv mt-5 text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">
+        45 דקות שיסדרו לך את התמונה.
+      </h2>
+      <p class="rv mt-5 max-w-md text-lg text-muted">
+        ללא עלות וללא התחייבות. גם אם לא נמשיך יחד, תצא עם מפה ברורה ושלוש נקודות לשיפור.
+      </p>
+      <ul class="rv mt-10 space-y-4 text-muted">
+        <li class="flex gap-3"><span class="text-accent">—</span> מנגיסטו חוזר אישית תוך יום עסקים אחד</li>
+        <li class="flex gap-3"><span class="text-accent">—</span> הפרטים נשמרים אצלנו בלבד</li>
+        <li class="flex gap-3"><span class="text-accent">—</span> אפס ספאם, אפס טלמרקטינג</li>
       </ul>
     </div>
-    <div class="text-xs text-white/35 leading-relaxed">
-      האמור באתר זה הוא מידע שיווקי כללי בלבד ואינו מהווה ייעוץ השקעות, שיווק השקעות או ייעוץ מס, ואינו מתחשב בנתוניו ובצרכיו של כל אדם. אין באמור התחייבות לתשואה. כל השקעה כרוכה בסיכון, לרבות אובדן חלק מהקרן או כולה.
-      <div class="mt-4">© <span id="yr"></span> מנגיסטו בלאו. כל הזכויות שמורות.</div>
+
+    <div class="rv rounded-2xl border border-ink/10 bg-canvas2 p-6 sm:p-9">
+      <form id="leadForm" novalidate class="space-y-5">
+        <div>
+          <label for="name" class="mb-2 block text-sm font-bold">שם מלא</label>
+          <input id="name" required placeholder="ישראל ישראלי"
+            class="w-full border-b border-ink/20 bg-transparent pb-3 outline-none transition-colors focus:border-accent" />
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="email" class="mb-2 block text-sm font-bold">אימייל</label>
+            <input id="email" type="email" required dir="ltr" placeholder="you@mail.com"
+              class="w-full border-b border-ink/20 bg-transparent pb-3 text-right outline-none transition-colors focus:border-accent" />
+          </div>
+          <div>
+            <label for="phone" class="mb-2 block text-sm font-bold">טלפון</label>
+            <input id="phone" type="tel" required dir="ltr" placeholder="050-0000000"
+              class="w-full border-b border-ink/20 bg-transparent pb-3 text-right outline-none transition-colors focus:border-accent" />
+          </div>
+        </div>
+        <div>
+          <label for="amount" class="mb-2 block text-sm font-bold">סכום להשקעה</label>
+          <select id="amount" class="w-full border-b border-ink/20 bg-transparent pb-3 outline-none transition-colors focus:border-accent">
+            <option>עד ₪50,000</option>
+            <option>₪50,000 – ₪250,000</option>
+            <option>₪250,000 – ₪1,000,000</option>
+            <option>מעל ₪1,000,000</option>
+          </select>
+        </div>
+        <div>
+          <label for="msg" class="mb-2 block text-sm font-bold">מה מטריד אותך כרגע? <span class="font-normal text-muted">(אופציונלי)</span></label>
+          <textarea id="msg" rows="3" placeholder="יש לי כסף בבנק ואני לא יודע מה לעשות איתו"
+            class="w-full resize-none border-b border-ink/20 bg-transparent pb-3 outline-none transition-colors focus:border-accent"></textarea>
+        </div>
+
+        <div class="absolute h-0 w-0 overflow-hidden" aria-hidden="true">
+          <label for="company">אל תמלא שדה זה</label>
+          <input id="company" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <button id="leadSubmit" type="submit"
+          class="w-full rounded-full bg-ink py-4 font-bold text-canvas transition-colors hover:bg-accent hover:text-ink">
+          קבעו לי שיחת אבחון
+        </button>
+        <p id="leadError" class="hidden rounded-lg bg-red-50 px-4 py-3 text-center text-sm text-red-700"></p>
+      </form>
+
+      <div id="leadSuccess" class="hidden py-10 text-center">
+        <div class="mx-auto grid h-14 w-14 place-items-center rounded-full bg-accent text-2xl text-ink">✓</div>
+        <h3 class="mt-5 text-xl font-black">הפרטים התקבלו</h3>
+        <p class="mt-2 text-muted">מנגיסטו יחזור אליך תוך יום עסקים אחד.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. שאלות ============ -->
+<section id="faq" class="bg-canvas2 py-24 sm:py-32">
+  <div class="mx-auto max-w-3xl px-5 sm:px-8">
+    <p class="rv text-xs font-bold tracking-[.3em] text-accent">שאלות</p>
+    <h2 class="rv mt-5 text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">לפני שמתחילים.</h2>
+
+    <div class="mt-12 divide-y divide-ink/10 border-y border-ink/10">
+      <details class="rv group py-6">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-bold">
+          כמה כסף צריך כדי להתחיל?
+          <span class="shrink-0 text-accent transition-transform duration-300 group-open:rotate-45">+</span>
+        </summary>
+        <p class="mt-4 leading-relaxed text-muted">אין רף מינימום. ההבדל בין ₪20,000 ל־₪2,000,000 הוא בתמהיל, לא בשאלה אם כדאי להתחיל.</p>
+      </details>
+      <details class="rv group py-6">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-bold">
+          מובטחת לי תשואה?
+          <span class="shrink-0 text-accent transition-transform duration-300 group-open:rotate-45">+</span>
+        </summary>
+        <p class="mt-4 leading-relaxed text-muted">לא, ואף אחד לא יכול להבטיח. מה שכן — תדע בדיוק איזה סיכון לקחת ולמה נבחר כל רכיב.</p>
+      </details>
+      <details class="rv group py-6">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-bold">
+          השיחה באמת ללא עלות?
+          <span class="shrink-0 text-accent transition-transform duration-300 group-open:rotate-45">+</span>
+        </summary>
+        <p class="mt-4 leading-relaxed text-muted">כן. 45 דקות, בלי התחייבות. גם אם לא נמשיך — תצא עם מפה ברורה.</p>
+      </details>
+      <details class="rv group py-6">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-bold">
+          אני כבר מושקע דרך הבנק. יש טעם?
+          <span class="shrink-0 text-accent transition-transform duration-300 group-open:rotate-45">+</span>
+        </summary>
+        <p class="mt-4 leading-relaxed text-muted">דווקא אז. רוב הבדיקות מגלות כפילויות, פיזור מדומה ודמי ניהול גבוהים מהנדרש.</p>
+      </details>
+      <details class="rv group py-6">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-bold">
+          מה קורה כשהשוק יורד?
+          <span class="shrink-0 text-accent transition-transform duration-300 group-open:rotate-45">+</span>
+        </summary>
+        <p class="mt-4 leading-relaxed text-muted">מתכוננים מראש. בתוכנית כתוב מה עושים בכל תרחיש, ויש עם מי לדבר לפני החלטה רגשית.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ סיום ============ -->
+<footer class="bg-ink py-16 text-canvas">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <div class="hair mb-14"></div>
+    <div class="grid gap-10 md:grid-cols-3">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="grid h-10 w-10 place-items-center rounded-full bg-accent font-black text-ink">מב</span>
+          <span class="font-bold">מנגיסטו בלאו</span>
+        </div>
+        <p class="mt-4 max-w-xs leading-relaxed text-canvas/45">תוכנית שאתה מבין, ומלווה שנשאר גם כשקשה.</p>
+      </div>
+      <div>
+        <h3 class="font-bold">יצירת קשר</h3>
+        <ul class="mt-4 space-y-2 text-canvas/50">
+          <li><a href="mailto:hello@mengistu-blau.co.il" dir="ltr" class="hover:text-accent2 transition-colors">hello@mengistu-blau.co.il</a></li>
+          <li><a href="tel:+972500000000" dir="ltr" class="hover:text-accent2 transition-colors">050-000-0000</a></li>
+          <li>א׳–ה׳ · 09:00–18:00</li>
+        </ul>
+      </div>
+      <p class="text-xs leading-relaxed text-canvas/35">
+        מידע שיווקי כללי בלבד. אינו מהווה ייעוץ השקעות, שיווק השקעות או ייעוץ מס, ואינו מתחשב בנתוניו ובצרכיו של כל אדם. אין התחייבות לתשואה. כל השקעה כרוכה בסיכון, לרבות אובדן חלק מהקרן או כולה.
+        <span class="mt-4 block">© <span id="yr"></span> מנגיסטו בלאו</span>
+      </p>
     </div>
   </div>
 </footer>
@@ -480,102 +479,90 @@ tailwind.config = {
   });
 
   const loadedAt = Date.now();
-  document.getElementById('yr').textContent = new Date().getFullYear();
+  const $ = (id) => document.getElementById(id);
+  $('yr').textContent = new Date().getFullYear();
 
-  /* ===== סצנת ההירו התלת־ממדית ===== */
-  (() => {
-    const scene = document.getElementById('top');
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // עמודות תלת־ממדיות — חמש פאות לכל עמודה, גדילה מדורגת
-    const host = document.getElementById('bars3d');
-    if (host) {
-      const D = 22; // חצי עומק
-      const spec = [
-        { h: 90,  w: 54, mint: false },
-        { h: 140, w: 54, mint: false },
-        { h: 116, w: 54, mint: false },
-        { h: 196, w: 54, mint: true  },
-        { h: 258, w: 54, mint: true  },
-      ];
-      host.style.height = '260px';
-      host.style.width = (spec.length * 76) + 'px';
+  /* --- חשיפה הדרגתית --- */
+  const revealAll = () => document.querySelectorAll('.rv').forEach((el) => el.classList.add('in'));
 
-      spec.forEach((b, i) => {
-        const box = document.createElement('div');
-        box.className = 'box3d' + (b.mint ? ' mintbar' : '');
-        box.style.cssText = `left:${i * 76}px;width:${b.w}px;height:${b.h}px;transform:translateZ(${i * 14}px)`;
-        box.style.animation = reduced ? 'none' : `bob ${6 + i}s ease-in-out ${i * .35}s infinite`;
-        box.innerHTML =
-          `<i class="fx" style="transform:translateZ(${D}px)"></i>` +
-          `<i class="bx" style="transform:translateZ(-${D}px) rotateY(180deg)"></i>` +
-          `<i class="lx" style="width:${D * 2}px;left:0;transform-origin:left center;transform:rotateY(-90deg) translateZ(${D}px)"></i>` +
-          `<i class="rx" style="width:${D * 2}px;right:0;transform-origin:right center;transform:rotateY(90deg) translateZ(${D}px)"></i>` +
-          `<i class="tx" style="height:${D * 2}px;top:0;transform-origin:center top;transform:rotateX(90deg) translateZ(${D}px)"></i>`;
-        host.appendChild(box);
+  if (!('IntersectionObserver' in window) || reduced) {
+    document.documentElement.classList.add('js');
+    revealAll();
+  } else {
+    document.documentElement.classList.add('js');
+    const revealer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (!e.isIntersecting) return;
+        e.target.style.transitionDelay = Math.min(i * 70, 280) + 'ms';
+        e.target.classList.add('in');
+        revealer.unobserve(e.target);
       });
-    }
+    }, { rootMargin: '0px 0px -12% 0px', threshold: .12 });
+    document.querySelectorAll('.rv').forEach((el) => revealer.observe(el));
 
-    if (reduced) return;
+    // רשת ביטחון: אם המשקיף לא פעל משום סיבה, לא נשאיר את העמוד ריק
+    setTimeout(() => {
+      if (!document.querySelector('.rv.in')) revealAll();
+    }, 2500);
+  }
 
-    const layers = [...scene.querySelectorAll('.par')];
-    const card = document.getElementById('lead');
-    const glare = scene.querySelector('.tilt-glare');
-    let tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
-
-    const draw = () => {
-      cx += (tx - cx) * .09;
-      cy += (ty - cy) * .09;
-
-      layers.forEach((el) => {
-        const d = Number(el.dataset.depth || 20);
-        el.style.transform =
-          `translate3d(${(-cx * d).toFixed(2)}px, ${(-cy * d * .6).toFixed(2)}px, 0)` +
-          ` rotateY(${(cx * 3).toFixed(2)}deg) rotateX(${(-cy * 2).toFixed(2)}deg)`;
-      });
-
-      if (card) {
-        card.style.transform =
-          `rotateY(${(cx * 7).toFixed(2)}deg) rotateX(${(-cy * 7).toFixed(2)}deg) translateZ(38px)`;
-      }
-      if (glare) {
-        glare.style.setProperty('--gx', (50 + cx * 45) + '%');
-        glare.style.setProperty('--gy', (30 + cy * 45) + '%');
-      }
-
-      raf = (Math.abs(tx - cx) > .001 || Math.abs(ty - cy) > .001)
-        ? requestAnimationFrame(draw)
-        : null;
-    };
-
-    const kick = () => { if (!raf) raf = requestAnimationFrame(draw); };
-
-    scene.addEventListener('pointermove', (e) => {
-      const r = scene.getBoundingClientRect();
-      tx = (e.clientX - r.left) / r.width * 2 - 1;
-      ty = (e.clientY - r.top) / r.height * 2 - 1;
-      kick();
+  /* --- ספירת מספרים --- */
+  const counter = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      counter.unobserve(el);
+      const to = Number(el.dataset.count);
+      const pre = el.dataset.prefix || '';
+      const suf = el.dataset.suffix || '';
+      if (reduced) { el.textContent = pre + to.toLocaleString('he-IL') + suf; return; }
+      const t0 = performance.now();
+      const tick = (t) => {
+        const p = Math.min((t - t0) / 1400, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = pre + Math.round(to * eased).toLocaleString('he-IL') + suf;
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
     });
+  }, { threshold: .6 });
+  document.querySelectorAll('[data-count]').forEach((el) => counter.observe(el));
 
-    scene.addEventListener('pointerleave', () => { tx = 0; ty = 0; kick(); });
+  /* --- ניווט: רקע, צבע וסימון האזור הפעיל --- */
+  const nav = $('nav');
+  const links = [...document.querySelectorAll('#navlinks a')];
+  const sections = links.map((a) => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const bar = $('bar');
 
-    // מכשירים ניידים — הטיה פיזית של המכשיר
-    window.addEventListener('deviceorientation', (e) => {
-      if (e.gamma == null || e.beta == null) return;
-      tx = Math.max(-1, Math.min(1, e.gamma / 35));
-      ty = Math.max(-1, Math.min(1, (e.beta - 45) / 35));
-      kick();
-    });
-  })();
+  const onScroll = () => {
+    const y = scrollY;
 
-  const form = document.getElementById('leadForm');
-  const btn = document.getElementById('leadSubmit');
-  const err = document.getElementById('leadError');
-  const val = (id) => document.getElementById(id).value.trim();
+    nav.classList.toggle('bg-canvas/85', y > 40);
+    nav.classList.toggle('backdrop-blur-md', y > 40);
+    nav.classList.toggle('border-b', y > 40);
+    nav.classList.toggle('border-ink/10', y > 40);
+
+    const doc = document.documentElement.scrollHeight - innerHeight;
+    bar.style.transform = `scaleX(${doc > 0 ? y / doc : 0})`;
+
+    let current = null;
+    sections.forEach((s) => { if (s.getBoundingClientRect().top <= innerHeight * .35) current = s.id; });
+    links.forEach((a) => a.setAttribute('aria-current', a.getAttribute('href') === '#' + current));
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* --- שליחת הטופס --- */
+  const form = $('leadForm');
+  const btn = $('leadSubmit');
+  const err = $('leadError');
+  const val = (id) => $(id).value.trim();
 
   const showSuccess = () => {
     form.classList.add('hidden');
-    document.getElementById('leadSuccess').classList.remove('hidden');
+    $('leadSuccess').classList.remove('hidden');
   };
 
   const fail = (msg) => {
@@ -589,8 +576,6 @@ tailwind.config = {
     e.preventDefault();
     if (btn.disabled) return;
     if (!form.checkValidity()) { form.reportValidity(); return; }
-
-    // מלכודת בוטים: שדה מוסתר שרק סקריפט אוטומטי ימלא, וזמן שהייה מינימלי בדף
     if (val('company') || Date.now() - loadedAt < 3000) { showSuccess(); return; }
 
     btn.disabled = true;
@@ -606,19 +591,13 @@ tailwind.config = {
     });
 
     if (error) {
-      const msg = String(error.message || '');
-      if (msg.includes('too many submissions')) {
-        fail('כבר קיבלנו ממך פנייה לאחרונה. מנגיסטו יחזור אליך — או שאפשר להתקשר ישירות.');
-      } else if (msg.includes('temporarily busy')) {
-        fail('הטופס עמוס כרגע. נסה שוב בעוד דקה.');
-      } else if (msg.includes('violates check constraint')) {
-        fail('חלק מהפרטים אינם תקינים. בדוק את האימייל והטלפון ונסה שוב.');
-      } else {
-        fail('לא הצלחנו לשלוח כרגע. אפשר לנסות שוב או להתקשר ישירות.');
-      }
+      const m = String(error.message || '');
+      if (m.includes('too many submissions')) fail('כבר קיבלנו ממך פנייה לאחרונה. מנגיסטו יחזור אליך.');
+      else if (m.includes('temporarily busy')) fail('הטופס עמוס כרגע. נסה שוב בעוד דקה.');
+      else if (m.includes('violates check constraint')) fail('חלק מהפרטים אינם תקינים. בדוק את האימייל והטלפון.');
+      else fail('לא הצלחנו לשלוח כרגע. אפשר לנסות שוב או להתקשר ישירות.');
       return;
     }
-
     showSuccess();
   });
 </script>
