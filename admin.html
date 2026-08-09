@@ -4,11 +4,17 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://uneexjwwyloqnszropsg.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
 <title>פאנל מנהל | מנגיסטו בלאו</title>
+<script>
+  // הגנת clickjacking — GitHub Pages לא מאפשר כותרת X-Frame-Options
+  if (window.top !== window.self) { window.top.location = window.self.location; }
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="vendor/tailwind-3.4.17.js"></script>
 <script>
 tailwind.config = {
   theme: { extend: {
@@ -35,7 +41,7 @@ tailwind.config = {
     <form id="loginForm" class="mt-7 space-y-4">
       <div>
         <label for="loginEmail" class="block text-sm font-semibold mb-1.5">אימייל</label>
-        <input id="loginEmail" type="email" required dir="ltr" value="admin@mengistu-blau.co.il"
+        <input id="loginEmail" type="email" required dir="ltr" autocomplete="username" placeholder="you@mail.com"
           class="w-full rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm text-right outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition" />
       </div>
       <div>
@@ -117,6 +123,7 @@ tailwind.config = {
             <th class="px-4 py-3 text-right font-semibold">טלפון</th>
             <th class="px-4 py-3 text-right font-semibold">סכום</th>
             <th class="px-4 py-3 text-right font-semibold">הודעה</th>
+            <th class="px-4 py-3 text-right font-semibold"></th>
           </tr>
         </thead>
         <tbody id="rows" class="divide-y divide-ink/5"></tbody>
@@ -146,11 +153,10 @@ tailwind.config = {
   </main>
 </div>
 
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { SUPABASE_URL, SUPABASE_KEY } from './supabase-config.js';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+<script src="vendor/supabase-js-2.58.0.js"></script>
+<script src="supabase-config.js"></script>
+<script>
+const db = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
 
 const el = (id) => document.getElementById(id);
 const loginView = el('loginView');
@@ -164,16 +170,16 @@ function showError(msg) {
 }
 
 async function route() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await db.auth.getSession();
   if (!session) {
     panelView.classList.add('hidden');
     loginView.classList.remove('hidden');
     return;
   }
   // מחובר — אבל מורשה רק אם האימייל נמצא ברשימת המנהלים
-  const { data: isAdmin, error } = await supabase.rpc('is_admin');
+  const { data: isAdmin, error } = await db.rpc('is_admin');
   if (error || !isAdmin) {
-    await supabase.auth.signOut();
+    await db.auth.signOut();
     panelView.classList.add('hidden');
     loginView.classList.remove('hidden');
     showError('החשבון הזה אינו מורשה לצפות בפניות.');
@@ -188,7 +194,7 @@ async function route() {
 }
 
 async function loadUsers() {
-  const { data, error } = await supabase.rpc('list_users');
+  const { data, error } = await db.rpc('list_users');
   const rows = error ? [] : (data ?? []);
 
   el('userRows').innerHTML = rows.map((u) => `
@@ -221,14 +227,14 @@ document.querySelectorAll('.tab-btn').forEach((btn) => {
 });
 
 async function loadLeads() {
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('leads')
-    .select('*')
+    .select('id, created_at, name, email, phone, amount, message, status')
     .order('created_at', { ascending: false });
 
   if (error) {
     // התחברת, אבל המשתמש לא ברשימת המנהלים — RLS חוסם
-    await supabase.auth.signOut();
+    await db.auth.signOut();
     loginView.classList.remove('hidden');
     panelView.classList.add('hidden');
     showError('החשבון הזה אינו מורשה לצפות בפניות.');
@@ -258,9 +264,25 @@ function render() {
       <td class="px-4 py-3" dir="ltr"><a class="text-gold hover:underline" href="tel:${esc(l.phone)}">${esc(l.phone)}</a></td>
       <td class="px-4 py-3 whitespace-nowrap">${esc(l.amount ?? '')}</td>
       <td class="px-4 py-3 text-ink/60 max-w-md">${esc(l.message ?? '')}</td>
+      <td class="px-4 py-3 text-left">
+        <button data-del="${esc(l.id)}" title="מחיקת פנייה"
+          class="rounded-lg border border-ink/10 px-2.5 py-1.5 text-xs text-ink/40 hover:border-red-300 hover:bg-red-50 hover:text-red-600 transition">מחק</button>
+      </td>
     </tr>`).join('');
 
+  el('rows').querySelectorAll('[data-del]').forEach((b) => {
+    b.addEventListener('click', () => deleteLead(b.dataset.del));
+  });
+
   el('empty').classList.toggle('hidden', list.length > 0);
+}
+
+async function deleteLead(id) {
+  if (!window.confirm('למחוק את הפנייה לצמיתות? הפעולה אינה הפיכה.')) return;
+  const { error } = await db.from('leads').delete().eq('id', id);
+  if (error) { window.alert('המחיקה נכשלה.'); return; }
+  leads = leads.filter((l) => l.id !== id);
+  render();
 }
 
 function esc(s) {
@@ -274,7 +296,7 @@ el('loginForm').addEventListener('submit', async (e) => {
   el('loginBtn').disabled = true;
   el('loginBtn').textContent = 'מתחבר…';
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { error } = await db.auth.signInWithPassword({
     email: el('loginEmail').value.trim(),
     password: el('loginPass').value,
   });
@@ -286,7 +308,7 @@ el('loginForm').addEventListener('submit', async (e) => {
 });
 
 el('googleBtn').addEventListener('click', async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
+  const { error } = await db.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: window.location.href.split('#')[0] },
   });
@@ -294,7 +316,7 @@ el('googleBtn').addEventListener('click', async () => {
 });
 
 el('logoutBtn').addEventListener('click', async () => {
-  await supabase.auth.signOut();
+  await db.auth.signOut();
   location.reload();
 });
 
@@ -306,8 +328,13 @@ el('csvBtn').addEventListener('click', () => {
   const body = leads.map((l) => [
     new Date(l.created_at).toLocaleString('he-IL'), l.name, l.email, l.phone, l.amount ?? '', (l.message ?? '').replace(/\n/g, ' '),
   ]);
+  // נטרול הזרקת נוסחאות: תא שמתחיל ב-= + - @ tab או CR מורץ כנוסחה באקסל
+  const safeCell = (c) => {
+    const s = String(c ?? '');
+    return (/^[=+\-@\t\r]/.test(s) ? "'" + s : s).replace(/"/g, '""');
+  };
   const csv = '﻿' + [head, ...body]
-    .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+    .map((r) => r.map((c) => `"${safeCell(c)}"`).join(',')).join('\r\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
   a.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
@@ -315,7 +342,7 @@ el('csvBtn').addEventListener('click', () => {
   URL.revokeObjectURL(a.href);
 });
 
-supabase.auth.onAuthStateChange(() => route());
+db.auth.onAuthStateChange(() => route());
 route();
 </script>
 </body>

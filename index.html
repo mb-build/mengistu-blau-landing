@@ -3,11 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://uneexjwwyloqnszropsg.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>מנגיסטו בלאו | ייעוץ השקעות</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="vendor/tailwind-3.4.17.js"></script>
 <script>
 tailwind.config = {
   theme: {
@@ -145,6 +147,11 @@ tailwind.config = {
             <label for="msg" class="block text-sm font-semibold mb-1.5">מה הכי מטריד אותך כרגע? <span class="font-normal text-ink/40">(אופציונלי)</span></label>
             <textarea id="msg" name="msg" rows="3" placeholder="למשל: יש לי כסף שיושב בבנק ואני לא יודע מה לעשות איתו"
               class="w-full resize-none rounded-xl border border-ink/15 bg-cloud px-4 py-3 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition"></textarea>
+          </div>
+
+          <div class="absolute h-0 w-0 overflow-hidden" aria-hidden="true">
+            <label for="company">אל תמלא שדה זה</label>
+            <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
           </div>
 
           <button id="leadSubmit" type="submit"
@@ -386,28 +393,46 @@ tailwind.config = {
   </div>
 </footer>
 
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-  import { SUPABASE_URL, SUPABASE_KEY } from './supabase-config.js';
+<script src="vendor/supabase-js-2.58.0.js"></script>
+<script src="supabase-config.js"></script>
+<script>
+  const db = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY, {
+    auth: { persistSession: false },
+  });
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
+  const loadedAt = Date.now();
   document.getElementById('yr').textContent = new Date().getFullYear();
 
   const form = document.getElementById('leadForm');
   const btn = document.getElementById('leadSubmit');
   const err = document.getElementById('leadError');
+  const val = (id) => document.getElementById(id).value.trim();
+
+  const showSuccess = () => {
+    form.classList.add('hidden');
+    document.getElementById('leadSuccess').classList.remove('hidden');
+  };
+
+  const fail = (msg) => {
+    btn.disabled = false;
+    btn.textContent = 'קבעו לי שיחת אבחון';
+    err.textContent = msg;
+    err.classList.remove('hidden');
+  };
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (btn.disabled) return;
     if (!form.checkValidity()) { form.reportValidity(); return; }
+
+    // מלכודת בוטים: שדה מוסתר שרק סקריפט אוטומטי ימלא, וזמן שהייה מינימלי בדף
+    if (val('company') || Date.now() - loadedAt < 3000) { showSuccess(); return; }
 
     btn.disabled = true;
     btn.textContent = 'שולח…';
     err.classList.add('hidden');
 
-    const val = (id) => document.getElementById(id).value.trim();
-    const { error } = await supabase.from('leads').insert({
+    const { error } = await db.from('leads').insert({
       name: val('name'),
       email: val('email'),
       phone: val('phone'),
@@ -416,15 +441,20 @@ tailwind.config = {
     });
 
     if (error) {
-      btn.disabled = false;
-      btn.textContent = 'קבעו לי שיחת אבחון';
-      err.textContent = 'לא הצלחנו לשלוח כרגע. אפשר לנסות שוב או להתקשר ישירות.';
-      err.classList.remove('hidden');
+      const msg = String(error.message || '');
+      if (msg.includes('too many submissions')) {
+        fail('כבר קיבלנו ממך פנייה לאחרונה. מנגיסטו יחזור אליך — או שאפשר להתקשר ישירות.');
+      } else if (msg.includes('temporarily busy')) {
+        fail('הטופס עמוס כרגע. נסה שוב בעוד דקה.');
+      } else if (msg.includes('violates check constraint')) {
+        fail('חלק מהפרטים אינם תקינים. בדוק את האימייל והטלפון ונסה שוב.');
+      } else {
+        fail('לא הצלחנו לשלוח כרגע. אפשר לנסות שוב או להתקשר ישירות.');
+      }
       return;
     }
 
-    form.classList.add('hidden');
-    document.getElementById('leadSuccess').classList.remove('hidden');
+    showSuccess();
   });
 </script>
 </body>
