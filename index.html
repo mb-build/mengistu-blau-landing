@@ -122,6 +122,54 @@ tailwind.config = {
   .disc.dim { background: radial-gradient(ellipse at 34% 30%, #D8D3C7, #B3ACA0 58%, #8E8880); }
   .disc.dim-edge { background: #7E7972; }
 
+  /* ===== אזור נעוץ בסגנון תצוגת מוצר ===== */
+  .pin-track { height: 320vh; }
+  .pin { position: sticky; top: 0; height: 100dvh; overflow: hidden; }
+
+  /* אותיות רפאים לרוחב הרקע */
+  .ghostword {
+    position: absolute; inset-inline: 0; display: flex; justify-content: space-between;
+    padding-inline: 3vw; pointer-events: none;
+    font-weight: 900; font-size: clamp(.7rem, 1vw, .95rem); letter-spacing: .1em;
+    color: rgba(233,206,138,.16);
+  }
+
+  /* ניווט נקודות אנכי */
+  .dotnav { position: absolute; inset-inline-end: 2.2vw; top: 50%; transform: translateY(-50%); }
+  .dotbtn {
+    display: grid; place-items: center; width: 52px; height: 52px; border-radius: 9999px;
+    border: 1px solid rgba(233,206,138,.22); color: rgba(247,245,240,.45);
+    transition: all .45s cubic-bezier(.2,.7,.3,1);
+  }
+  .dotbtn[data-on="true"] {
+    border-color: rgba(233,206,138,.85); color: #0B1220;
+    background: radial-gradient(circle at 35% 30%, #F2DFA6, #B4892B);
+    box-shadow: 0 0 34px rgba(180,137,43,.45);
+    transform: scale(1.08);
+  }
+  .dotsep { width: 1px; height: 26px; margin: 6px auto; background: rgba(233,206,138,.2); }
+
+  /* פאנל טקסט מתחלף */
+  .panel { position: absolute; inset-block: 0; display: flex; flex-direction: column; justify-content: center;
+           opacity: 0; transform: translateY(18px); pointer-events: none;
+           transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1); }
+  .panel[data-on="true"] { opacity: 1; transform: none; pointer-events: auto; }
+  .myth { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: rgba(180,137,43,.9); }
+
+  /* אובייקט מרכזי מתחלף */
+  .obj { position: absolute; inset: 0; display: grid; place-items: center;
+         opacity: 0; transform: scale(.92); transition: opacity .7s ease, transform .9s cubic-bezier(.2,.7,.3,1); }
+  .obj[data-on="true"] { opacity: 1; transform: none; }
+  .spin { animation: spinY 26s linear infinite; transform-style: preserve-3d; }
+  @keyframes spinY { to { transform: rotateY(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pin-track { height: auto; }
+    .pin { position: static; height: auto; }
+    .panel, .obj { position: static; opacity: 1; transform: none; }
+    .spin { animation: none; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .rot3, .iso { transform: none !important; }
   }
@@ -268,41 +316,110 @@ tailwind.config = {
 </section>
 
 <!-- ============ 2. האתגר ============ -->
-<section id="problem" class="d3s relative py-24 sm:py-32" data-3d>
-  <!-- תלת־ממד: ערימות שנשחקות — הכסף שיושב ומאבד ערך -->
-  <div id="erode" class="iso pointer-events-none absolute left-[4%] top-1/2 hidden h-[1px] w-[320px] -translate-y-1/2 opacity-70 xl:block" aria-hidden="true"></div>
+<div class="fade-to-ink h-14"></div>
 
-  <div class="relative mx-auto max-w-6xl px-5 sm:px-8">
-    <div class="rule rv mb-16 text-accent"><i></i></div>
-    <p class="rv mark text-xs font-bold tracking-[.3em] text-accent">האתגר</p>
-    <h2 class="rv mt-5 max-w-3xl text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">
-      רוב האנשים לא מפסידים כסף מהשקעה גרועה.
-    </h2>
-    <p class="rv mt-5 max-w-2xl text-lg text-muted">
-      הם מפסידים מחוסר החלטה — ומהזמן שעובר בזמן שמתלבטים.
-    </p>
+<section id="problem" class="pin-track relative bg-ink text-canvas">
+  <div class="pin d3s dotgrid" data-3d>
 
-    <div class="mt-16 grid gap-px overflow-hidden rounded-2xl bg-ink/10 md:grid-cols-3">
-      <article class="rv card plate extrude bg-canvas p-8 hover:bg-canvas2">
-        <span class="text-sm font-black text-accent">01</span>
-        <h3 class="mt-4 text-xl font-black">כסף שממתין</h3>
-        <p class="mt-3 leading-relaxed text-muted">כל שנה בעו״ש היא שנה שהאינפלציה גובה. ריבית דריבית לא מחכה לאף אחד.</p>
-      </article>
-      <article class="rv card plate extrude bg-canvas p-8 hover:bg-canvas2">
-        <span class="text-sm font-black text-accent">02</span>
-        <h3 class="mt-4 text-xl font-black">יותר מדי כיוונים</h3>
-        <p class="mt-3 leading-relaxed text-muted">כל אחד ממליץ על משהו אחר. בלי מסגרת שמתאימה לך, כל עצה היא רק רעש.</p>
-      </article>
-      <article class="rv card plate extrude bg-canvas p-8 hover:bg-canvas2">
-        <span class="text-sm font-black text-accent">03</span>
-        <h3 class="mt-4 text-xl font-black">עלויות שלא רואים</h3>
-        <p class="mt-3 leading-relaxed text-muted">אחוז וחצי דמי ניהול נשמע זניח — עד שמותחים אותו על עשרים שנה.</p>
-      </article>
+    <div class="ghostword top-[15%]" aria-hidden="true">
+      <span>ה</span><span>א</span><span>ת</span><span>ג</span><span>ר</span><span>ה</span><span>א</span><span>מ</span><span>י</span><span>ת</span><span>י</span>
     </div>
+    <div class="ghostword bottom-[15%]" aria-hidden="true">
+      <span>ל</span><span>פ</span><span>נ</span><span>י</span><span>ש</span><span>מ</span><span>ת</span><span>ח</span><span>י</span><span>ל</span><span>י</span><span>ם</span>
+    </div>
+
+    <!-- האובייקט המרכזי, מתחלף לפי הפריט -->
+    <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div class="obj" data-obj="0" data-on="true">
+        <div class="rot3 relative h-[340px] w-[340px]">
+          <div class="halo absolute inset-[-35%] rounded-full"></div>
+          <div id="pinStack" class="iso absolute inset-x-0 bottom-20 mx-auto h-[1px] w-[110px]"></div>
+        </div>
+      </div>
+
+      <div class="obj" data-obj="1">
+        <div class="spin relative h-[320px] w-[320px]">
+          <div class="halo absolute inset-[-35%] rounded-full"></div>
+          <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full">
+            <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(233,206,138,.18)"/>
+            <circle cx="100" cy="100" r="58" fill="none" stroke="rgba(233,206,138,.12)"/>
+            <g stroke="#B4892B" stroke-width="2.5" stroke-linecap="round">
+              <path d="M100 100 L100 24"/><path d="M100 100 L160 62"/><path d="M100 100 L168 132"/>
+              <path d="M100 100 L118 176"/><path d="M100 100 L44 158"/><path d="M100 100 L28 82"/>
+              <path d="M100 100 L52 40"/>
+            </g>
+            <circle cx="100" cy="100" r="9" fill="#E9CE8A"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="obj" data-obj="2">
+        <div class="rot3 relative h-[320px] w-[320px]">
+          <div class="halo absolute inset-[-35%] rounded-full"></div>
+          <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full">
+            <ellipse cx="100" cy="120" rx="78" ry="30" fill="#8A6A19"/>
+            <ellipse cx="100" cy="108" rx="78" ry="30" fill="#B4892B"/>
+            <path d="M100 108 L178 108 A78 30 0 0 1 120 136 Z" fill="#0B1220" opacity=".6"/>
+            <ellipse cx="100" cy="108" rx="78" ry="30" fill="none" stroke="rgba(233,206,138,.5)"/>
+            <text x="100" y="58" text-anchor="middle" fill="#E9CE8A" font-size="20" font-weight="900">1.5%</text>
+            <path d="M100 66 L100 86" stroke="#E9CE8A" stroke-width="2"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- הטקסט המתחלף -->
+    <div class="relative mx-auto h-full max-w-6xl px-5 sm:px-8">
+      <p class="mark absolute top-[13%] text-xs font-bold tracking-[.3em] text-accent2">האתגר</p>
+
+      <div class="panel max-w-md" data-panel="0" data-on="true">
+        <span class="myth self-start text-sm font-bold text-canvas/40">״הכסף בטוח בעו״ש״</span>
+        <h2 class="mt-4 text-[clamp(2rem,5vw,3.6rem)] font-black leading-[1.05]">כסף<br/>שממתין</h2>
+        <p class="mt-6 text-lg leading-relaxed text-canvas/55">
+          כל שנה בעו״ש היא שנה שהאינפלציה גובה. ריבית דריבית לא מחכה לאף אחד — והזמן הוא הנכס היחיד שאי אפשר לקנות בחזרה.
+        </p>
+      </div>
+
+      <div class="panel max-w-md" data-panel="1">
+        <span class="myth self-start text-sm font-bold text-canvas/40">״אשאל כמה אנשים ואחליט״</span>
+        <h2 class="mt-4 text-[clamp(2rem,5vw,3.6rem)] font-black leading-[1.05]">יותר מדי<br/>כיוונים</h2>
+        <p class="mt-6 text-lg leading-relaxed text-canvas/55">
+          כל אחד ממליץ על משהו אחר, וכולם צודקים — עבור מישהו אחר. בלי מסגרת שמתאימה דווקא לך, כל עצה היא עוד רעש.
+        </p>
+      </div>
+
+      <div class="panel max-w-md" data-panel="2">
+        <span class="myth self-start text-sm font-bold text-canvas/40">״אחוז וחצי זה זניח״</span>
+        <h2 class="mt-4 text-[clamp(2rem,5vw,3.6rem)] font-black leading-[1.05]">עלויות<br/>שלא רואים</h2>
+        <p class="mt-6 text-lg leading-relaxed text-canvas/55">
+          דמי ניהול נשמעים זניחים עד שמותחים אותם על עשרים שנה. אז מתברר שהם הנתח הגדול ביותר שיצא מהתיק.
+        </p>
+      </div>
+    </div>
+
+    <!-- ניווט נקודות -->
+    <nav class="dotnav z-10" aria-label="ניווט האתגר">
+      <button class="dotbtn" data-go="0" data-on="true" aria-label="כסף שממתין">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5">
+          <ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>
+        </svg>
+      </button>
+      <div class="dotsep"></div>
+      <button class="dotbtn" data-go="1" aria-label="יותר מדי כיוונים">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5">
+          <circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>
+        </svg>
+      </button>
+      <div class="dotsep"></div>
+      <button class="dotbtn" data-go="2" aria-label="עלויות שלא רואים">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5">
+          <path d="M12 3v18"/><path d="M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.6 7 6.5 9.2 10 12 10.5s5 1.6 5 3.5-2.2 3.5-5 3.5-5-1.1-5-3"/>
+        </svg>
+      </button>
+    </nav>
+
   </div>
 </section>
-
-<div class="fade-to-ink h-14"></div>
 
 <!-- ============ 3. התהליך ============ -->
 <section id="process" class="dotgrid relative bg-ink py-24 text-canvas sm:py-32">
@@ -650,23 +767,54 @@ tailwind.config = {
     });
   })();
 
-  /* --- ערימות נשחקות: אותה שפה, כיוון הפוך --- */
+  /* --- ערימת מטבעות נשחקת באזור האתגר --- */
   (() => {
-    const host = $('erode');
+    const host = $('pinStack');
     if (!host) return;
-    const W = 82, H = 29, T = 11;
-    [10, 6, 3].forEach((count, c) => {
-      const stack = document.createElement('div');
-      stack.className = 'stack';
-      stack.style.cssText = `width:${W}px;height:${H}px;left:${c * 92}px`;
-      for (let i = 0; i < count; i++) {
-        const z = i * T;
-        stack.insertAdjacentHTML('beforeend',
-          `<span class="disc dim-edge" style="width:${W}px;height:${H}px;top:0;transform:translateZ(${z - 4}px)"></span>` +
-          `<span class="disc dim" style="width:${W}px;height:${H}px;top:0;transform:translateZ(${z}px)"></span>`);
-      }
-      host.appendChild(stack);
-    });
+    const W = 104, H = 37, T = 14;
+    for (let i = 0; i < 9; i++) {
+      const z = i * T;
+      const fade = i >= 6;
+      host.insertAdjacentHTML('beforeend',
+        `<span class="disc ${fade ? 'dim-edge' : ''}" style="width:${W}px;height:${H}px;top:0;background:${fade ? '#6E6A63' : '#8A6A19'};transform:translateZ(${z - 5}px)"></span>` +
+        `<span class="disc ${fade ? 'dim' : 'face'}" style="width:${W}px;height:${H}px;top:0;transform:translateZ(${z}px);opacity:${fade ? .5 : 1}"></span>`);
+    }
+  })();
+
+  /* --- אזור האתגר: פריט פעיל לפי גלילה או לחיצה --- */
+  (() => {
+    const track = $('problem');
+    if (!track) return;
+    const pin = track.querySelector('.pin');
+    const panels = [...track.querySelectorAll('[data-panel]')];
+    const objs = [...track.querySelectorAll('[data-obj]')];
+    const dots = [...track.querySelectorAll('[data-go]')];
+    const N = panels.length;
+    let active = -1;
+
+    const setActive = (i) => {
+      if (i === active) return;
+      active = i;
+      panels.forEach((p, k) => p.setAttribute('data-on', String(k === i)));
+      objs.forEach((o, k) => o.setAttribute('data-on', String(k === i)));
+      dots.forEach((d, k) => d.setAttribute('data-on', String(k === i)));
+    };
+
+    dots.forEach((d) => d.addEventListener('click', () => {
+      const i = Number(d.dataset.go);
+      const span = track.offsetHeight - pin.offsetHeight;
+      scrollTo({ top: track.offsetTop + (span * (i + .5)) / N, behavior: reduced ? 'auto' : 'smooth' });
+      setActive(i);
+    }));
+
+    const update = () => {
+      const span = track.offsetHeight - pin.offsetHeight;
+      const p = span > 0 ? (scrollY - track.offsetTop) / span : 0;
+      setActive(Math.max(0, Math.min(N - 1, Math.floor(p * N))));
+    };
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update, { passive: true });
+    update();
   })();
 
   /* --- תמהיל התיק כארבע שכבות בעלות נפח --- */
