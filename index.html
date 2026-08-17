@@ -122,53 +122,156 @@ tailwind.config = {
   .disc.dim { background: radial-gradient(ellipse at 34% 30%, #D8D3C7, #B3ACA0 58%, #8E8880); }
   .disc.dim-edge { background: #7E7972; }
 
-  /* ===== אזור נעוץ בסגנון תצוגת מוצר ===== */
-  .pin-track { height: 320vh; }
-  .pin { position: sticky; top: 0; height: 100dvh; overflow: hidden; }
-
-  /* אותיות רפאים לרוחב הרקע */
-  .ghostword {
-    position: absolute; inset-inline: 0; display: flex; justify-content: space-between;
-    padding-inline: 3vw; pointer-events: none;
-    font-weight: 900; font-size: clamp(.7rem, 1vw, .95rem); letter-spacing: .1em;
-    color: rgba(233,206,138,.16);
+  /* ===== שחזור אזור הגאמה — מבנה 1:1, שפה של יועץ השקעות ===== */
+  .pin-track { height: 340svh; }
+  .pin {
+    position: sticky; top: 0; height: 100svh; overflow: hidden;
+    background: #0B1220;
+  }
+  /* הזוהר הרדיאלי שעולה מלמטה — במקור סגול, כאן זהב */
+  .pin::before {
+    content: ''; position: absolute; inset-inline: -20%; bottom: -46%;
+    height: 118%; pointer-events: none;
+    background: radial-gradient(ellipse 52% 60% at 50% 100%, rgba(180,137,43,.42), rgba(180,137,43,.12) 42%, transparent 72%);
   }
 
-  /* ניווט נקודות אנכי */
-  .dotnav { position: absolute; inset-inline-end: 2.2vw; top: 50%; transform: translateY(-50%); }
+  /* מסגרת סוגריי־פינה */
+  .frame { position: absolute; inset: 26px; pointer-events: none; }
+  .frame span { position: absolute; width: 15px; height: 15px; border: 1px solid rgba(233,206,138,.4); }
+  .frame span:nth-child(1) { inset-block-start: 0; inset-inline-start: 0; border-inline-end: 0; border-block-end: 0; }
+  .frame span:nth-child(2) { inset-block-start: 0; inset-inline-end: 0; border-inline-start: 0; border-block-end: 0; }
+  .frame span:nth-child(3) { inset-block-end: 0; inset-inline-start: 0; border-inline-end: 0; border-block-start: 0; }
+  .frame span:nth-child(4) { inset-block-end: 0; inset-inline-end: 0; border-inline-start: 0; border-block-start: 0; }
+
+  /* hairline עם streak נע */
+  .hairline { position: absolute; inset-inline: 26px; height: 1px; background: rgba(233,206,138,.18); overflow: hidden; }
+  .hairline i { position: absolute; inset-block: 0; width: 140px; background: linear-gradient(to left, transparent, #F2DFA6, transparent);
+                animation: streak 5.5s cubic-bezier(.6,0,.4,1) infinite; }
+  @keyframes streak { 0% { inset-inline-start: -140px } 100% { inset-inline-start: 100% } }
+
+  /* מחוון סטטוס */
+  .meter { display: inline-flex; align-items: center; gap: .55rem; font-size: 12px; font-weight: 700; letter-spacing: .12em; color: rgba(247,245,240,.7); }
+  .meter b { display: flex; gap: 3px; }
+  .meter b s { width: 2px; height: 11px; background: rgba(233,206,138,.35); text-decoration: none; }
+  .meter b s.on { background: #F2DFA6; }
+
+  /* אותיות רפאים ברווחים שווים לכל הרוחב */
+  .ghostword {
+    position: absolute; inset-inline: 3.2vw; display: flex; justify-content: space-between;
+    pointer-events: none; font-weight: 700; font-size: 13px; letter-spacing: .08em;
+    color: rgba(247,245,240,.22);
+  }
+
+  /* ניווט נקודות אנכי בקצה */
+  .dotnav { position: absolute; inset-inline-start: 2.4vw; top: 50%; transform: translateY(-50%); z-index: 3; }
   .dotbtn {
     display: grid; place-items: center; width: 52px; height: 52px; border-radius: 9999px;
     border: 1px solid rgba(233,206,138,.22); color: rgba(247,245,240,.45);
-    transition: all .45s cubic-bezier(.2,.7,.3,1);
+    background: rgba(247,245,240,.04);
+    transition: color .45s, border-color .45s, background-color .45s, box-shadow .45s, transform .45s cubic-bezier(.2,.7,.3,1);
   }
+  .dotbtn:hover { border-color: rgba(233,206,138,.5); color: #F2DFA6; }
+  .dotbtn:focus-visible { outline: 2px solid #F2DFA6; outline-offset: 4px; }
   .dotbtn[data-on="true"] {
-    border-color: rgba(233,206,138,.85); color: #0B1220;
-    background: radial-gradient(circle at 35% 30%, #F2DFA6, #B4892B);
-    box-shadow: 0 0 34px rgba(180,137,43,.45);
-    transform: scale(1.08);
+    border-color: rgba(233,206,138,.9); color: #0B1220;
+    background: radial-gradient(circle at 34% 28%, #F6E6B4, #B4892B);
+    box-shadow: 0 0 38px rgba(180,137,43,.5);
+    transform: scale(1.1);
   }
-  .dotsep { width: 1px; height: 26px; margin: 6px auto; background: rgba(233,206,138,.2); }
+  .dotsep { width: 1px; height: 30px; margin: 7px auto; background: rgba(233,206,138,.2); }
 
   /* פאנל טקסט מתחלף */
-  .panel { position: absolute; inset-block: 0; display: flex; flex-direction: column; justify-content: center;
-           opacity: 0; transform: translateY(18px); pointer-events: none;
-           transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1); }
-  .panel[data-on="true"] { opacity: 1; transform: none; pointer-events: auto; }
-  .myth { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: rgba(180,137,43,.9); }
+  .panel {
+    position: absolute; inset-block: 0; inset-inline-start: 0; width: min(26rem, 34vw);
+    display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; visibility: hidden; transform: translateY(24px); pointer-events: none;
+    transition: opacity .5s ease, transform .7s cubic-bezier(.2,.7,.3,1), visibility 0s linear .5s;
+  }
+  .panel[data-on="true"] {
+    opacity: 1; visibility: visible; transform: none; pointer-events: auto;
+    transition: opacity .5s ease .1s, transform .7s cubic-bezier(.2,.7,.3,1) .1s, visibility 0s;
+  }
+  .myth { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: rgba(180,137,43,.95); }
+  .display { font-size: clamp(2.4rem, 5.4vw, 4.4rem); font-weight: 900; line-height: .96; letter-spacing: -.02em; }
 
-  /* אובייקט מרכזי מתחלף */
-  .obj { position: absolute; inset: 0; display: grid; place-items: center;
-         opacity: 0; transform: scale(.92); transition: opacity .7s ease, transform .9s cubic-bezier(.2,.7,.3,1); }
-  .obj[data-on="true"] { opacity: 1; transform: none; }
-  .spin { animation: spinY 26s linear infinite; transform-style: preserve-3d; }
-  @keyframes spinY { to { transform: rotateY(360deg); } }
+  /* האובייקט המרכזי — מדליית זהב על ציר, בחצי הפנוי של המסך */
+  .objwrap {
+    position: absolute; inset: 0; display: grid; place-items: center end;
+    padding-inline-end: 9vw; pointer-events: none; perspective: 1400px;
+  }
+  .medal {
+    position: relative; transform-style: preserve-3d;
+    width: clamp(230px, 27vw, 400px); aspect-ratio: 1;
+    transform: rotateX(9deg) rotateY(var(--spin, 0deg));
+    filter: drop-shadow(0 44px 60px rgba(0,0,0,.6));
+  }
+  .medal > i { position: absolute; inset: 0; border-radius: 50%; }
+
+  .medal .m-face {
+    transform: translateZ(16px);
+    background:
+      radial-gradient(circle at 30% 24%, #FFF8E2 2%, #F0DCA0 18%, #D6B45C 42%, #B4892B 66%, #6E5212 96%);
+    box-shadow:
+      inset 0 0 0 3px rgba(255,248,226,.55),
+      inset 0 0 0 16px rgba(110,82,18,.35),
+      inset 0 0 0 19px rgba(255,248,226,.3),
+      inset -18px -26px 54px rgba(70,50,8,.55),
+      inset 22px 26px 46px rgba(255,248,226,.30);
+  }
+  /* חריטת שוליים — שיניים דקות סביב ההיקף */
+  .medal .m-teeth {
+    transform: translateZ(15px);
+    background: repeating-conic-gradient(from 0deg, rgba(110,82,18,.75) 0deg 1.4deg, rgba(240,220,160,.75) 1.4deg 2.8deg);
+    -webkit-mask-image: radial-gradient(circle, transparent 87%, #000 88%);
+            mask-image: radial-gradient(circle, transparent 87%, #000 88%);
+  }
+  .medal .m-back {
+    transform: translateZ(-16px) rotateY(180deg);
+    background: radial-gradient(circle at 66% 74%, #E8D296, #A9861F 58%, #5B4310);
+    box-shadow: inset 0 0 0 14px rgba(90,66,14,.5);
+  }
+  .medal .m-rim {
+    inset: 0; transform: translateZ(0);
+    background: conic-gradient(from 200deg, #6E5212, #E3C578 12%, #8A6A19 26%, #FFF3CE 44%, #7E5F16 60%, #E3C578 78%, #6E5212);
+  }
+  .glyph {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    transform: translateZ(18px);
+  }
+  .glyph span {
+    font-size: clamp(3.4rem, 7vw, 6rem); font-weight: 900; line-height: 1;
+    color: #6E5212;
+    text-shadow: 0 2px 0 rgba(255,248,226,.55), 0 -1px 2px rgba(70,50,8,.6);
+  }
+  /* הילה שמתחת למדליה, כמו הזרקור במקור */
+  .objwrap::after {
+    content: ''; position: absolute; inset-block-end: 12%; inset-inline-end: 9vw;
+    width: clamp(230px, 27vw, 400px); height: 46px; transform: translateX(0);
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(180,137,43,.5), transparent 70%);
+    filter: blur(6px);
+  }
+
+  @media (max-width: 900px) {
+    /* בלי translateX — הוא ציר פיזי ומתהפך ב-RTL */
+    .panel { width: auto; inset-inline: 0; padding-block-end: 9rem; justify-content: flex-end; padding-block-start: 42svh; }
+    .objwrap { place-items: start center; padding-inline-end: 0; padding-block-start: 12svh; }
+    .objwrap::after { inset-inline-end: 50%; transform: translateX(50%); inset-block-end: auto; inset-block-start: 12svh; }
+    .dotnav { inset-inline: 0; inset-block-start: auto; inset-block-end: 3.5svh; top: auto;
+              transform: none; display: flex; justify-content: center; align-items: center; }
+    .dotsep { width: 30px; height: 1px; margin: 0 7px; }
+    .medal { width: 190px; height: 190px; }
+    .lineup { display: none; }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .pin-track { height: auto; }
-    .pin { position: static; height: auto; }
-    .panel, .obj { position: static; opacity: 1; transform: none; }
-    .spin { animation: none; }
+    .pin { position: static; height: auto; padding-block: 5rem; }
+    .panel { position: static; width: auto; opacity: 1; transform: none; margin-block: 3rem; }
+    .objwrap, .lineup, .hairline i { display: none; }
   }
+  html:not(.js) .panel { position: static; width: auto; opacity: 1; transform: none; margin-block: 3rem; }
+  html:not(.js) .pin-track { height: auto; }
+  html:not(.js) .pin { position: static; height: auto; }
 
   @media (prefers-reduced-motion: reduce) {
     .rot3, .iso { transform: none !important; }
@@ -211,7 +314,7 @@ tailwind.config = {
 <header id="nav" class="fixed inset-x-0 top-0 z-50 transition-colors duration-500">
   <div class="mx-auto max-w-6xl px-5 sm:px-8 h-20 flex items-center justify-between gap-6">
     <a href="#top" class="flex shrink-0 items-center gap-3">
-      <span class="grid h-10 w-10 place-items-center rounded-full bg-ink text-accent2 font-black">מב</span>
+      <span id="brandMark" class="grid h-10 w-10 place-items-center rounded-full bg-ink font-black text-accent2 transition-colors">מב</span>
       <span class="leading-tight">
         <span id="brandName" class="block font-bold transition-colors">מנגיסטו בלאו</span>
         <span id="brandRole" class="block text-[11px] tracking-widest text-muted transition-colors">ייעוץ וליווי השקעות</span>
@@ -227,7 +330,7 @@ tailwind.config = {
     </nav>
 
     <div class="flex shrink-0 items-center gap-2">
-      <a href="#contact" class="rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-canvas hover:bg-accent hover:text-ink transition-colors">
+      <a id="navCta" href="#contact" class="rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-canvas transition-colors hover:bg-accent hover:text-ink">
         שיחת אבחון
       </a>
       <a href="admin.html" title="כניסת מנהל" id="lockBtn"
@@ -318,101 +421,80 @@ tailwind.config = {
 <!-- ============ 2. האתגר ============ -->
 <div class="fade-to-ink h-14"></div>
 
-<section id="problem" class="pin-track relative bg-ink text-canvas">
-  <div class="pin d3s dotgrid" data-3d>
+<section id="problem" class="pin-track relative bg-ink text-canvas" data-dark>
+  <div class="pin">
 
-    <div class="ghostword top-[15%]" aria-hidden="true">
-      <span>ה</span><span>א</span><span>ת</span><span>ג</span><span>ר</span><span>ה</span><span>א</span><span>מ</span><span>י</span><span>ת</span><span>י</span>
+    <div class="frame" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="hairline top-[12svh]" aria-hidden="true"><i></i></div>
+
+    <div class="absolute top-[calc(12svh+18px)] z-[3] flex w-full items-center justify-between px-[3.2vw]" aria-hidden="true">
+      <span class="meter">מסלול<b id="meterBars"></b></span>
+      <span class="text-xs font-bold tracking-[.24em] text-canvas/45">האתגר</span>
     </div>
-    <div class="ghostword bottom-[15%]" aria-hidden="true">
+
+    <div class="ghostword top-[26svh]" aria-hidden="true">
       <span>ל</span><span>פ</span><span>נ</span><span>י</span><span>ש</span><span>מ</span><span>ת</span><span>ח</span><span>י</span><span>ל</span><span>י</span><span>ם</span>
     </div>
 
-    <!-- האובייקט המרכזי, מתחלף לפי הפריט -->
-    <div class="pointer-events-none absolute inset-0" aria-hidden="true">
-      <div class="obj" data-obj="0" data-on="true">
-        <div class="rot3 relative h-[340px] w-[340px]">
-          <div class="halo absolute inset-[-35%] rounded-full"></div>
-          <div id="pinStack" class="iso absolute inset-x-0 bottom-20 mx-auto h-[1px] w-[110px]"></div>
-        </div>
-      </div>
-
-      <div class="obj" data-obj="1">
-        <div class="spin relative h-[320px] w-[320px]">
-          <div class="halo absolute inset-[-35%] rounded-full"></div>
-          <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full">
-            <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(233,206,138,.18)"/>
-            <circle cx="100" cy="100" r="58" fill="none" stroke="rgba(233,206,138,.12)"/>
-            <g stroke="#B4892B" stroke-width="2.5" stroke-linecap="round">
-              <path d="M100 100 L100 24"/><path d="M100 100 L160 62"/><path d="M100 100 L168 132"/>
-              <path d="M100 100 L118 176"/><path d="M100 100 L44 158"/><path d="M100 100 L28 82"/>
-              <path d="M100 100 L52 40"/>
-            </g>
-            <circle cx="100" cy="100" r="9" fill="#E9CE8A"/>
-          </svg>
-        </div>
-      </div>
-
-      <div class="obj" data-obj="2">
-        <div class="rot3 relative h-[320px] w-[320px]">
-          <div class="halo absolute inset-[-35%] rounded-full"></div>
-          <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full">
-            <ellipse cx="100" cy="120" rx="78" ry="30" fill="#8A6A19"/>
-            <ellipse cx="100" cy="108" rx="78" ry="30" fill="#B4892B"/>
-            <path d="M100 108 L178 108 A78 30 0 0 1 120 136 Z" fill="#0B1220" opacity=".6"/>
-            <ellipse cx="100" cy="108" rx="78" ry="30" fill="none" stroke="rgba(233,206,138,.5)"/>
-            <text x="100" y="58" text-anchor="middle" fill="#E9CE8A" font-size="20" font-weight="900">1.5%</text>
-            <path d="M100 66 L100 86" stroke="#E9CE8A" stroke-width="2"/>
-          </svg>
-        </div>
+    <!-- האובייקט המרכזי -->
+    <div class="objwrap" aria-hidden="true">
+      <div class="medal" id="medal">
+        <i class="m-rim"></i>
+        <i class="m-back"></i>
+        <i class="m-face"></i>
+        <i class="m-teeth"></i>
+        <div class="glyph"><span id="medalGlyph">₪</span></div>
       </div>
     </div>
 
     <!-- הטקסט המתחלף -->
     <div class="relative mx-auto h-full max-w-6xl px-5 sm:px-8">
-      <p class="mark absolute top-[13%] text-xs font-bold tracking-[.3em] text-accent2">האתגר</p>
-
-      <div class="panel max-w-md" data-panel="0" data-on="true">
-        <span class="myth self-start text-sm font-bold text-canvas/40">״הכסף בטוח בעו״ש״</span>
-        <h2 class="mt-4 text-[clamp(2rem,5vw,3.6rem)] font-black leading-[1.05]">כסף<br/>שממתין</h2>
-        <p class="mt-6 text-lg leading-relaxed text-canvas/55">
-          כל שנה בעו״ש היא שנה שהאינפלציה גובה. ריבית דריבית לא מחכה לאף אחד — והזמן הוא הנכס היחיד שאי אפשר לקנות בחזרה.
+      <div class="panel" data-panel="0" data-on="true">
+        <span class="myth self-start text-sm font-bold text-canvas/65">״הכסף בטוח בעו״ש״</span>
+        <h2 class="display mt-4">כסף<br/>שממתין</h2>
+        <p class="mt-6 max-w-sm text-lg leading-relaxed text-canvas/55">
+          כל שנה בעו״ש היא שנה שהאינפלציה גובה. הזמן הוא הנכס היחיד שאי אפשר לקנות בחזרה.
         </p>
+        <span class="mt-8 text-xs font-bold tracking-[.24em] text-accent2">01 / 03</span>
       </div>
 
-      <div class="panel max-w-md" data-panel="1">
-        <span class="myth self-start text-sm font-bold text-canvas/40">״אשאל כמה אנשים ואחליט״</span>
-        <h2 class="mt-4 text-[clamp(2rem,5vw,3.6rem)] font-black leading-[1.05]">יותר מדי<br/>כיוונים</h2>
-        <p class="mt-6 text-lg leading-relaxed text-canvas/55">
-          כל אחד ממליץ על משהו אחר, וכולם צודקים — עבור מישהו אחר. בלי מסגרת שמתאימה דווקא לך, כל עצה היא עוד רעש.
+      <div class="panel" data-panel="1">
+        <span class="myth self-start text-sm font-bold text-canvas/65">״אשאל כמה אנשים ואחליט״</span>
+        <h2 class="display mt-4">יותר מדי<br/>כיוונים</h2>
+        <p class="mt-6 max-w-sm text-lg leading-relaxed text-canvas/55">
+          כולם צודקים — עבור מישהו אחר. בלי מסגרת שמתאימה דווקא לך, כל עצה היא עוד רעש.
         </p>
+        <span class="mt-8 text-xs font-bold tracking-[.24em] text-accent2">02 / 03</span>
       </div>
 
-      <div class="panel max-w-md" data-panel="2">
-        <span class="myth self-start text-sm font-bold text-canvas/40">״אחוז וחצי זה זניח״</span>
-        <h2 class="mt-4 text-[clamp(2rem,5vw,3.6rem)] font-black leading-[1.05]">עלויות<br/>שלא רואים</h2>
-        <p class="mt-6 text-lg leading-relaxed text-canvas/55">
-          דמי ניהול נשמעים זניחים עד שמותחים אותם על עשרים שנה. אז מתברר שהם הנתח הגדול ביותר שיצא מהתיק.
+      <div class="panel" data-panel="2">
+        <span class="myth self-start text-sm font-bold text-canvas/65">״אחוז וחצי זה זניח״</span>
+        <h2 class="display mt-4">עלויות<br/>שלא רואים</h2>
+        <p class="mt-6 max-w-sm text-lg leading-relaxed text-canvas/55">
+          דמי ניהול נשמעים זניחים עד שמותחים אותם על עשרים שנה. אז מתברר מי לקח את הנתח הגדול.
         </p>
+        <span class="mt-8 text-xs font-bold tracking-[.24em] text-accent2">03 / 03</span>
       </div>
     </div>
 
+    <div class="hairline bottom-[12svh]" aria-hidden="true"></div>
+
     <!-- ניווט נקודות -->
-    <nav class="dotnav z-10" aria-label="ניווט האתגר">
+    <nav class="dotnav" aria-label="ניווט האתגר">
       <button class="dotbtn" data-go="0" data-on="true" aria-label="כסף שממתין">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="h-5 w-5">
           <ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>
         </svg>
       </button>
       <div class="dotsep"></div>
       <button class="dotbtn" data-go="1" aria-label="יותר מדי כיוונים">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="h-5 w-5">
           <circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>
         </svg>
       </button>
       <div class="dotsep"></div>
       <button class="dotbtn" data-go="2" aria-label="עלויות שלא רואים">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="h-5 w-5">
           <path d="M12 3v18"/><path d="M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.6 7 6.5 9.2 10 12 10.5s5 1.6 5 3.5-2.2 3.5-5 3.5-5-1.1-5-3"/>
         </svg>
       </button>
@@ -422,7 +504,7 @@ tailwind.config = {
 </section>
 
 <!-- ============ 3. התהליך ============ -->
-<section id="process" class="dotgrid relative bg-ink py-24 text-canvas sm:py-32">
+<section id="process" data-dark class="dotgrid relative bg-ink py-24 text-canvas sm:py-32">
   <div class="mx-auto max-w-6xl px-5 sm:px-8">
     <p class="rv mark text-xs font-bold tracking-[.3em] text-accent2">התהליך</p>
     <h2 class="rv mt-5 max-w-3xl text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">
@@ -532,7 +614,7 @@ tailwind.config = {
 <div class="fade-to-ink h-14"></div>
 
 <!-- ============ 6. עדויות ============ -->
-<section class="dotgrid bg-ink py-24 text-canvas sm:py-32">
+<section data-dark class="dotgrid bg-ink py-24 text-canvas sm:py-32">
   <div class="mx-auto max-w-6xl px-5 sm:px-8">
     <p class="rv mark text-xs font-bold tracking-[.3em] text-accent2">אחרי השיחה הראשונה</p>
     <div class="d3s rot3 mt-14 grid gap-12 md:grid-cols-3" data-3d>
@@ -767,54 +849,52 @@ tailwind.config = {
     });
   })();
 
-  /* --- ערימת מטבעות נשחקת באזור האתגר --- */
-  (() => {
-    const host = $('pinStack');
-    if (!host) return;
-    const W = 104, H = 37, T = 14;
-    for (let i = 0; i < 9; i++) {
-      const z = i * T;
-      const fade = i >= 6;
-      host.insertAdjacentHTML('beforeend',
-        `<span class="disc ${fade ? 'dim-edge' : ''}" style="width:${W}px;height:${H}px;top:0;background:${fade ? '#6E6A63' : '#8A6A19'};transform:translateZ(${z - 5}px)"></span>` +
-        `<span class="disc ${fade ? 'dim' : 'face'}" style="width:${W}px;height:${H}px;top:0;transform:translateZ(${z}px);opacity:${fade ? .5 : 1}"></span>`);
-    }
-  })();
-
-  /* --- אזור האתגר: פריט פעיל לפי גלילה או לחיצה --- */
+  /* --- אזור האתגר: pin עם scrub על סיבוב המטבע --- */
   (() => {
     const track = $('problem');
-    if (!track) return;
+    if (!track || reduced) return;
     const pin = track.querySelector('.pin');
     const panels = [...track.querySelectorAll('[data-panel]')];
-    const objs = [...track.querySelectorAll('[data-obj]')];
     const dots = [...track.querySelectorAll('[data-go]')];
+    const medal = $('medal');
+    const glyph = $('medalGlyph');
+    const bars = $('meterBars');
+    const GLYPHS = ['₪', '?', '%'];
     const N = panels.length;
-    let active = -1;
+    let active = -1, ticking = false;
+
+    if (bars) bars.innerHTML = Array.from({ length: N }, () => '<s></s>').join('');
 
     const setActive = (i) => {
       if (i === active) return;
       active = i;
       panels.forEach((p, k) => p.setAttribute('data-on', String(k === i)));
-      objs.forEach((o, k) => o.setAttribute('data-on', String(k === i)));
       dots.forEach((d, k) => d.setAttribute('data-on', String(k === i)));
+      if (glyph) glyph.textContent = GLYPHS[i];
+      if (bars) [...bars.children].forEach((s, k) => s.classList.toggle('on', k <= i));
+    };
+
+    const render = () => {
+      const span = track.offsetHeight - pin.offsetHeight;
+      const p = span > 0 ? (scrollY - track.offsetTop) / span : 0;
+      const c = Math.max(0, Math.min(1, p));
+      // טווח מוגבל: מטבע שטוח נעלם לגמרי בזווית 90°, לכן לא חוצים אותה
+      if (medal) medal.style.setProperty('--spin', (c * 140 - 70).toFixed(1) + 'deg');
+      setActive(Math.max(0, Math.min(N - 1, Math.floor(c * N * 0.999))));
+      ticking = false;
     };
 
     dots.forEach((d) => d.addEventListener('click', () => {
       const i = Number(d.dataset.go);
       const span = track.offsetHeight - pin.offsetHeight;
-      scrollTo({ top: track.offsetTop + (span * (i + .5)) / N, behavior: reduced ? 'auto' : 'smooth' });
-      setActive(i);
+      scrollTo({ top: track.offsetTop + (span * (i + .5)) / N, behavior: 'smooth' });
     }));
 
-    const update = () => {
-      const span = track.offsetHeight - pin.offsetHeight;
-      const p = span > 0 ? (scrollY - track.offsetTop) / span : 0;
-      setActive(Math.max(0, Math.min(N - 1, Math.floor(p * N))));
-    };
-    addEventListener('scroll', update, { passive: true });
-    addEventListener('resize', update, { passive: true });
-    update();
+    addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(render); }
+    }, { passive: true });
+    addEventListener('resize', render, { passive: true });
+    render();
   })();
 
   /* --- תמהיל התיק כארבע שכבות בעלות נפח --- */
@@ -906,10 +986,37 @@ tailwind.config = {
   const onScroll = () => {
     const y = scrollY;
 
-    nav.classList.toggle('bg-canvas/85', y > 40);
-    nav.classList.toggle('backdrop-blur-md', y > 40);
-    nav.classList.toggle('border-b', y > 40);
-    nav.classList.toggle('border-ink/10', y > 40);
+    // האם הניווט עומד כרגע מעל אזור כהה?
+    const overDark = [...document.querySelectorAll('[data-dark]')].some((s) => {
+      const r = s.getBoundingClientRect();
+      return r.top <= 84 && r.bottom >= 84;
+    });
+
+    const solid = y > 40;
+    nav.classList.toggle('backdrop-blur-md', solid);
+    nav.classList.toggle('border-b', solid);
+    nav.classList.toggle('bg-canvas/85', solid && !overDark);
+    nav.classList.toggle('border-ink/10', solid && !overDark);
+    nav.classList.toggle('bg-ink/80', solid && overDark);
+    nav.classList.toggle('border-canvas/10', solid && overDark);
+
+    nav.classList.toggle('text-canvas', overDark);
+    $('brandName').classList.toggle('text-canvas', overDark);
+    $('brandRole').classList.toggle('text-canvas/50', overDark);
+    $('brandRole').classList.toggle('text-muted', !overDark);
+    $('lockBtn').classList.toggle('border-canvas/20', overDark);
+    $('lockBtn').classList.toggle('border-ink/15', !overDark);
+
+    // הלוגו וה-CTA כהים על כהה — מתהפכים לזהב
+    $('brandMark').classList.toggle('bg-accent', overDark);
+    $('brandMark').classList.toggle('text-ink', overDark);
+    $('brandMark').classList.toggle('bg-ink', !overDark);
+    $('brandMark').classList.toggle('text-accent2', !overDark);
+
+    $('navCta').classList.toggle('bg-accent', overDark);
+    $('navCta').classList.toggle('text-ink', overDark);
+    $('navCta').classList.toggle('bg-ink', !overDark);
+    $('navCta').classList.toggle('text-canvas', !overDark);
 
     const doc = document.documentElement.scrollHeight - innerHeight;
     bar.style.transform = `scaleX(${doc > 0 ? y / doc : 0})`;
