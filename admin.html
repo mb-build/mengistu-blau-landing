@@ -19,7 +19,12 @@
 tailwind.config = {
   theme: { extend: {
     fontFamily: { sans: ['Heebo', 'system-ui', 'sans-serif'] },
-    colors: { ink:'#0A1128', ink2:'#111C3D', gold:'#C9A227', gold2:'#E8C766', mint:'#2ED3A7', cloud:'#F6F7FB' },
+    /* אותה מערכת שלושת הצבעים של האתר: 70 canvas / 30 ink / 10 accent.
+       gold2 / ink2 / muted הם מיזוגים מחושבים, לא גוונים חדשים. */
+    colors: {
+      cloud:'#F7F5F0', ink:'#0B1220', gold:'#B4892B',
+      ink2:'#1E2431', gold2:'#D2BA84', mint:'#B4892B', muted:'#65686F',
+    },
   }}
 }
 </script>
@@ -70,7 +75,7 @@ tailwind.config = {
       התחברות עם Google
     </button>
 
-    <p id="loginError" class="hidden mt-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-center text-sm text-red-700"></p>
+    <p id="loginError" class="hidden mt-4 rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-center text-sm font-semibold text-ink"></p>
     <a href="index.html" class="mt-6 block text-center text-xs text-ink/40 hover:text-gold transition">חזרה לאתר →</a>
   </div>
 </div>
@@ -299,7 +304,7 @@ function render() {
       <td class="px-4 py-3 text-ink/60 max-w-md">${esc(l.message ?? '')}</td>
       <td class="px-4 py-3 text-left">
         <button data-del="${esc(l.id)}" title="מחיקת פנייה"
-          class="rounded-lg border border-ink/10 px-2.5 py-1.5 text-xs text-ink/40 hover:border-red-300 hover:bg-red-50 hover:text-red-600 transition">מחק</button>
+          class="rounded-lg border border-ink/10 px-2.5 py-1.5 text-xs text-ink/50 transition hover:border-ink hover:bg-ink hover:text-cloud">מחק</button>
       </td>
     </tr>`).join('');
 
