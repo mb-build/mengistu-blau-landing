@@ -5,6 +5,7 @@ video/frames_trust/
 video/t_*.mp4
 video/q_*.png
 video/test_*.png
+video/trans_check.png
 video/poster_src.png
 video/sheet*.png
 video/contact-sheet.png

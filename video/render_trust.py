@@ -403,20 +403,28 @@ def sc_brand(t):
 
 SCENES = [(sc_doubt, 2.3), (sc_meeting, 2.6), (sc_plan, 2.4), (sc_trust, 2.6), (sc_brand, 2.2)]
 XF = 0.40
-TOTAL = sum(s[1] for s in SCENES)
+
+# ציר זמן חופף: הסצנה הנכנסת כבר מתקדמת בזמן שהיוצאת דועכת
+STARTS, _acc = [], 0.0
+for _i, (_fn, _dur) in enumerate(SCENES):
+    STARTS.append(_acc)
+    _acc += _dur - (XF if _i < len(SCENES)-1 else 0)
+TOTAL = STARTS[-1] + SCENES[-1][1]
 N = int(FPS*TOTAL)
 
 def compose(tg):
-    acc = 0.0
+    act = []
     for i, (fn, dur) in enumerate(SCENES):
-        if tg < acc+dur or i == len(SCENES)-1:
-            lt = tg-acc
-            img = fn(min(lt, dur))
-            if i+1 < len(SCENES) and lt > dur-XF:
-                img = Image.blend(img, SCENES[i+1][0](0.0), eio((lt-(dur-XF))/XF))
-            return img
-        acc += dur
-    return SCENES[-1][0](SCENES[-1][1])
+        lt = tg - STARTS[i]
+        if -1e-6 <= lt <= dur + 1e-6:
+            act.append((fn, min(max(lt, 0.0), dur)))
+    if not act:
+        return SCENES[-1][0](SCENES[-1][1])
+    if len(act) == 1:
+        return act[0][0](act[0][1])
+    (f0, l0), (f1, l1) = act[0], act[1]
+    k = eio(max(0.0, min(1.0, l1/XF)))    # ההתקדמות של הנכנסת היא גם הקרוספייד
+    return Image.blend(f0(l0), f1(l1), k)
 
 os.makedirs(OUT, exist_ok=True)
 for i in range(N):
