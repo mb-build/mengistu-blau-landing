@@ -874,7 +874,7 @@ tailwind.config = {
     };
 
     // רשת ביטחון — האתר לעולם לא נשאר חסום
-    const guard = setTimeout(close, 17000);
+    const guard = setTimeout(close, 22000);
 
     box.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -893,27 +893,39 @@ tailwind.config = {
     };
     requestAnimationFrame(tick);
 
-    // מתחילים רק כשיש מספיק חומר כדי לנגן עד הסוף בלי לעצור
-    const start = () => {
-      if (started || done) return;
-      started = true;
-      hold.style.opacity = '0';
-      vid.style.opacity = '1';
-      // ניסיון ראשון עם קול. אם הדפדפן חוסם — נופלים למושתק
+    // מתחילים רק כשבאמת יש חומר. כישלון ניגון לעולם לא סוגר את הפתיח —
+    // רק מנסה שוב כשמגיעים נתונים. הסגירה נשארת באחריות רשת הביטחון.
+    const tryPlay = () => {
       vid.muted = false; vid.volume = 0.85;
       vid.play().then(() => {
         $('introSoundLabel').textContent = 'השתק';
         $('introMuteSlash').style.display = 'none';
       }).catch(() => {
         vid.muted = true;
-        const p2 = vid.play();
-        if (p2 && typeof p2.catch === 'function') p2.catch(close);
+        vid.play().catch(() => {});   // ננסה שוב באירוע הנתונים הבא
       });
     };
 
-    vid.addEventListener('canplaythrough', start, { once: true });
-    // אם הדפדפן לא יורה canplaythrough, מתחילים אחרי 2.5 שניות בכל מקרה
-    setTimeout(start, 2500);
+    const start = () => {
+      if (started || done) return;
+      if (vid.readyState < 3) return;   // אין מספיק נתונים — עוד לא מתחילים
+      started = true;
+      hold.style.opacity = '0';
+      vid.style.opacity = '1';
+      tryPlay();
+    };
+
+    ['canplaythrough', 'canplay', 'loadeddata', 'progress'].forEach((ev) =>
+      vid.addEventListener(ev, start));
+    // אם אחרי 6 שניות עדיין אין מספיק — מתחילים עם מה שיש
+    setTimeout(() => {
+      if (started || done) return;
+      started = true;
+      hold.style.opacity = '0';
+      vid.style.opacity = '1';
+      tryPlay();
+      vid.addEventListener('canplay', () => { if (vid.paused && !done) tryPlay(); }, { once: true });
+    }, 6000);
 
     // הדפדפן חוסם ניגון אוטומטי עם קול. לכן: מנסים עם קול,
     // ואם נחסם — מתחילים מושתק ומדליקים בנגיעה הראשונה של המשתמש.
