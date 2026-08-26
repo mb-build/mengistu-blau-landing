@@ -4,7 +4,7 @@ import math, os
 from PIL import Image, ImageDraw, ImageFont
 
 W, H, FPS = 1920, 1080, 30
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frames2")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frames3")
 
 INK      = (11, 18, 32)
 INK_UP   = (26, 34, 52)
@@ -61,8 +61,30 @@ def txt(d, xy, s, fnt, fill, ls=0, right=False, center=False):
     return total
 
 # ---------------- דמויות ----------------
-def head(d, cx, cy, r, skin, hair, hair_style="short", a=1.0):
-    d.ellipse([cx-r, cy-r, cx+r, cy+r], fill=mix(skin, INK, a))
+def narc(d, x0, y0, x1, y1, st, en, fill, width):
+    d.arc([min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1)], st, en, fill=fill, width=width)
+
+def head(d, cx, cy, r, skin, hair, hair_style="short", a=1.0, face=0):
+    """face=0 חזית, 1 פרופיל ימינה, -1 פרופיל שמאלה."""
+    sk = mix(skin, INK, a)
+    d.ellipse([cx-r, cy-r, cx+r, cy+r], fill=sk)
+    ink = mix((28, 24, 20), skin, a*0.9)
+    if face == 0:
+        for sx in (-1, 1):
+            d.ellipse([cx+sx*r*0.36-r*0.085, cy-r*0.10, cx+sx*r*0.36+r*0.085, cy+r*0.10], fill=ink)
+            d.line([(cx+sx*r*0.52, cy-r*0.34), (cx+sx*r*0.20, cy-r*0.30)],
+                   fill=ink, width=max(1, int(r*0.075)))
+        d.arc([cx-r*0.30, cy+r*0.14, cx+r*0.30, cy+r*0.56], 20, 160,
+              fill=ink, width=max(1, int(r*0.085)))
+    else:
+        ex = cx + face*r*0.30
+        d.ellipse([ex-r*0.085, cy-r*0.10, ex+r*0.085, cy+r*0.10], fill=ink)
+        d.line([(ex+face*r*0.20, cy-r*0.34), (ex-face*r*0.14, cy-r*0.30)],
+               fill=ink, width=max(1, int(r*0.075)))
+        d.polygon([(cx+face*r*0.62, cy+r*0.02), (cx+face*r*0.94, cy+r*0.20),
+                   (cx+face*r*0.60, cy+r*0.24)], fill=sk)
+        narc(d, cx+face*r*0.10, cy+r*0.24, cx+face*r*0.70, cy+r*0.60, 20, 160,
+             ink, max(1, int(r*0.085)))
     hc = mix(hair, INK, a)
     if hair_style == "short":
         d.pieslice([cx-r, cy-r, cx+r, cy+r], 180, 360, fill=hc)
@@ -71,8 +93,14 @@ def head(d, cx, cy, r, skin, hair, hair_style="short", a=1.0):
     elif hair_style == "bun":
         d.pieslice([cx-r, cy-r, cx+r, cy+r], 180, 360, fill=hc)
         d.ellipse([cx-r*0.34, cy-r*1.62, cx+r*0.34, cy-r*0.94], fill=hc)
-    else:  # bald / short-crop
+    else:
         d.pieslice([cx-r, cy-r*1.02, cx+r, cy+r*0.5], 195, 345, fill=hc)
+
+def shadow(d, cx, y, w, a=1.0):
+    """צל רך על הרצפה — מקרקע את הדמות."""
+    for k, sc in enumerate((1.0, 0.72, 0.46)):
+        d.ellipse([cx-w*sc/2, y-w*sc*0.10, cx+w*sc/2, y+w*sc*0.10],
+                  fill=mix((4, 7, 14), INK_UP, a*(0.16+k*0.10)))
 
 def torso(d, cx, top, w, h, col, a=1.0):
     c = mix(col, INK, a)
@@ -86,7 +114,8 @@ def arm(d, x0, y0, x1, y1, thick, col, a=1.0):
     d.ellipse([x1-r, y1-r, x1+r, y1+r], fill=c)
 
 def person_standing(d, cx, base, h, shirt, hair, hair_style="short",
-                    skin=SKIN, a=1.0, arm_pose=0.0, tie=False):
+                    skin=SKIN, a=1.0, arm_pose=0.0, tie=False, breath=0.0):
+    shadow(d, cx, base+h*0.012, h*0.34, a)
     hr = h*0.088
     hip = base - h*0.44
     d.rectangle([cx-h*0.055, hip, cx-h*0.006, base], fill=mix(INK_UP, INK, a))
@@ -105,15 +134,16 @@ def person_standing(d, cx, base, h, shirt, hair, hair_style="short",
         d.polygon([(cx, hip-th), (cx-h*0.020, hip-th+h*0.05), (cx, hip-th+h*0.20),
                    (cx+h*0.020, hip-th+h*0.05)], fill=mix(GOLD, INK, a))
     d.rectangle([cx-h*0.028, hip-th-h*0.035, cx+h*0.028, hip-th+h*0.012], fill=mix(skin, INK, a))
-    head(d, cx, hip-th-h*0.035-hr, hr, skin, (34, 30, 26), hair_style, a)
+    head(d, cx, hip-th-h*0.035-hr+breath, hr, skin, (34, 30, 26), hair_style, a, 0)
 
 def rect(d, x0, y0, x1, y1, fill):
     """מלבן שסובל קואורדינטות בכל סדר — נדרש לדמות שפונה שמאלה."""
     d.rectangle([min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1)], fill=fill)
 
 def person_seated(d, cx, seat_y, h, shirt, hair, hair_style="short",
-                  face=1, skin=SKIN, a=1.0, lean=0.0):
+                  face=1, skin=SKIN, a=1.0, lean=0.0, breath=0.0):
     """יושב בפרופיל. face=1 פונה ימינה, face=-1 שמאלה."""
+    shadow(d, cx, seat_y+h*0.055, h*0.30, a)
     hr = h*0.088
     tw, th = h*0.30, h*0.32
     top = seat_y - th
@@ -128,7 +158,7 @@ def person_seated(d, cx, seat_y, h, shirt, hair, hair_style="short",
     d.ellipse([hx-h*0.026, seat_y-h*0.05, hx+h*0.026, seat_y+h*0.002], fill=mix(skin, INK, a))
     rect(d, lx-h*0.026, top-h*0.032, lx+h*0.026, top+h*0.012, mix(skin, INK, a))
     hcx = lx + face*h*0.012
-    head(d, hcx, top-h*0.032-hr, hr, skin, (34, 30, 26), hair_style, a)
+    head(d, hcx, top-h*0.032-hr+breath, hr, skin, (34, 30, 26), hair_style, a, face)
 
 # ---------------- אביזרים ----------------
 def bubble(d, cx, cy, w, h, col, tail_dir=1, a=1.0, txt_s=None, fnt=None, tcol=None):
@@ -221,18 +251,18 @@ def s1(t):
     frame_marks(d); brandbar(d, ease_out(seg(t, .1, .8)))
     cx, base = 400, H-70
     person_standing(d, cx, base, 540, CANVAS, None, "short", SKIN,
-                    ease_out(seg(t, .15, .8)), arm_pose=.45)
-    labels = [("קרן השתלמות", -2.62), ("קריפטו", -2.16), ("נדל״ן", -1.70),
-              ("מניות", -1.24), ("פיקדון", -0.78)]
-    ox, oy = cx+130, base-400
+                    ease_out(seg(t, .15, .8)), arm_pose=.45, breath=math.sin(t*2.1)*2.2)
+    labels = [("קרן השתלמות", -2.30), ("קריפטו", -1.92), ("נדל״ן", -1.54),
+              ("מניות", -1.16), ("פיקדון", -0.78)]
+    ox, oy = cx+265, base-350          # מחוץ לגוף, כדי שהחצים לא יחצו את הפנים
     for k, (s, ang) in enumerate(labels):
-        a = ease_out(seg(t, .5 + k*.15, .9 + k*.15))
+        a = ease_out(seg(t, .30 + k*.11, .70 + k*.11))
         if a <= 0: continue
         L = 170*a
         arrow(d, ox, oy, ang, L, GOLD_LT if k % 2 else GOLD, a*.8, 6)
         bx = ox + math.cos(ang)*(L+118); by = oy + math.sin(ang)*(L+118)
         bubble(d, bx, by, 232, 68, CANVAS, -1, a, s, f_small, INK)
-    caption(d, t, 1.45, "יותר מדי כיוונים", "וכולם נשמעים משכנעים")
+    caption(d, t, 0.90, "יותר מדי כיוונים", "וכולם נשמעים משכנעים")
     return img
 
 def s2(t):
@@ -248,12 +278,12 @@ def s2(t):
         rect(d, 640, ty+18, 664, ty+150, mix(GOLD_DK, INK, td*.8))
         rect(d, 858, ty+18, 882, ty+150, mix(GOLD_DK, INK, td*.8))
     person_seated(d, 420, ty, 520, CANVAS, None, "short", 1, SKIN,
-                  ease_out(seg(t, .1, .7)), lean=.5)
+                  ease_out(seg(t, .1, .7)), lean=.5, breath=math.sin(t*2.0)*2.0)
     person_seated(d, 1105, ty, 520, GOLD_LT, None, "bun", -1, SKIN_2,
-                  ease_out(seg(t, .26, .86)), lean=.5)
-    sa = ease_out(seg(t, .85, 1.45))
+                  ease_out(seg(t, .26, .86)), lean=.5, breath=math.sin(t*2.0+1.4)*2.0)
+    sa = ease_out(seg(t, .55, 1.05))
     if sa > 0: sheet(d, 760, ty-62, 196, 136, sa)
-    caption(d, t, 1.5, "45 דקות של הקשבה", "לפני מילה אחת על השקעה")
+    caption(d, t, 0.95, "45 דקות של הקשבה", "לפני מילה אחת על השקעה")
     return img
 
 def s3(t):
@@ -262,7 +292,7 @@ def s3(t):
     d = ImageDraw.Draw(img)
     frame_marks(d); brandbar(d, 1)
     base = H-70
-    sp = ease_out(seg(t, .45, 1.45))
+    sp = ease_out(seg(t, .30, 1.20))
     if sp > 0:
         pts = [(760, 806), (900, 762), (1040, 778), (1180, 700), (1320, 720), (1460, 630)]
         segs = len(pts)-1; total = sp*segs; drawn = [pts[0]]
@@ -273,12 +303,12 @@ def s3(t):
                           pts[i][1]+(pts[i+1][1]-pts[i][1])*k))
         if len(drawn) > 1: d.line(drawn, fill=GOLD, width=6, joint="curve")
         hx, hy = drawn[-1]; d.ellipse([hx-11, hy-11, hx+11, hy+11], fill=GOLD_PALE)
-    for cx, n, st in ((1130, 4, .15), (1330, 7, .36), (1530, 11, .57)):
+    for cx, n, st in ((1130, 4, .10), (1330, 7, .26), (1530, 11, .42)):
         r = ease_out(seg(t, st, st+.6))
         if r > 0: coin_stack(d, cx, base-20, n, r)
     person_standing(d, 400, base, 540, CANVAS, None, "short", SKIN,
-                    ease_out(seg(t, .05, .7)), arm_pose=.12, tie=True)
-    caption(d, t, 1.5, "תוכנית אחת. ברורה.", "מותאמת לך, לא לתבנית")
+                    ease_out(seg(t, .05, .7)), arm_pose=.12, tie=True, breath=math.sin(t*2.1)*2.2)
+    caption(d, t, 0.95, "תוכנית אחת. ברורה.", "מותאמת לך, לא לתבנית")
     return img
 
 def s4(t):
@@ -312,8 +342,8 @@ def s4(t):
         if c > .6: txt(d, (W//2, 716), label, f_mid, mix(INK, GOLD, (c-.6)/.4), center=True)
     return img
 
-SCENES = [(s1, 3.4), (s2, 3.4), (s3, 3.4), (s4, 2.6)]
-XF = 0.45
+SCENES = [(s1, 2.5), (s2, 2.5), (s3, 2.5), (s4, 2.2)]
+XF = 0.38
 TOTAL = sum(s[1] for s in SCENES)
 N = int(FPS*TOTAL)
 
@@ -334,6 +364,9 @@ os.makedirs(OUT, exist_ok=True)
 for i in range(N):
     tg = i/float(FPS)
     img = compose(tg)
+    k = 0.012 + 0.030 * (tg / TOTAL)          # דחיפה איטית פנימה
+    dx, dy = int(W*k), int(H*k)
+    img = img.crop((dx, dy, W-dx, H-dy)).resize((W, H), Image.LANCZOS)
     fade = min(ease_io(seg(i, 0, 10)), 1-seg(i, N-12, N))
     if fade < 1:
         img = Image.blend(Image.new("RGB", (W, H), (0, 0, 0)), img, max(0.0, fade))

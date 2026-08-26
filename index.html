@@ -317,12 +317,25 @@ tailwind.config = {
 </head>
 <body class="font-sans bg-canvas text-ink antialiased overflow-x-hidden">
 
-<!-- מסך פתיחה — רץ פעם אחת לביקור, ואז נעלם -->
+<!-- מסך פתיחה — רץ בכל רענון. הווידאו מתגלה רק כשהוא מוכן לנגן ברצף -->
 <div id="intro" class="fixed inset-0 z-[100] hidden bg-ink">
-  <video id="introVid" class="h-full w-full object-contain" muted playsinline preload="auto" poster="media/poster.jpg">
+  <!-- מסך המתנה: אותו מותג, בלי הבהוב של פוסטר מטושטש -->
+  <div id="introHold" class="absolute inset-0 grid place-items-center transition-opacity duration-500">
+    <div class="text-center">
+      <span class="mx-auto grid h-24 w-24 place-items-center rounded-full bg-accent text-3xl font-black text-ink">מב</span>
+      <div class="mt-6 text-lg font-bold tracking-[.24em] text-canvas/70">מנגיסטו בלאו</div>
+      <div class="mx-auto mt-6 h-[2px] w-40 overflow-hidden rounded-full bg-canvas/15">
+        <div id="introBar" class="h-full w-1/3 rounded-full bg-accent"></div>
+      </div>
+    </div>
+  </div>
+
+  <video id="introVid" class="h-full w-full object-contain opacity-0 transition-opacity duration-500"
+         muted playsinline preload="auto" poster="media/poster.jpg">
     <source src="media/mengistu-intro.webm" type="video/webm">
     <source src="media/mengistu-intro.mp4" type="video/mp4">
   </video>
+
   <button id="introSkip"
     class="absolute bottom-8 left-8 rounded-full border border-canvas/25 bg-ink/50 px-6 py-2.5 text-sm font-bold text-canvas backdrop-blur transition hover:border-accent hover:text-accent">
     דלג
@@ -831,41 +844,63 @@ tailwind.config = {
 
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* --- מסך הפתיחה --- */
+  /* --- מסך הפתיחה: רץ בכל רענון, ומתחיל רק כשהוא מוכן לנגן ברצף --- */
   (() => {
     const box = $('intro');
     const vid = $('introVid');
-    if (!box || !vid) return;
+    const hold = $('introHold');
+    const bar = $('introBar');
+    if (!box || !vid || reduced) return;
 
-    let seen = true;
-    try { seen = sessionStorage.getItem('introSeen') === '1'; } catch {}
-    if (seen || reduced) return;
-
-    let done = false;
+    let done = false, started = false;
     const close = () => {
       if (done) return;
       done = true;
       clearTimeout(guard);
-      try { sessionStorage.setItem('introSeen', '1'); } catch {}
       try { vid.pause(); } catch {}
-      box.style.transition = 'opacity .6s ease';
+      box.style.transition = 'opacity .55s ease';
       box.style.opacity = '0';
-      setTimeout(() => { box.remove(); document.body.style.overflow = ''; }, 620);
+      setTimeout(() => { box.remove(); document.body.style.overflow = ''; }, 580);
     };
 
-    // רשת ביטחון: אם הווידאו לא מתנגן משום סיבה, לא חוסמים את האתר
-    const guard = setTimeout(close, 16000);
+    // רשת ביטחון — האתר לעולם לא נשאר חסום
+    const guard = setTimeout(close, 18000);
 
     box.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+
+    // חיווי טעינה אמיתי לפי כמה מהווידאו כבר במאגר
+    const tick = () => {
+      if (started || done) return;
+      let pct = 0;
+      try {
+        if (vid.buffered.length && vid.duration) {
+          pct = Math.min(1, vid.buffered.end(vid.buffered.length - 1) / vid.duration);
+        }
+      } catch {}
+      bar.style.width = Math.max(12, pct * 100) + '%';
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+
+    // מתחילים רק כשיש מספיק חומר כדי לנגן עד הסוף בלי לעצור
+    const start = () => {
+      if (started || done) return;
+      started = true;
+      hold.style.opacity = '0';
+      vid.style.opacity = '1';
+      const p = vid.play();
+      if (p && typeof p.catch === 'function') p.catch(close);
+    };
+
+    vid.addEventListener('canplaythrough', start, { once: true });
+    // אם הדפדפן לא יורה canplaythrough, מתחילים אחרי 2.5 שניות בכל מקרה
+    setTimeout(start, 2500);
 
     vid.addEventListener('ended', close);
     vid.addEventListener('error', close);
     $('introSkip').addEventListener('click', close);
     addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-
-    const p = vid.play();
-    if (p && typeof p.catch === 'function') p.catch(close);
   })();
 
   /* --- חשיפה הדרגתית --- */
