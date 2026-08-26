@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap');
+    body { margin: 0; font-family: 'Heebo', system-ui, sans-serif; direction: rtl; }
+    a { color: #705927; } a:hover { color: #0B1220; }
+    .mark { position: relative; padding-inline-start: 1.15rem; }
+    .mark::before { content: ""; position: absolute; inset-inline-start: 0; top: .1em;
+      width: .5rem; height: .5rem; border-top: 1.5px solid currentColor; border-inline-start: 1.5px solid currentColor; }
+    @keyframes rvIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    .rv { animation: rvIn .8s cubic-bezier(.2,.7,.3,1) both; }
+    .plate { position: relative; transform-style: preserve-3d; }
+    .plate::after { content: ""; position: absolute; inset: 0; border-radius: inherit;
+      transform: translateZ(-18px); background: rgba(11,18,32,.07); }
+    .extrude { box-shadow: 3px 3px 0 rgba(11,18,32,.05), 6px 6px 0 rgba(11,18,32,.04),
+      9px 9px 0 rgba(11,18,32,.03), 14px 14px 30px rgba(11,18,32,.09); }
+    @keyframes tilt { 0%, 100% { transform: rotateX(0deg); } 50% { transform: rotateX(2deg); } }
+    .rot3 { transform-style: preserve-3d; animation: tilt 12s ease-in-out infinite; }
+    .fld { border-bottom: 1px solid rgba(11,18,32,.2); padding-bottom: 12px; margin-bottom: 24px; }
+    .lbl { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .ph { font-size: 17px; color: rgba(11,18,32,.4); }
+  </style>
+</helmet>
+<div style="width: 1240px; height: 760px; box-sizing: border-box; background: #F7F5F0; color: #0B1220; padding: 64px 80px;
+  display: grid; grid-template-columns: 1fr 460px; gap: 64px; align-items: center; perspective: 1250px;">
+
+  <div>
+    <p class="rv mark" style="margin: 0 0 18px; font-size: 13px; font-weight: 700; letter-spacing: .3em; color: #705927;">הצעד הראשון</p>
+    <h2 class="rv" style="animation-delay: .06s; margin: 0 0 22px; font-size: 52px; line-height: 1.02; font-weight: 900;">
+      45 דקות שיסדרו לך את התמונה.
+    </h2>
+    <p class="rv" style="animation-delay: .12s; margin: 0 0 38px; font-size: 20px; color: #65686F; max-width: 420px;">
+      ללא עלות וללא התחייבות. גם אם לא נמשיך יחד, תצא עם מפה ברורה ושלוש נקודות לשיפור.
+    </p>
+    <div class="rv" style="animation-delay: .18s; display: flex; flex-direction: column; gap: 16px; font-size: 17px; color: #65686F;">
+      <div style="display: flex; gap: 12px;"><span style="color: #705927; font-weight: 700;">—</span><span>מנגיסטו חוזר אישית תוך יום עסקים אחד</span></div>
+      <div style="display: flex; gap: 12px;"><span style="color: #705927; font-weight: 700;">—</span><span>הפרטים נשמרים אצלנו בלבד</span></div>
+      <div style="display: flex; gap: 12px;"><span style="color: #705927; font-weight: 700;">—</span><span>אפס ספאם, אפס טלמרקטינג</span></div>
+    </div>
+  </div>
+
+  <div class="rv rot3 plate extrude" style="animation-delay: .2s; background: #E9E7E4; border: 1px solid rgba(11,18,32,.1); border-radius: 18px; padding: 36px;">
+    <div class="fld"><div class="lbl">שם מלא</div><div class="ph">ישראל ישראלי</div></div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px;">
+      <div class="fld"><div class="lbl">אימייל</div><div class="ph" dir="ltr" style="text-align: right;">you@mail.com</div></div>
+      <div class="fld"><div class="lbl">טלפון</div><div class="ph" dir="ltr" style="text-align: right;">050-0000000</div></div>
+    </div>
+    <div class="fld"><div class="lbl">סכום להשקעה</div><div class="ph">עד ₪50,000</div></div>
+    <div class="fld" style="border: none; margin-bottom: 14px;"><div class="lbl">מה מטריד אותך כרגע? <span style="font-weight: 400; color: #65686F;">(אופציונלי)</span></div><div class="ph">יש לי כסף בבנק ואני לא יודע מה לעשות איתו</div></div>
+    <div style="background: #0B1220; color: #F7F5F0; text-align: center; font-weight: 700; font-size: 18px; padding: 16px; border-radius: 999px;">קבעו לי שיחת אבחון</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

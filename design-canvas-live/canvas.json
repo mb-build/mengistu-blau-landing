@@ -1,0 +1,79 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 3774,
+      "y": -2471,
+      "w": 1920,
+      "h": 1515,
+      "title": "הבטחה"
+    },
+    {
+      "file": "Challenge.dc.html",
+      "x": 1360,
+      "y": 0,
+      "w": 1240,
+      "h": 760,
+      "title": "האתגר"
+    },
+    {
+      "file": "Process.dc.html",
+      "x": 2720,
+      "y": 0,
+      "w": 1240,
+      "h": 700,
+      "title": "התהליך"
+    },
+    {
+      "file": "Tracks.dc.html",
+      "x": 4080,
+      "y": 0,
+      "w": 1240,
+      "h": 1000,
+      "title": "המסלולים"
+    },
+    {
+      "file": "About.dc.html",
+      "x": 5440,
+      "y": 0,
+      "w": 1240,
+      "h": 700,
+      "title": "מנגיסטו"
+    },
+    {
+      "file": "Testimonials.dc.html",
+      "x": 6800,
+      "y": 0,
+      "w": 1240,
+      "h": 560,
+      "title": "עדויות"
+    },
+    {
+      "file": "Contact.dc.html",
+      "x": 8160,
+      "y": 0,
+      "w": 1240,
+      "h": 760,
+      "title": "יצירת קשר"
+    },
+    {
+      "file": "Faq.dc.html",
+      "x": 9520,
+      "y": 0,
+      "w": 1240,
+      "h": 720,
+      "title": "שאלות"
+    },
+    {
+      "file": "Closing.dc.html",
+      "x": 10880,
+      "y": 0,
+      "w": 1240,
+      "h": 640,
+      "title": "סגירה ופוטר"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}

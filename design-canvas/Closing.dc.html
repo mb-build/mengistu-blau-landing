@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap');
+    body { margin: 0; font-family: 'Heebo', system-ui, sans-serif; direction: rtl; }
+    a { color: #D2BA84; } a:hover { color: #F7F5F0; }
+    .mark { position: relative; padding-inline-start: 1.15rem; }
+    .mark::before { content: ""; position: absolute; inset-inline-start: 0; top: .1em;
+      width: .5rem; height: .5rem; border-top: 1.5px solid currentColor; border-inline-start: 1.5px solid currentColor; }
+    @keyframes rvIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    .rv { animation: rvIn .8s cubic-bezier(.2,.7,.3,1) both; }
+    .hair { height: 1px; background: linear-gradient(to left, transparent, #B4892B, transparent); }
+  </style>
+</helmet>
+<div style="width: 1240px; height: 640px; box-sizing: border-box; display: flex; flex-direction: column;">
+
+  <div style="background: #B4892B; color: #0B1220; padding: 52px 80px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 32px;">
+    <div class="rv">
+      <p class="mark" style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .3em;">הצעד הבא</p>
+      <h2 style="margin: 14px 0 0; font-size: 44px; line-height: 1.06; font-weight: 900; max-width: 620px;">
+        בעוד שנה תרצה שהתחלת היום.
+      </h2>
+    </div>
+    <span class="rv" style="animation-delay: .1s; background: #0B1220; color: #F7F5F0; font-weight: 700; font-size: 18px; padding: 16px 36px; border-radius: 999px;">לשיחת אבחון ←</span>
+  </div>
+
+  <div style="flex: 1; background: #0B1220; color: #F7F5F0; padding: 52px 80px;">
+    <div class="hair" style="margin-bottom: 44px;"></div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px; background: #B4892B; color: #0B1220; font-weight: 900;">מב</span>
+          <span style="font-weight: 700;">מנגיסטו בלאו</span>
+        </div>
+        <p style="margin: 16px 0 0; max-width: 260px; font-size: 15px; line-height: 1.6; color: rgba(247,245,240,.45);">
+          תוכנית שאתה מבין, ומלווה שנשאר גם כשקשה.
+        </p>
+      </div>
+      <div>
+        <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 700;">יצירת קשר</h3>
+        <div style="display: flex; flex-direction: column; gap: 9px; font-size: 15px; color: rgba(247,245,240,.5);">
+          <span dir="ltr" style="text-align: right;">hello@mengistu-blau.co.il</span>
+          <span dir="ltr" style="text-align: right;">050-000-0000</span>
+          <span>א׳–ה׳ · 09:00–18:00</span>
+        </div>
+      </div>
+      <p style="margin: 0; font-size: 12px; line-height: 1.65; color: rgba(247,245,240,.35);">
+        מידע שיווקי כללי בלבד. אינו מהווה ייעוץ השקעות, שיווק השקעות או ייעוץ מס, ואינו מתחשב בנתוניו ובצרכיו של כל אדם. אין התחייבות לתשואה. כל השקעה כרוכה בסיכון, לרבות אובדן חלק מהקרן או כולה.
+        <span style="display: block; margin-top: 16px;">© 2026 מנגיסטו בלאו</span>
+      </p>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

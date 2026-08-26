@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap');
+    body { margin: 0; font-family: 'Heebo', system-ui, sans-serif; direction: rtl; }
+    a { color: #705927; } a:hover { color: #0B1220; }
+    .mark { position: relative; padding-inline-start: 1.15rem; }
+    .mark::before { content: ""; position: absolute; inset-inline-start: 0; top: .1em;
+      width: .5rem; height: .5rem; border-top: 1.5px solid currentColor; border-inline-start: 1.5px solid currentColor; }
+    @keyframes rvIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    .rv { animation: rvIn .8s cubic-bezier(.2,.7,.3,1) both; }
+    .plate { position: relative; transform-style: preserve-3d; }
+    .plate::after { content: ""; position: absolute; inset: 0; border-radius: inherit;
+      transform: translateZ(-18px); background: rgba(11,18,32,.07); }
+    @keyframes tilt { 0%, 100% { transform: rotateX(0deg); } 50% { transform: rotateX(2.5deg); } }
+    .rot3 { transform-style: preserve-3d; animation: tilt 12s ease-in-out infinite; }
+  </style>
+</helmet>
+<div style="width: 1240px; height: 560px; box-sizing: border-box; background: #F7F5F0; color: #0B1220; padding: 64px 80px; perspective: 1250px;">
+
+  <p class="rv mark" style="margin: 0 0 44px; font-size: 13px; font-weight: 700; letter-spacing: .3em; color: #705927;">אחרי השיחה הראשונה</p>
+
+  <div class="rot3" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px;">
+    <figure class="rv plate" style="animation-delay: .08s; margin: 0; border: 1px solid rgba(11,18,32,.1); border-radius: 18px; padding: 30px;">
+      <blockquote style="margin: 0; font-size: 19px; line-height: 1.62;">״פירק את זה לצעדים שהבנתי. היום יש לנו תוכנית שאני לא מפחדת להסתכל עליה.״</blockquote>
+      <figcaption style="margin-top: 22px; font-size: 14px; color: #65686F;">שירה כ׳ · תל אביב</figcaption>
+    </figure>
+    <figure class="rv plate" style="animation-delay: .16s; margin: 0; border: 1px solid rgba(11,18,32,.1); border-radius: 18px; padding: 30px;">
+      <blockquote style="margin: 0; font-size: 19px; line-height: 1.62;">״הדבר הראשון שהוא הראה לי זה כמה אני משלם עמלות. רק זה שינה את התמונה.״</blockquote>
+      <figcaption style="margin-top: 22px; font-size: 14px; color: #65686F;">אבי ט׳ · חיפה</figcaption>
+    </figure>
+    <figure class="rv plate" style="animation-delay: .24s; margin: 0; border: 1px solid rgba(11,18,32,.1); border-radius: 18px; padding: 30px;">
+      <blockquote style="margin: 0; font-size: 19px; line-height: 1.62;">״בירידה רציתי למכור הכל. שיחה אחת החזירה אותי לתוכנית.״</blockquote>
+      <figcaption style="margin-top: 22px; font-size: 14px; color: #65686F;">רונן מ׳ · ראשל״צ</figcaption>
+    </figure>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

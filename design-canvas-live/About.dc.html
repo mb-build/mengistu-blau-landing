@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap');
+    body { margin: 0; font-family: 'Heebo', system-ui, sans-serif; direction: rtl; }
+    a { color: #705927; } a:hover { color: #0B1220; }
+    .mark { position: relative; padding-inline-start: 1.15rem; }
+    .mark::before { content: ""; position: absolute; inset-inline-start: 0; top: .1em;
+      width: .5rem; height: .5rem; border-top: 1.5px solid currentColor; border-inline-start: 1.5px solid currentColor; }
+    @keyframes rvIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    .rv { animation: rvIn .8s cubic-bezier(.2,.7,.3,1) both; }
+    .plate { position: relative; transform-style: preserve-3d; }
+    .plate::after { content: ""; position: absolute; inset: 0; border-radius: inherit;
+      transform: translateZ(-18px); background: rgba(11,18,32,.07); }
+    .extrude { box-shadow: 3px 3px 0 rgba(11,18,32,.05), 6px 6px 0 rgba(11,18,32,.04),
+      9px 9px 0 rgba(11,18,32,.03), 14px 14px 30px rgba(11,18,32,.09); }
+    @keyframes tilt { 0%, 100% { transform: rotateX(0deg) rotateY(0deg); } 50% { transform: rotateX(3deg) rotateY(-3deg); } }
+    .rot3 { transform-style: preserve-3d; animation: tilt 11s ease-in-out infinite; }
+  </style>
+</helmet>
+<div style="width: 1240px; height: 700px; box-sizing: border-box; background: #E9E7E4; color: #0B1220; padding: 64px 80px;
+  display: grid; grid-template-columns: 340px 1fr; gap: 64px; align-items: center; perspective: 1250px;">
+
+  <div class="rv">
+    <div class="rot3" style="position: relative; width: 100%;">
+      <span style="position: absolute; inset: 0; transform: translate(16px, 16px); border-radius: 18px; border: 1px solid rgba(180,137,43,.25);"></span>
+      <span style="position: absolute; inset: 0; transform: translate(8px, 8px); border-radius: 18px; background: rgba(180,137,43,.15);"></span>
+      <div class="plate extrude" style="position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 4/5; border-radius: 18px; background: #B4892B;">
+        <span style="font-size: 88px; font-weight: 900; color: #0B1220;">מב</span>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="rv mark" style="animation-delay: .06s; margin: 0 0 18px; font-size: 13px; font-weight: 700; letter-spacing: .3em; color: #705927;">מנגיסטו בלאו</p>
+    <h2 class="rv" style="animation-delay: .12s; margin: 0 0 24px; font-size: 42px; line-height: 1.08; font-weight: 900;">
+      קודם מבינים את החיים שלך. רק אחר כך בוחרים מכשיר פיננסי.
+    </h2>
+    <div class="rv" style="animation-delay: .18s; display: flex; flex-direction: column; gap: 16px; font-size: 19px; line-height: 1.65; color: #65686F;">
+      <p style="margin: 0;">מלווה משקיעים פרטיים, משפחות ובעלי עסקים — מהשקל הראשון ועד תיקים בני מיליונים.</p>
+      <p style="margin: 0;">לא מוכר מוצרים ולא מבטיח תשואות. בונה מסגרת שאתה מבין לעומק, ונשאר איתך גם כשהשוק יורד — כי שם נקבעות התוצאות.</p>
+    </div>
+    <div class="rv" style="animation-delay: .24s; display: flex; flex-wrap: wrap; gap: 36px; margin-top: 34px; padding-top: 24px; border-top: 1px solid rgba(11,18,32,.1); font-size: 15px; font-weight: 700;">
+      <span>ניסיון מוסדי בניהול תיקים</span>
+      <span>שקיפות מלאה בעמלות</span>
+      <span>ליווי אישי, לא מוקד</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

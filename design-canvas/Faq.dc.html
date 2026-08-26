@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap');
+    body { margin: 0; font-family: 'Heebo', system-ui, sans-serif; direction: rtl; }
+    a { color: #705927; } a:hover { color: #0B1220; }
+    .mark { position: relative; padding-inline-start: 1.15rem; }
+    .mark::before { content: ""; position: absolute; inset-inline-start: 0; top: .1em;
+      width: .5rem; height: .5rem; border-top: 1.5px solid currentColor; border-inline-start: 1.5px solid currentColor; }
+    @keyframes rvIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    .rv { animation: rvIn .8s cubic-bezier(.2,.7,.3,1) both; }
+    .qrow { display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      padding: 22px 0; border-top: 1px solid rgba(11,18,32,.1); font-size: 19px; font-weight: 700; cursor: pointer; }
+    .plus { color: #B4892B; font-size: 22px; transition: transform .3s cubic-bezier(.2,.7,.3,1); }
+    .open .plus { transform: rotate(45deg); }
+  </style>
+</helmet>
+<div style="width: 1240px; height: 720px; box-sizing: border-box; background: #E9E7E4; color: #0B1220; padding: 64px 220px;">
+
+  <div class="rv" style="background: #B4892B; color: #0B1220; border-radius: 18px; padding: 26px 30px; margin-bottom: 40px;">
+    <p class="mark" style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .3em;">שאלות</p>
+    <h2 style="margin: 12px 0 0; font-size: 40px; line-height: 1.05; font-weight: 900;">לפני שמתחילים.</h2>
+  </div>
+
+  <div class="rv" style="animation-delay: .1s; border-bottom: 1px solid rgba(11,18,32,.1);">
+    <div class="open">
+      <div class="qrow">כמה כסף צריך כדי להתחיל?<span class="plus">+</span></div>
+      <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.62; color: #65686F;">אין רף מינימום. ההבדל בין ₪20,000 ל־₪2,000,000 הוא בתמהיל, לא בשאלה אם כדאי להתחיל.</p>
+    </div>
+    <div class="qrow">מובטחת לי תשואה?<span class="plus">+</span></div>
+    <div class="qrow">השיחה באמת ללא עלות?<span class="plus">+</span></div>
+    <div class="qrow">אני כבר מושקע דרך הבנק. יש טעם?<span class="plus">+</span></div>
+    <div class="qrow">מה קורה כשהשוק יורד?<span class="plus">+</span></div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

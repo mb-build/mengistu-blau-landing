@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap');
+    body { margin: 0; font-family: 'Heebo', system-ui, sans-serif; direction: rtl; }
+    a { color: #705927; } a:hover { color: #0B1220; }
+    .halo { background: radial-gradient(circle, rgba(180,137,43,.10), transparent 62%); }
+    .mark { position: relative; padding-inline-start: 1.15rem; }
+    .mark::before { content: ""; position: absolute; inset-inline-start: 0; top: .1em;
+      width: .5rem; height: .5rem; border-top: 1.5px solid currentColor; border-inline-start: 1.5px solid currentColor; }
+    @keyframes rvIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    .rv { animation: rvIn .8s cubic-bezier(.2,.7,.3,1) both; }
+    .stage { perspective: 1100px; perspective-origin: 50% 40%; }
+    .stacks { transform-style: preserve-3d; transform: rotateX(56deg) rotateZ(-24deg); }
+    .stack { position: absolute; transform-style: preserve-3d; bottom: 0;
+             animation: riseUp 1.1s cubic-bezier(.2,.8,.25,1) both; }
+    .disc { position: absolute; border-radius: 50%; inset-inline-start: 0; }
+    .face { background: radial-gradient(ellipse at 34% 30%, #E0CFAB, #B4892B 58%, #705927); box-shadow: 0 0 0 1px rgba(112,89,39,.35); }
+    .edge { background: #705927; }
+    @keyframes riseUp { from { opacity: 0; transform: translateZ(-40px); } to { opacity: 1; transform: none; } }
+    @keyframes drawLine { to { stroke-dashoffset: 0; } }
+    .spark .line { stroke-dasharray: 620; stroke-dashoffset: 620; animation: drawLine 2.1s cubic-bezier(.3,.7,.3,1) .5s both; }
+    @keyframes fadeIn { to { opacity: 1; } }
+    .spark .area { opacity: 0; animation: fadeIn 1s ease 1.4s both; }
+    .spark circle { opacity: 0; animation: fadeIn .4s ease 2.2s both; }
+    @keyframes grow { from { width: 0; } to { width: 34%; } }
+    .progress { animation: grow 3.4s cubic-bezier(.3,.7,.3,1) both; }
+  </style>
+</helmet>
+<div style="width: 1240px; height: 1000px; box-sizing: border-box; background: #F7F5F0; color: #0B1220; padding: 0 80px 64px; position: absolute; overflow: hidden; left: 827px; top: 253px">
+  <div class="progress" style="position: absolute; top: 0; inset-inline-start: 0; height: 3px; background: #B4892B;"></div>
+  <div class="halo" style="position: absolute; top: -140px; inset-inline-end: -80px; width: 620px; height: 620px; border-radius: 999px;"></div>
+  <div class="halo" style="position: absolute; bottom: -160px; inset-inline-start: -140px; width: 520px; height: 520px; border-radius: 999px;"></div>
+
+  <div style="position: relative; display: flex; justify-content: space-between; align-items: center; height: 80px; margin-bottom: 56px;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span style="display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px; background: #0B1220; color: #D2BA84; font-weight: 900;">מב</span>
+      <div style="line-height: 1.25;">
+        <div style="font-weight: 700;">מנגיסטו בלאו</div>
+        <div style="font-size: 11px; letter-spacing: .18em; color: #65686F;">ייעוץ וליווי השקעות</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 36px; font-size: 15px; color: #65686F;">
+      <span>האתגר</span><span>התהליך</span><span>המסלולים</span><span>מנגיסטו</span><span>שאלות</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="background: #0B1220; color: #F7F5F0; font-weight: 700; font-size: 14px; padding: 10px 20px; border-radius: 999px;">שיחת אבחון</span>
+      <span style="display: grid; place-items: center; width: 36px; height: 36px; border-radius: 999px; border: 1px solid rgba(11,18,32,.15); color: rgba(11,18,32,.4);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width: 16px; height: 16px;">
+          <rect width="18" height="11" x="3" y="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </span>
+    </div>
+  </div>
+
+  <div style="position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center;">
+    <div>
+      <p class="rv mark" style="margin: 0 0 22px; font-size: 13px; font-weight: 700; letter-spacing: .3em; color: #705927;">ייעוץ וליווי השקעות</p>
+      <h1 class="rv" style="animation-delay: .07s; margin: 0; font-size: 82px; line-height: .98; font-weight: 900; letter-spacing: -.02em;">
+        הכסף שלך צריך תוכנית.<br>
+        <span style="color: #65686F;">לא עוד דעה.</span>
+      </h1>
+      <p class="rv" style="animation-delay: .14s; max-width: 520px; margin: 32px 0 38px; font-size: 20px; line-height: 1.6; color: #65686F;">
+        מנגיסטו בלאו בונה איתך מסלול השקעה אחד, ברור, מותאם לסכום שלך, לזמן שיש לך ולסיכון שאתה באמת מוכן לקחת.
+      </p>
+      <div class="rv" style="animation-delay: .21s; display: flex; align-items: center; gap: 22px; margin-bottom: 50px;">
+        <span style="background: #0B1220; color: #F7F5F0; font-weight: 700; font-size: 17px; padding: 16px 34px; border-radius: 999px;">לשיחת אבחון ללא עלות ←</span>
+        <span style="font-size: 15px; font-weight: 500; color: #65686F; text-decoration: underline; text-underline-offset: 8px;">קודם תסביר לי למה</span>
+      </div>
+      <div class="rv" style="animation-delay: .28s; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; background: #B4892B; color: #0B1220; border-radius: 18px; padding: 28px 32px;">
+        <div>
+          <div style="font-size: 38px; font-weight: 900;">{{c1}}</div>
+          <div style="font-size: 13px; font-weight: 700;">שנות ניסיון</div>
+        </div>
+        <div>
+          <div style="font-size: 38px; font-weight: 900;">{{c2}}</div>
+          <div style="font-size: 13px; font-weight: 700;">תוכניות שנבנו</div>
+        </div>
+        <div>
+          <div style="font-size: 38px; font-weight: 900;">{{c3}}</div>
+          <div style="font-size: 13px; font-weight: 700;">נכסים בליווי</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rv" style="animation-delay: .3s; position: relative;">
+      <div class="halo" style="position: absolute; inset: -22%; border-radius: 999px;"><div style="box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 192px; height: 176px; background-color: #977D3F; border-radius: 50%; position: absolute; left: 287px; top: 527px"></div></div>
+      <div class="stage" style="position: relative; height: 300px;">
+        <div class="stacks" style="position: absolute; inset-inline-start: 40px; bottom: 34px; width: 300px; height: 1px;">
+          <div class="stack" style="width: 96px; height: 34px; inset-inline-start: 0; animation-delay: .25s;">
+            <sc-for list="{{s1}}" as="d" hint-placeholder-count="4">
+              <span class="disc edge" style="width: 96px; height: 34px; top: 0; transform: {{d.zEdge}}"></span>
+              <span class="disc face" style="width: 96px; height: 34px; top: 0; transform: {{d.z}}"></span>
+            </sc-for>
+          </div>
+          <div class="stack" style="width: 96px; height: 34px; inset-inline-start: 104px; animation-delay: .43s;">
+            <sc-for list="{{s2}}" as="d" hint-placeholder-count="7">
+              <span class="disc edge" style="width: 96px; height: 34px; top: 0; transform: {{d.zEdge}}"></span>
+              <span class="disc face" style="width: 96px; height: 34px; top: 0; transform: {{d.z}}"></span>
+            </sc-for>
+          </div>
+          <div class="stack" style="width: 96px; height: 34px; inset-inline-start: 208px; animation-delay: .61s;">
+            <sc-for list="{{s3}}" as="d" hint-placeholder-count="11">
+              <span class="disc edge" style="width: 96px; height: 34px; top: 0; transform: {{d.zEdge}}"></span>
+              <span class="disc face" style="width: 96px; height: 34px; top: 0; transform: {{d.z}}"></span>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <svg class="spark" viewBox="0 0 380 150" fill="none" style="position: relative; width: 100%; margin-top: -14px;">
+        <defs>
+          <linearGradient id="fillGold" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#B4892B" stop-opacity=".26"></stop>
+            <stop offset="1" stop-color="#B4892B" stop-opacity="0"></stop>
+          </linearGradient>
+        </defs>
+        <path class="area" d="M6,124 L68,110 L130,116 L192,78 L254,88 L316,40 L374,18 L374,150 L6,150 Z" fill="url(#fillGold)"></path>
+        <path class="line" d="M6,124 L68,110 L130,116 L192,78 L254,88 L316,40 L374,18" stroke="#B4892B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <circle cx="192" cy="78" r="3.5" fill="#B4892B"></circle>
+        <circle cx="316" cy="40" r="3.5" fill="#B4892B"></circle>
+        <circle cx="374" cy="18" r="5" fill="#B4892B"></circle>
+        <circle cx="374" cy="18" r="10" fill="none" stroke="#B4892B" stroke-opacity=".35"></circle>
+      </svg>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1240,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { t: 0 }; }
+  componentDidMount() {
+    const t0 = Date.now();
+    this.iv = setInterval(() => {
+      const p = Math.min((Date.now() - t0) / 1600, 1);
+      this.setState({ t: 1 - Math.pow(1 - p, 3) });
+      if (p >= 1) clearInterval(this.iv);
+    }, 40);
+  }
+  componentWillUnmount() { clearInterval(this.iv); }
+  stack(n) {
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const z = i * 13;
+      out.push({ z: "translateZ(" + z + "px)", zEdge: "translateZ(" + (z - 5) + "px)" });
+    }
+    return out;
+  }
+  renderVals() {
+    const t = this.state.t;
+    return {
+      c1: Math.round(12 * t) + "+",
+      c2: Math.round(1400 * t).toLocaleString("he-IL") + "+",
+      c3: "₪" + Math.round(380 * t) + "M",
+      s1: this.stack(4), s2: this.stack(7), s3: this.stack(11)
+    };
+  }
+}
+</script>
+</body>
+</html>
