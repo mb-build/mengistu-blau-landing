@@ -1,11 +1,10 @@
-video/frames/
-video/frames2/
-video/frames3/
-video/frames_trust/
+video/frames*/
+video/photos/
 video/t_*.mp4
 video/q_*.png
 video/test_*.png
 video/trans_check.png
+video/check_trust.png
 video/poster_src.png
 video/sheet*.png
 video/contact-sheet.png

@@ -899,21 +899,48 @@ tailwind.config = {
       started = true;
       hold.style.opacity = '0';
       vid.style.opacity = '1';
-      const p = vid.play();
-      if (p && typeof p.catch === 'function') p.catch(close);
+      // ניסיון ראשון עם קול. אם הדפדפן חוסם — נופלים למושתק
+      vid.muted = false; vid.volume = 0.85;
+      vid.play().then(() => {
+        $('introSoundLabel').textContent = 'השתק';
+        $('introMuteSlash').style.display = 'none';
+      }).catch(() => {
+        vid.muted = true;
+        const p2 = vid.play();
+        if (p2 && typeof p2.catch === 'function') p2.catch(close);
+      });
     };
 
     vid.addEventListener('canplaythrough', start, { once: true });
     // אם הדפדפן לא יורה canplaythrough, מתחילים אחרי 2.5 שניות בכל מקרה
     setTimeout(start, 2500);
 
-    // הדפדפן חוסם ניגון אוטומטי עם קול, לכן מתחילים מושתק ונותנים כפתור
-    $('introSound').addEventListener('click', () => {
-      vid.muted = !vid.muted;
+    // הדפדפן חוסם ניגון אוטומטי עם קול. לכן: מנסים עם קול,
+    // ואם נחסם — מתחילים מושתק ומדליקים בנגיעה הראשונה של המשתמש.
+    const paint = () => {
       $('introSoundLabel').textContent = vid.muted ? 'הפעל קול' : 'השתק';
       $('introMuteSlash').style.display = vid.muted ? '' : 'none';
+    };
+    const unmute = () => {
+      if (done || !vid.muted) return;
+      vid.muted = false; vid.volume = 0.85;
+      vid.play().catch(() => { vid.muted = true; paint(); });
+      paint();
+    };
+    const gestures = ['pointerdown', 'keydown', 'touchstart', 'wheel'];
+    const onGesture = (e) => {
+      if (e.target && e.target.closest && e.target.closest('#introSound')) return;
+      unmute();
+      gestures.forEach((g) => removeEventListener(g, onGesture, true));
+    };
+    gestures.forEach((g) => addEventListener(g, onGesture, true));
+
+    $('introSound').addEventListener('click', () => {
+      vid.muted = !vid.muted;
       if (!vid.muted) { vid.volume = 0.85; vid.play().catch(() => {}); }
+      paint();
     });
+    paint();
 
     vid.addEventListener('ended', close);
     vid.addEventListener('error', close);
