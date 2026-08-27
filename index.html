@@ -479,7 +479,9 @@ tailwind.config = {
    </div>
 
    <!-- ויזואל: ערימות מטבעות תלת־ממדיות מעל גרף שמצטייר -->
-   <div class="cue drift relative hidden lg:block" style="--d:.40s" aria-hidden="true">
+   <!-- cue ו-drift על אלמנטים נפרדים: שתי אנימציות על אותו אלמנט דורסות זו את זו -->
+   <div class="cue hidden lg:block" style="--d:.40s" aria-hidden="true">
+    <div class="drift relative">
      <div class="absolute inset-0 halo rounded-full"></div>
 
      <div id="stage" class="stage relative mx-auto h-[300px] w-full max-w-[420px]">
@@ -501,6 +503,7 @@ tailwind.config = {
        <circle cx="374" cy="18" r="5" fill="#B4892B"/>
        <circle cx="374" cy="18" r="10" fill="none" stroke="#B4892B" stroke-opacity=".35"/>
      </svg>
+    </div>
    </div>
   </div>
 
