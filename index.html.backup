@@ -234,12 +234,6 @@ tailwind.config = {
   .pin {
     position: sticky; top: 0; height: 100svh; overflow: hidden;
     background: #0B1220;
-    perspective: 1150px; perspective-origin: 50% 46%;
-  }
-  /* צעיף כהה בצד הטקסט — הבמה התלת־ממדית לא מפריעה לקריאה */
-  .pin::after {
-    content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    background: linear-gradient(to left, rgba(11,18,32,.80), rgba(11,18,32,.34) 30%, transparent 56%);
   }
   /* הזוהר הרדיאלי שעולה מלמטה — במקור סגול, כאן זהב */
   .pin::before {
@@ -276,7 +270,7 @@ tailwind.config = {
   }
 
   /* ניווט נקודות אנכי בקצה */
-  .dotnav { position: absolute; inset-inline-end: 2.4vw; top: 50%; transform: translateY(-50%); z-index: 3; }
+  .dotnav { position: absolute; inset-inline-start: 2.4vw; top: 50%; transform: translateY(-50%); z-index: 3; }
   .dotbtn {
     display: grid; place-items: center; width: 52px; height: 52px; border-radius: 9999px;
     border: 1px solid rgba(210,186,132,.22); color: rgba(247,245,240,.45);
@@ -320,15 +314,11 @@ tailwind.config = {
           text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: rgba(180,137,43,.95); }
 
   /* ספרת ענק ברקע */
-  .bignum { position: absolute; inset: 0; pointer-events: none; line-height: 1;
-            transform-style: preserve-3d;
-            transform: rotateX(var(--cx, 0deg)) rotateY(var(--cy, 0deg)); }
-  .bignum b { position: absolute; inset-inline-end: auto; left: 22%; translate: -50% 0; bottom: 19vh;
-              font-size: clamp(14rem, 34vw, 30rem);
-              font-weight: 900; letter-spacing: -.06em; color: rgba(247,245,240,.05);
-              opacity: 0; transform: translateZ(-640px) translateY(34px);
-              transition: opacity .7s ease, transform .9s cubic-bezier(.2,.7,.3,1); }
-  .bignum b[data-on="true"] { opacity: 1; transform: translateZ(-640px); }
+  .bignum { position: absolute; inset-inline-end: 6vw; bottom: 4vh; pointer-events: none; line-height: 1; }
+  .bignum b { position: absolute; inset-inline-end: 0; bottom: 0; font-size: clamp(9rem, 22vw, 19rem);
+              font-weight: 900; letter-spacing: -.06em; color: rgba(247,245,240,.035);
+              opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .9s cubic-bezier(.2,.7,.3,1); }
+  .bignum b[data-on="true"] { opacity: 1; transform: none; }
 
   /* אותיות רפאים שנעות */
   .ghostrail { position: absolute; inset-inline: 0; overflow: hidden; pointer-events: none;
@@ -340,10 +330,9 @@ tailwind.config = {
 
   /* האובייקטים */
   .obj { position: absolute; inset: 0; display: grid; place-items: center;
-         opacity: 0; pointer-events: none; transform-style: preserve-3d;
-         transform: translateZ(-120px) rotateY(-16deg) translateY(20px);
-         transition: opacity .65s ease, transform 1.05s cubic-bezier(.2,.75,.3,1); }
-  .obj[data-on="true"] { opacity: 1; transform: translateZ(46px) rotateY(0deg); }
+         opacity: 0; transform: scale(.9) translateY(18px); pointer-events: none;
+         transition: opacity .65s ease, transform .9s cubic-bezier(.2,.75,.3,1); }
+  .obj[data-on="true"] { opacity: 1; transform: none; }
   .obj svg { width: clamp(280px, 32vw, 470px); height: auto; overflow: visible;
              filter: drop-shadow(0 40px 60px rgba(0,0,0,.55)); }
 
@@ -385,10 +374,7 @@ tailwind.config = {
   .dotbtn:hover .dotlabel, .dotbtn:focus-visible .dotlabel { opacity: 1; transform: none; }
 
   /* האובייקט המרכזי — מדליית זהב על ציר, בחצי הפנוי של המסך */
-  .objwrap { position: absolute; inset: 0; inset-inline: auto; left: 0; right: auto; width: 54%;
-             pointer-events: none; z-index: 2;
-             transform-style: preserve-3d;
-             transform: rotateX(var(--cx, 0deg)) rotateY(var(--cy, 0deg)); }
+  .objwrap { position: absolute; inset: 0; pointer-events: none; }
   .medal {
     position: relative; transform-style: preserve-3d;
     width: clamp(230px, 27vw, 400px); aspect-ratio: 1;
@@ -435,89 +421,17 @@ tailwind.config = {
   }
   /* הילה שמתחת למדליה, כמו הזרקור במקור */
   .objwrap::after {
-    content: ''; position: absolute; inset-block-end: 13%; inset-inline: auto; left: 50%;
-    width: clamp(230px, 30vw, 430px); height: 54px; translate: -50% 0;
-    transform: translateZ(-40px);
-    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(180,137,43,.55), transparent 70%);
-    filter: blur(7px);
-  }
-
-  /* ============ הבמה התלת־ממדית — פרושה על כל רוחב האזור ============ */
-  .stage3d { position: absolute; inset: 0; z-index: 0; pointer-events: none;
-             transform-style: preserve-3d;
-             transform: rotateX(var(--cx, 0deg)) rotateY(var(--cy, 0deg));
-             will-change: transform; }
-
-  /* רצפה נסוגה עד קו האופק */
-  .floor3d { position: absolute; left: -70%; right: -70%; top: 54%; height: 210%;
-             transform-origin: 50% 0; transform: rotateX(75deg);
-             background-image:
-               repeating-linear-gradient(to right, rgba(210,186,132,.28) 0 1px, transparent 1px 148px),
-               repeating-linear-gradient(to bottom, rgba(210,186,132,.26) 0 1px, transparent 1px 148px);
-             -webkit-mask-image: radial-gradient(ellipse 80% 96% at 50% 14%, #000, rgba(0,0,0,.42) 48%, transparent 84%);
-                     mask-image: radial-gradient(ellipse 80% 96% at 50% 14%, #000, rgba(0,0,0,.42) 48%, transparent 84%);
-             animation: floorRun 7.5s linear infinite; }
-  @keyframes floorRun { to { background-position: 0 0, 0 148px; } }
-
-  /* זוהר קו האופק */
-  .horizon3d { position: absolute; left: 0; right: 0; top: 54%; height: 190px;
-               transform: translateY(-95px) translateZ(-820px);
-               background: radial-gradient(ellipse 44% 60% at 50% 50%, rgba(210,186,132,.30), rgba(180,137,43,.10) 46%, transparent 74%);
-               filter: blur(14px); }
-
-  /* עמודי אור בעומקים שונים — הם שיוצרים את הפרלקסה לרוחב */
-  .beam3d { position: absolute; top: 5%; bottom: 17%; left: var(--x); width: 1.5px;
-            transform: translateZ(var(--z));
-            background: linear-gradient(to bottom, transparent, rgba(210,186,132,var(--o, .26)) 38%, transparent); }
-  .beam3d::after { content: ''; position: absolute; inset-block: 0; left: -46px; width: 92px;
-                   background: linear-gradient(to bottom, transparent, rgba(180,137,43,.11), transparent);
-                   filter: blur(13px); }
-
-  /* טבעות מקיפות את האובייקט — אחת ניצבת, כדי שהעומק ייקרא */
-  .orbit3d { position: absolute; left: 27%; top: 49%; width: min(50vw, 690px); aspect-ratio: 1;
-             translate: -50% -50%; transform-style: preserve-3d; }
-  .orbit3d i { position: absolute; inset: 0; border-radius: 50%;
-               border: 1px dashed rgba(210,186,132,var(--o, .22));
-               transform: rotateX(var(--rx, 72deg)) rotateY(var(--ry, 0deg)) scale(var(--s, 1));
-               animation: orbSpin var(--t, 30s) linear infinite var(--dir, normal); }
-  @keyframes orbSpin { to { transform: rotateX(var(--rx, 72deg)) rotateY(var(--ry, 0deg)) scale(var(--s, 1)) rotate(360deg); } }
-
-  /* כן נשיאה מוצק — שכבות אמיתיות בעומק */
-  .plinth3d { position: absolute; left: 27%; bottom: 15%; width: min(24vw, 310px); aspect-ratio: 1;
-              translate: -50% 0; transform-style: preserve-3d; transform: rotateX(75deg); }
-  .plinth3d i { position: absolute; inset: 0; border-radius: 50%;
-                transform: translateZ(calc(var(--k) * -3.4px));
-                background: radial-gradient(circle at 36% 30%, rgba(112,89,39,.85), rgba(62,54,35,.9) 70%);
-                border: 1px solid rgba(210,186,132,.10); }
-  .plinth3d i:first-child { background: radial-gradient(circle at 36% 30%, #D2BA84, #B4892B 44%, #705927 82%);
-                            opacity: .26; border-color: rgba(210,186,132,.30); }
-
-  /* אבק זהב מרחף בעומק */
-  .dust3d i { position: absolute; left: var(--x); top: var(--y); width: 4px; height: 4px;
-              border-radius: 50%; background: #D2BA84; opacity: 0;
-              transform: translateZ(var(--z));
-              animation: dustFloat 11s ease-in-out var(--dl, 0s) infinite; }
-  @keyframes dustFloat {
-    0%   { opacity: 0; translate: 0 24px; }
-    18%  { opacity: .6; }
-    62%  { opacity: .3; }
-    100% { opacity: 0; translate: 0 -104px; }
+    content: ''; position: absolute; inset-block-end: 12%; inset-inline-end: 9vw;
+    width: clamp(230px, 27vw, 400px); height: 46px; transform: translateX(0);
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(180,137,43,.5), transparent 70%);
+    filter: blur(6px);
   }
 
   @media (max-width: 900px) {
     /* בלי translateX — הוא ציר פיזי ומתהפך ב-RTL */
     .panel { width: auto; inset-inline: 0; padding-block-end: 9rem; justify-content: flex-end; padding-block-start: 42svh; }
-    .objwrap { left: 0; right: 0; width: auto; padding-inline-end: 0; }
-    .obj { place-items: start center; padding-block-start: 11svh; }
-    .objwrap::after { left: 50%; inset-block-end: auto; inset-block-start: 30svh; }
-    .pin::after { background: linear-gradient(to top, rgba(11,18,32,.86), rgba(11,18,32,.30) 44%, transparent 70%); }
-    .orbit3d, .plinth3d { left: 50%; }
-    .orbit3d { top: 30svh; width: min(84vw, 420px); }
-    .plinth3d { bottom: auto; top: 44svh; width: min(56vw, 260px); }
-    .bignum b { left: 50%; bottom: auto; top: 13svh; font-size: clamp(11rem, 62vw, 20rem);
-                transform: translateZ(-380px) translateY(30px); }
-    .bignum b[data-on="true"] { transform: translateZ(-380px); }
-    .beam3d:nth-of-type(n+4) { display: none; }
+    .objwrap { place-items: start center; padding-inline-end: 0; padding-block-start: 12svh; }
+    .objwrap::after { inset-inline-end: 50%; transform: translateX(50%); inset-block-end: auto; inset-block-start: 12svh; }
     .dotnav { inset-inline: 0; inset-block-start: auto; inset-block-end: 3.5svh; top: auto;
               transform: none; display: flex; justify-content: center; align-items: center; }
     .dotsep { width: 30px; height: 1px; margin: 0 7px; }
@@ -529,7 +443,7 @@ tailwind.config = {
     .pin-track { height: auto; }
     .pin { position: static; height: auto; padding-block: 5rem; }
     .panel { position: static; width: auto; opacity: 1; transform: none; margin-block: 3rem; }
-    .objwrap, .lineup, .hairline i, .stage3d { display: none; }
+    .objwrap, .lineup, .hairline i { display: none; }
   }
   html:not(.js) .panel { position: static; width: auto; opacity: 1; transform: none; margin-block: 3rem; }
   html:not(.js) .pin-track { height: auto; }
@@ -814,27 +728,6 @@ tailwind.config = {
 
 <section id="problem" class="pin-track relative bg-ink text-canvas" data-dark>
   <div class="pin">
-    <!-- ================= במה תלת־ממדית שממלאת את כל רוחב האזור ================= -->
-    <div class="stage3d" id="pinStage" aria-hidden="true">
-      <div class="floor3d"></div>
-      <div class="horizon3d"></div>
-      <i class="beam3d" style="--x:7%;--z:-620px;--o:.34"></i>
-      <i class="beam3d" style="--x:17%;--z:-260px;--o:.20"></i>
-      <i class="beam3d" style="--x:30%;--z:-880px;--o:.30"></i>
-      <i class="beam3d" style="--x:43%;--z:-120px;--o:.14"></i>
-      <i class="beam3d" style="--x:56%;--z:-540px;--o:.26"></i>
-      <i class="beam3d" style="--x:71%;--z:-300px;--o:.16"></i>
-      <i class="beam3d" style="--x:88%;--z:-760px;--o:.28"></i>
-      <div class="orbit3d">
-        <i style="--rx:72deg;--s:1;--t:38s;--o:.22"></i>
-        <i style="--rx:72deg;--s:.72;--t:26s;--o:.16;--dir:reverse"></i>
-        <i style="--rx:72deg;--s:1.28;--t:52s;--o:.13"></i>
-        <i style="--rx:6deg;--ry:74deg;--s:.92;--t:44s;--o:.15;--dir:reverse"></i>
-      </div>
-      <div class="plinth3d"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><i style="--k:3"></i><i style="--k:4"></i><i style="--k:5"></i><i style="--k:6"></i><i style="--k:7"></i><i style="--k:8"></i><i style="--k:9"></i><i style="--k:10"></i><i style="--k:11"></i><i style="--k:12"></i><i style="--k:13"></i><i style="--k:14"></i></div>
-      <div class="dust3d"><i style="--x:11%;--y:62%;--z:-420px;--dl:0s"></i><i style="--x:19%;--y:38%;--z:-140px;--dl:1.6s"></i><i style="--x:26%;--y:71%;--z:120px;--dl:3.1s"></i><i style="--x:34%;--y:30%;--z:-560px;--dl:4.4s"></i><i style="--x:41%;--y:58%;--z:-60px;--dl:2.2s"></i><i style="--x:49%;--y:44%;--z:-320px;--dl:5.8s"></i><i style="--x:58%;--y:66%;--z:-700px;--dl:.8s"></i><i style="--x:66%;--y:34%;--z:-180px;--dl:6.9s"></i><i style="--x:74%;--y:55%;--z:-480px;--dl:3.7s"></i><i style="--x:82%;--y:41%;--z:-90px;--dl:8.1s"></i><i style="--x:90%;--y:68%;--z:-640px;--dl:5.0s"></i><i style="--x:96%;--y:29%;--z:-240px;--dl:2.7s"></i></div>
-    </div>
-
 
     <div class="frame" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
     <div class="hairline top-[92px]"><i></i></div>
@@ -914,7 +807,7 @@ tailwind.config = {
     </div>
 
     <!-- הטקסט -->
-    <div class="relative z-[2] mx-auto h-full max-w-6xl px-5 sm:px-8">
+    <div class="relative mx-auto h-full max-w-6xl px-5 sm:px-8">
       <div class="panel" data-panel="0" data-on="true">
         <span class="mythtag"><i></i><span class="myth">״הכסף בטוח בעו״ש״</span></span>
         <h2 class="display mt-6">כסף<br/>שממתין</h2>
@@ -1521,30 +1414,6 @@ tailwind.config = {
     }, { passive: true });
     addEventListener('resize', render, { passive: true });
     render();
-
-    /* מצלמה: הבמה מסתובבת בעדינות אחרי הסמן, ומתייצבת כשהוא יוצא */
-    if (!reduced) {
-      let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
-      const apply = () => {
-        pin.style.setProperty('--cx', cx.toFixed(2) + 'deg');
-        pin.style.setProperty('--cy', cy.toFixed(2) + 'deg');
-      };
-      const loop = () => {
-        cx += (tx - cx) * 0.085;
-        cy += (ty - cy) * 0.085;
-        apply();
-        raf = (Math.abs(tx - cx) > 0.01 || Math.abs(ty - cy) > 0.01) ? requestAnimationFrame(loop) : 0;
-      };
-      const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
-      addEventListener('pointermove', (e) => {
-        const r = pin.getBoundingClientRect();
-        if (r.bottom < 0 || r.top > innerHeight) return;
-        ty = ((e.clientX / innerWidth) - 0.5) * 7.5;
-        tx = (0.5 - ((e.clientY - r.top) / (r.height || 1))) * 5;
-        kick();
-      }, { passive: true });
-      addEventListener('pointerleave', () => { tx = 0; ty = 0; kick(); }, { passive: true });
-    }
   })();
 
   /* --- ספירת מספרים --- */
