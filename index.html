@@ -100,6 +100,62 @@ tailwind.config = {
   @keyframes drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
   html.intro-done .drift { animation: drift 7s ease-in-out infinite; animation-delay: 1.6s; }
 
+  /* ===== הקומפוזיציה הגרפית המתחלפת ===== */
+  .viz-stage { position: relative; aspect-ratio: 1; width: 100%; max-width: 460px; margin-inline: auto; }
+  .viz-stage svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+  /* טבעות מסלול קבועות ברקע */
+  @keyframes orbit { to { transform: rotate(360deg); } }
+  .orbit-a { animation: orbit 46s linear infinite; transform-origin: 200px 200px; }
+  .orbit-b { animation: orbit 34s linear infinite reverse; transform-origin: 200px 200px; }
+
+  /* שכבת גרפיקה — נכנסת בדעיכה עם סיבוב זעיר */
+  .viz { opacity: 0; transform: scale(.94) rotate(-2deg); transition: opacity .7s ease, transform .9s cubic-bezier(.2,.75,.3,1); }
+  .viz[data-on="true"] { opacity: 1; transform: none; }
+
+  /* קווים שמציירים את עצמם מחדש בכל הופעה */
+  .viz .draw { stroke-dasharray: var(--len, 600); stroke-dashoffset: var(--len, 600); }
+  .viz.play .draw { animation: drawIn var(--dur, 1.5s) cubic-bezier(.25,.7,.25,1) var(--dl, 0s) forwards; }
+  @keyframes drawIn { to { stroke-dashoffset: 0; } }
+
+  .viz .pop { opacity: 0; transform: scale(.4); transform-box: fill-box; transform-origin: center; }
+  .viz.play .pop { animation: popIn .5s cubic-bezier(.2,1.4,.4,1) var(--dl, 0s) forwards; }
+  @keyframes popIn { to { opacity: 1; transform: none; } }
+
+  .viz .grow { transform: scaleY(0); transform-box: fill-box; transform-origin: bottom; }
+  .viz.play .grow { animation: growUp .85s cubic-bezier(.2,.85,.3,1) var(--dl, 0s) forwards; }
+  @keyframes growUp { to { transform: scaleY(1); } }
+
+  .viz .swing { transform: rotate(-84deg); transform-box: fill-box; transform-origin: 50% 100%; }
+  .viz.play .swing { animation: swingTo 1.5s cubic-bezier(.2,1.25,.35,1) .3s forwards; }
+  @keyframes swingTo { to { transform: rotate(38deg); } }
+
+  .viz .fadein { opacity: 0; }
+  .viz.play .fadein { animation: fadeSoft .7s ease var(--dl, 0s) forwards; }
+  @keyframes fadeSoft { to { opacity: 1; } }
+
+  /* תווית הגרפיקה — מתחלפת יחד איתה */
+  .viz-label { position: relative; min-height: 2.6rem; }
+  .viz-label b {
+    position: absolute; inset-inline: 0; top: 0; font-weight: 700;
+    opacity: 0; transform: translateY(10px);
+    transition: opacity .45s ease, transform .55s cubic-bezier(.2,.7,.3,1);
+  }
+  .viz-label b[data-on="true"] { opacity: 1; transform: none; }
+
+  /* מחווני התקדמות בין הגרפיקות */
+  .viz-dots { display: flex; justify-content: center; gap: 8px; }
+  .viz-dots span { width: 22px; height: 3px; border-radius: 999px; background: rgba(11,18,32,.14); transition: background-color .5s; }
+  .viz-dots span[data-on="true"] { background: #B4892B; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orbit-a, .orbit-b { animation: none; }
+    .viz .draw { stroke-dashoffset: 0; }
+    .viz .pop, .viz .fadein { opacity: 1; transform: none; }
+    .viz .grow { transform: none; }
+    .viz .swing { transform: rotate(38deg); }
+  }
+
   /* --- הקישוט שמוביל לאזור הבא --- */
   .guide { position: absolute; inset-inline-start: 50%; bottom: 26px; translate: -50% 0; }
   .guide-rail { width: 1px; height: 62px; margin-inline: auto; background: linear-gradient(to bottom, transparent, rgba(180,137,43,.55)); overflow: hidden; }
@@ -479,30 +535,114 @@ tailwind.config = {
    </div>
 
    <!-- ויזואל: ערימות מטבעות תלת־ממדיות מעל גרף שמצטייר -->
-   <!-- cue ו-drift על אלמנטים נפרדים: שתי אנימציות על אותו אלמנט דורסות זו את זו -->
-   <div class="cue hidden lg:block" style="--d:.40s" aria-hidden="true">
+   <!-- קומפוזיציה גרפית מתחלפת -->
+   <div class="cue hidden lg:block" style="--d:.40s">
     <div class="drift relative">
      <div class="absolute inset-0 halo rounded-full"></div>
 
-     <div id="stage" class="stage relative mx-auto h-[300px] w-full max-w-[420px]">
-       <div id="stacks" class="stacks absolute inset-x-0 bottom-6 mx-auto h-[1px] w-[300px]"></div>
+     <div id="vizStage" class="viz-stage">
+       <!-- מסגרת קבועה: טבעות מסלול, נקודה שמקיפה, סימני רבע -->
+       <svg viewBox="0 0 400 400" aria-hidden="true">
+         <g class="orbit-a">
+           <circle cx="200" cy="200" r="186" fill="none" stroke="#B4892B" stroke-opacity=".16" stroke-dasharray="3 9"/>
+           <circle cx="200" cy="14" r="4" fill="#B4892B" opacity=".55"/>
+         </g>
+         <g class="orbit-b">
+           <circle cx="200" cy="200" r="162" fill="none" stroke="#B4892B" stroke-opacity=".10"/>
+           <circle cx="362" cy="200" r="2.5" fill="#705927" opacity=".5"/>
+         </g>
+         <g stroke="#B4892B" stroke-opacity=".45" stroke-width="1.5">
+           <path d="M200 6v16M200 378v16M6 200h16M378 200h16"/>
+         </g>
+       </svg>
+
+       <!-- 1. תמהיל התיק -->
+       <svg class="viz" data-viz="0" data-on="true" viewBox="0 0 400 400">
+         <g fill="none" stroke-linecap="round" transform="rotate(-90 200 200)">
+           <circle cx="200" cy="200" r="112" stroke="#0B1220" stroke-opacity=".07" stroke-width="26"/>
+           <circle class="draw" cx="200" cy="200" r="112" stroke="#B4892B" stroke-width="26"
+                   style="--len:704;--dur:1.3s" stroke-dasharray="312 704"/>
+           <circle class="draw" cx="200" cy="200" r="112" stroke="#C5A45C" stroke-width="26"
+                   style="--len:704;--dur:1.1s;--dl:.25s" stroke-dasharray="176 704" stroke-dashoffset="-312"/>
+           <circle class="draw" cx="200" cy="200" r="112" stroke="#D2BA84" stroke-width="26"
+                   style="--len:704;--dur:1.0s;--dl:.45s" stroke-dasharray="141 704" stroke-dashoffset="-488"/>
+           <circle class="draw" cx="200" cy="200" r="112" stroke="#0B1220" stroke-width="26"
+                   style="--len:704;--dur:.9s;--dl:.62s" stroke-dasharray="70 704" stroke-dashoffset="-629"/>
+         </g>
+         <text class="fadein" style="--dl:.9s" x="200" y="192" text-anchor="middle"
+               font-size="52" font-weight="900" fill="#0B1220">4</text>
+         <text class="fadein" style="--dl:1.0s" x="200" y="224" text-anchor="middle"
+               font-size="17" font-weight="700" fill="#65686F">מסלולים</text>
+       </svg>
+
+       <!-- 2. צמיחה מצטברת -->
+       <svg class="viz" data-viz="1" viewBox="0 0 400 400">
+         <defs>
+           <linearGradient id="vg" x1="0" y1="0" x2="0" y2="1">
+             <stop offset="0" stop-color="#B4892B" stop-opacity=".30"/>
+             <stop offset="1" stop-color="#B4892B" stop-opacity="0"/>
+           </linearGradient>
+         </defs>
+         <g stroke="#0B1220" stroke-opacity=".08">
+           <path d="M52 300h296M52 232h296M52 164h296M52 96h296"/>
+         </g>
+         <path class="fadein" style="--dl:.85s" d="M52 300 L110 274 L168 284 L226 214 L284 232 L342 128 L342 300 Z" fill="url(#vg)"/>
+         <path class="draw" style="--len:420;--dur:1.6s" d="M52 300 L110 274 L168 284 L226 214 L284 232 L342 128"
+               fill="none" stroke="#B4892B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+         <circle class="pop" style="--dl:1.35s" cx="342" cy="128" r="8" fill="#B4892B"/>
+         <circle class="pop" style="--dl:1.45s" cx="342" cy="128" r="17" fill="none" stroke="#B4892B" stroke-opacity=".35"/>
+         <g class="pop" style="--dl:1.5s">
+           <rect x="272" y="72" width="98" height="38" rx="19" fill="#0B1220"/>
+           <text x="321" y="97" text-anchor="middle" font-size="17" font-weight="700" fill="#F7F5F0">‎+7.4%</text>
+         </g>
+       </svg>
+
+       <!-- 3. ריבית דריבית -->
+       <svg class="viz" data-viz="2" viewBox="0 0 400 400">
+         <line x1="46" y1="312" x2="354" y2="312" stroke="#0B1220" stroke-opacity=".12" stroke-width="2"/>
+         <g>
+           <rect class="grow" style="--dl:0s"   x="60"  y="252" width="34" height="60"  rx="8" fill="#D2BA84"/>
+           <rect class="grow" style="--dl:.09s" x="106" y="226" width="34" height="86"  rx="8" fill="#D2BA84"/>
+           <rect class="grow" style="--dl:.18s" x="152" y="192" width="34" height="120" rx="8" fill="#C5A45C"/>
+           <rect class="grow" style="--dl:.27s" x="198" y="150" width="34" height="162" rx="8" fill="#C5A45C"/>
+           <rect class="grow" style="--dl:.36s" x="244" y="112" width="34" height="200" rx="8" fill="#B4892B"/>
+           <rect class="grow" style="--dl:.45s" x="290" y="62"  width="34" height="250" rx="8" fill="#B4892B"/>
+         </g>
+         <path class="draw" style="--len:340;--dur:1.3s;--dl:.5s" d="M77 246 L123 220 L169 186 L215 144 L261 106 L307 56"
+               fill="none" stroke="#0B1220" stroke-width="2.5" stroke-dasharray="6 8" stroke-linecap="round"/>
+         <circle class="pop" style="--dl:1.5s" cx="307" cy="56" r="7" fill="#0B1220"/>
+       </svg>
+
+       <!-- 4. רמת סיכון -->
+       <svg class="viz" data-viz="3" viewBox="0 0 400 400">
+         <g fill="none" stroke-width="22" stroke-linecap="round">
+           <path class="draw" style="--len:240;--dur:.8s" d="M84 268 A120 120 0 0 1 128 152" stroke="#D2BA84"/>
+           <path class="draw" style="--len:200;--dur:.8s;--dl:.18s" d="M140 140 A120 120 0 0 1 260 140" stroke="#C5A45C"/>
+           <path class="draw" style="--len:240;--dur:.8s;--dl:.36s" d="M272 152 A120 120 0 0 1 316 268" stroke="#B4892B"/>
+         </g>
+         <g stroke="#0B1220" stroke-opacity=".25" stroke-width="2">
+           <path d="M200 96v14M124 128l10 10M276 128l-10 10"/>
+         </g>
+         <g class="swing">
+           <path d="M197 268 L200 148 L203 268 Z" fill="#0B1220"/>
+         </g>
+         <circle cx="200" cy="268" r="13" fill="#0B1220"/>
+         <circle cx="200" cy="268" r="5" fill="#B4892B"/>
+         <text class="fadein" style="--dl:1.5s" x="200" y="330" text-anchor="middle"
+               font-size="19" font-weight="700" fill="#0B1220">מותאם אישית</text>
+       </svg>
      </div>
 
-     <svg class="spark relative -mt-6 w-full" viewBox="0 0 380 150" fill="none">
-       <defs>
-         <linearGradient id="fillGold" x1="0" y1="0" x2="0" y2="1">
-           <stop offset="0" stop-color="#B4892B" stop-opacity=".26"/>
-           <stop offset="1" stop-color="#B4892B" stop-opacity="0"/>
-         </linearGradient>
-       </defs>
-       <path class="area" d="M6,124 L68,110 L130,116 L192,78 L254,88 L316,40 L374,18 L374,150 L6,150 Z" fill="url(#fillGold)"/>
-       <path class="line" d="M6,124 L68,110 L130,116 L192,78 L254,88 L316,40 L374,18"
-             stroke="#B4892B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-       <circle cx="192" cy="78" r="3.5" fill="#B4892B"/>
-       <circle cx="316" cy="40" r="3.5" fill="#B4892B"/>
-       <circle cx="374" cy="18" r="5" fill="#B4892B"/>
-       <circle cx="374" cy="18" r="10" fill="none" stroke="#B4892B" stroke-opacity=".35"/>
-     </svg>
+     <div class="viz-label mt-6 text-center text-lg text-ink">
+       <b data-on="true">תמהיל התיק שלך</b>
+       <b>צמיחה לאורך זמן</b>
+       <b>כוחה של ריבית דריבית</b>
+       <b>רמת הסיכון שלך</b>
+     </div>
+
+     <div id="vizDots" class="viz-dots mt-4">
+       <span data-on="true"></span><span></span><span></span><span></span>
+     </div>
     </div>
    </div>
   </div>
@@ -1066,138 +1206,36 @@ tailwind.config = {
     document.addEventListener('hero:start', () => setInterval(swap, 5200), { once: true });
   })();
 
-  /* --- ערימות מטבעות תלת־ממדיות --- */
+  /* --- הקומפוזיציה הגרפית: מחזור ארבע גרפיקות --- */
   (() => {
-    const host = $('stacks');
-    if (!host) return;
+    const stage = $('vizStage');
+    if (!stage) return;
+    const vizs = [...stage.querySelectorAll('.viz')];
+    const labels = [...document.querySelectorAll('.viz-label b')];
+    const dots = [...document.querySelectorAll('#vizDots span')];
+    let k = 0;
 
-    const W = 96;            // קוטר מטבע
-    const H = 34;            // גובה האליפסה בזווית הצפייה
-    const T = 13;            // עובי מטבע
-    const cols = [4, 7, 11]; // הערימות — נמוכה עד גבוהה, סיפור של צמיחה
-
-    cols.forEach((count, c) => {
-      const stack = document.createElement('div');
-      stack.className = 'stack';
-      if (!reduced) onHero(() => stack.classList.add('rise'));
-      stack.style.cssText =
-        `width:${W}px;height:${H}px;left:${c * 104}px;` +
-        `animation-delay:${.25 + c * .18}s`;
-
-      for (let i = 0; i < count; i++) {
-        const z = i * T;
-        stack.insertAdjacentHTML('beforeend',
-          `<span class="disc edge" style="width:${W}px;height:${H}px;top:0;transform:translateZ(${z - 5}px)"></span>` +
-          `<span class="disc face" style="width:${W}px;height:${H}px;top:0;transform:translateZ(${z}px)"></span>`);
-      }
-      host.appendChild(stack);
-    });
-  })();
-
-  /* --- אזור האתגר: pin עם scrub על סיבוב המטבע --- */
-  (() => {
-    const track = $('problem');
-    if (!track || reduced) return;
-    const pin = track.querySelector('.pin');
-    const panels = [...track.querySelectorAll('[data-panel]')];
-    const dots = [...track.querySelectorAll('[data-go]')];
-    const medal = $('medal');
-    const glyph = $('medalGlyph');
-    const bars = $('meterBars');
-    const GLYPHS = ['₪', '?', '%'];
-    const N = panels.length;
-    let active = -1, ticking = false;
-
-    if (bars) bars.innerHTML = Array.from({ length: N }, () => '<s></s>').join('');
-
-    const setActive = (i) => {
-      if (i === active) return;
-      active = i;
-      panels.forEach((p, k) => p.setAttribute('data-on', String(k === i)));
-      dots.forEach((d, k) => d.setAttribute('data-on', String(k === i)));
-      if (glyph) glyph.textContent = GLYPHS[i];
-      if (bars) [...bars.children].forEach((s, k) => s.classList.toggle('on', k <= i));
-    };
-
-    const render = () => {
-      const span = track.offsetHeight - pin.offsetHeight;
-      const p = span > 0 ? (scrollY - track.offsetTop) / span : 0;
-      const c = Math.max(0, Math.min(1, p));
-      // טווח מוגבל: מטבע שטוח נעלם לגמרי בזווית 90°, לכן לא חוצים אותה
-      if (medal) medal.style.setProperty('--spin', (c * 140 - 70).toFixed(1) + 'deg');
-      setActive(Math.max(0, Math.min(N - 1, Math.floor(c * N * 0.999))));
-      ticking = false;
-    };
-
-    dots.forEach((d) => d.addEventListener('click', () => {
-      const i = Number(d.dataset.go);
-      const span = track.offsetHeight - pin.offsetHeight;
-      scrollTo({ top: track.offsetTop + (span * (i + .5)) / N, behavior: 'smooth' });
-    }));
-
-    addEventListener('scroll', () => {
-      if (!ticking) { ticking = true; requestAnimationFrame(render); }
-    }, { passive: true });
-    addEventListener('resize', render, { passive: true });
-    render();
-  })();
-
-  /* --- תמהיל התיק כארבע שכבות בעלות נפח --- */
-  (() => {
-    const host = $('mix');
-    if (!host) return;
-    const layers = [
-      { h: 54, c: '#B4892B', s: '#705927' },
-      { h: 34, c: '#C5A45C', s: '#927129' },
-      { h: 26, c: '#D2BA84', s: '#B4892B' },
-      { h: 16, c: '#0B1220', s: '#1E2431' },
-    ];
-    const W = 190, D = 78;
-    let y = 0;
-    layers.forEach((L, i) => {
-      const slab = document.createElement('div');
-      slab.className = 'slab';
-      slab.style.cssText = `width:${W}px;height:${D}px;left:35px;top:35px;transform:translateZ(${y}px)`;
-      slab.innerHTML =
-        `<i style="inset:0;background:${L.c};box-shadow:0 0 0 1px rgba(0,0,0,.12)"></i>` +
-        `<i style="left:0;top:0;width:${L.h}px;height:${D}px;transform-origin:left center;transform:rotateY(-90deg);background:${L.s}"></i>` +
-        `<i style="left:0;top:0;width:${W}px;height:${L.h}px;transform-origin:center top;transform:rotateX(90deg);background:${L.s};filter:brightness(1.25)"></i>`;
-      host.appendChild(slab);
-      y += L.h;
-    });
-  })();
-
-  /* --- עומק מונע גלילה: כל אזור מדווח את מיקומו --- */
-  (() => {
-    const zones = [...document.querySelectorAll('[data-3d]')];
-    if (!zones.length || reduced) return;
-    let ticking = false;
-    const update = () => {
-      const mid = innerHeight / 2;
-      zones.forEach((z) => {
-        const r = z.getBoundingClientRect();
-        const p = ((r.top + r.height / 2) - mid) / innerHeight;
-        z.style.setProperty('--sy', Math.max(-1, Math.min(1, p)).toFixed(3));
+    const show = (i) => {
+      vizs.forEach((v, n) => {
+        const on = n === i;
+        v.setAttribute('data-on', String(on));
+        if (on) {
+          v.classList.remove('play');
+          void v.offsetWidth;          // מאלץ חישוב מחדש כדי שהציור יתחיל מהתחלה
+          v.classList.add('play');
+        } else {
+          v.classList.remove('play');
+        }
       });
-      ticking = false;
+      labels.forEach((l, n) => l.setAttribute('data-on', String(n === i)));
+      dots.forEach((d, n) => d.setAttribute('data-on', String(n === i)));
     };
-    addEventListener('scroll', () => {
-      if (!ticking) { ticking = true; requestAnimationFrame(update); }
-    }, { passive: true });
-    addEventListener('resize', update, { passive: true });
-    update();
-  })();
 
-  /* --- הגרף מצטייר כשמגיעים אליו --- */
-  (() => {
-    const spark = document.querySelector('.spark');
-    if (!spark) return;
-    if (reduced) { spark.classList.add('on'); return; }
-    const io = new IntersectionObserver((es) => {
-      es.forEach((e) => { if (e.isIntersecting) { spark.classList.add('on'); io.disconnect(); } });
-    }, { threshold: .3 });
-    io.observe(spark);
-    onHero(() => spark.classList.add('on'));
+    onHero(() => {
+      show(0);
+      if (reduced) return;
+      setInterval(() => { k = (k + 1) % vizs.length; show(k); }, 4600);
+    });
   })();
 
   /* --- ספירת מספרים --- */
