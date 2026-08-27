@@ -65,6 +65,48 @@ tailwind.config = {
   /* --- קישוט: טבעות עדינות ברקע --- */
   .halo { background: radial-gradient(circle, rgba(180,137,43,.10), transparent 62%); }
 
+  /* ===== כוריאוגרפיית הפתיחה — נכנסת לפעולה כשהסרטון מסתיים ===== */
+  .js .cue { opacity: 0; transform: translateY(34px); }
+  html.intro-done .cue {
+    animation: cueIn .95s cubic-bezier(.16,.84,.30,1) both;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes cueIn { from { opacity: 0; transform: translateY(34px); } to { opacity: 1; transform: none; } }
+
+  /* הכותרת נחשפת שורה־שורה מאחורי מסכה */
+  .js .lineclip { display: block; overflow: hidden; }
+  .js .lineclip > span { display: block; transform: translateY(105%); }
+  html.intro-done .lineclip > span {
+    animation: lineUp 1.05s cubic-bezier(.16,.84,.30,1) both;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes lineUp { from { transform: translateY(105%); } to { transform: none; } }
+
+  /* קו זהב שנמתח מתחת לכותרת */
+  .js .underline-grow { transform: scaleX(0); transform-origin: right center; }
+  html.intro-done .underline-grow { animation: growX 1.1s cubic-bezier(.16,.84,.30,1) both; animation-delay: var(--d, 0s); }
+  @keyframes growX { to { transform: scaleX(1); } }
+
+  /* הכיתוב המתחלף — דעיכה פנימה והחוצה */
+  .rot { position: relative; display: block; min-height: 1.9em; }
+  .rot b {
+    position: absolute; inset-inline-start: 0; top: 0; font-weight: 500;
+    opacity: 0; transform: translateY(14px);
+    transition: opacity .55s ease, transform .65s cubic-bezier(.2,.7,.3,1);
+  }
+  .rot b[data-on="true"] { opacity: 1; transform: none; }
+
+  /* ריחוף עדין אחרי שהאלמנטים נחתו */
+  @keyframes drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+  html.intro-done .drift { animation: drift 7s ease-in-out infinite; animation-delay: 1.6s; }
+
+  /* --- הקישוט שמוביל לאזור הבא --- */
+  .guide { position: absolute; inset-inline-start: 50%; bottom: 26px; translate: -50% 0; }
+  .guide-rail { width: 1px; height: 62px; margin-inline: auto; background: linear-gradient(to bottom, transparent, rgba(180,137,43,.55)); overflow: hidden; }
+  .guide-rail i { display: block; width: 100%; height: 22px; background: #B4892B; animation: railRun 2.4s cubic-bezier(.7,0,.3,1) infinite; }
+  @keyframes railRun { 0% { transform: translateY(-24px); } 100% { transform: translateY(64px); } }
+  .guide:hover .guide-label { color: #705927; }
+
   /* --- מרקם נקודות לאזורים הכהים --- */
   .dotgrid {
     background-image: radial-gradient(rgba(210,186,132,.13) 1px, transparent 1px);
@@ -394,18 +436,23 @@ tailwind.config = {
 
   <div class="relative mx-auto grid w-full max-w-6xl items-center gap-16 px-5 sm:px-8 lg:grid-cols-[1.05fr_.95fr]">
    <div>
-    <p class="rv mark text-xs font-bold tracking-[.3em] text-accentink">ייעוץ וליווי השקעות</p>
+    <p class="cue mark text-xs font-bold tracking-[.3em] text-accentink" style="--d:.05s">ייעוץ וליווי השקעות</p>
 
-    <h1 class="rv mt-6 max-w-4xl text-[clamp(2.5rem,7vw,5.25rem)] font-black leading-[1.02] tracking-tight">
-      הכסף שלך צריך תוכנית.
-      <span class="block text-muted">לא עוד דעה.</span>
+    <h1 class="mt-6 max-w-4xl text-[clamp(2.5rem,7vw,5.25rem)] font-black leading-[1.02] tracking-tight">
+      <span class="lineclip"><span style="--d:.20s">הכסף שלך צריך תוכנית.</span></span>
+      <span class="lineclip text-muted"><span style="--d:.34s">לא עוד דעה.</span></span>
     </h1>
 
-    <p class="rv mt-8 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-      מנגיסטו בלאו בונה איתך מסלול השקעה אחד, ברור, מותאם לסכום שלך, לזמן שיש לך ולסיכון שאתה באמת מוכן לקחת.
+    <div class="underline-grow mt-6 h-[2px] w-40 bg-accent" style="--d:.62s"></div>
+
+    <!-- כיתוב מתחלף: כל שורה נכנסת ויוצאת בדעיכה -->
+    <p class="cue rot mt-7 max-w-xl text-lg leading-relaxed text-muted sm:text-xl" style="--d:.50s" aria-live="polite">
+      <b data-on="true">מנגיסטו בלאו בונה איתך מסלול השקעה אחד, ברור, מותאם לסכום שלך ולזמן שיש לך.</b>
+      <b>בלי ז׳רגון, בלי הבטחות באוויר — רק החלטות שאתה מבין ויכול לעמוד מאחוריהן.</b>
+      <b>מלווה אחד לאורך כל הדרך, גם כשהשוק יורד. שם נקבעות התוצאות.</b>
     </p>
 
-    <div class="rv mt-10 flex flex-wrap items-center gap-4">
+    <div class="cue mt-10 flex flex-wrap items-center gap-4" style="--d:.68s">
       <a href="#contact" class="group inline-flex items-center gap-3 rounded-full bg-ink px-8 py-4 font-bold text-canvas transition-colors hover:bg-accent hover:text-ink">
         לשיחת אבחון ללא עלות
         <span class="transition-transform group-hover:-translate-x-1">←</span>
@@ -415,7 +462,7 @@ tailwind.config = {
       </a>
     </div>
 
-    <dl class="rv mt-20 grid max-w-2xl grid-cols-3 gap-6 rounded-2xl bg-accent px-7 py-7 text-ink">
+    <dl class="cue mt-16 grid max-w-2xl grid-cols-3 gap-6 rounded-2xl bg-accent px-7 py-7 text-ink" style="--d:.84s">
       <div>
         <dt class="text-3xl font-black text-ink sm:text-4xl" data-count="12" data-suffix="+">0</dt>
         <dd class="mt-1 text-xs font-semibold text-ink sm:text-sm">שנות ניסיון</dd>
@@ -432,7 +479,7 @@ tailwind.config = {
    </div>
 
    <!-- ויזואל: ערימות מטבעות תלת־ממדיות מעל גרף שמצטייר -->
-   <div class="rv relative hidden lg:block" aria-hidden="true">
+   <div class="cue drift relative hidden lg:block" style="--d:.40s" aria-hidden="true">
      <div class="absolute inset-0 halo rounded-full"></div>
 
      <div id="stage" class="stage relative mx-auto h-[300px] w-full max-w-[420px]">
@@ -457,8 +504,10 @@ tailwind.config = {
    </div>
   </div>
 
-  <a href="#problem" aria-label="המשך" class="absolute inset-x-0 bottom-8 mx-auto grid h-10 w-6 place-items-start justify-center rounded-full border border-ink/20 pt-2">
-    <span class="block h-2 w-1 animate-bounce rounded-full bg-accent"></span>
+  <!-- קישוט שמוביל לאזור הבא -->
+  <a href="#problem" class="guide cue group flex flex-col items-center gap-3 text-center" style="--d:1.05s">
+    <span class="guide-label text-[11px] font-bold tracking-[.28em] text-muted transition-colors">האתגר</span>
+    <span class="guide-rail rounded-full"><i></i></span>
   </a>
 </section>
 
@@ -854,18 +903,32 @@ tailwind.config = {
 
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* --- אות הפתיחה: משחרר את כוריאוגרפיית ההירו --- */
+  let heroFired = false;
+  const fireHero = () => {
+    if (heroFired) return;
+    heroFired = true;
+    document.documentElement.classList.add('intro-done');
+    document.dispatchEvent(new CustomEvent('hero:start'));
+  };
+  const onHero = (fn) => {
+    if (heroFired) { fn(); return; }
+    document.addEventListener('hero:start', fn, { once: true });
+  };
+
   /* --- מסך הפתיחה: רץ בכל רענון, ומתחיל רק כשהוא מוכן לנגן ברצף --- */
   (() => {
     const box = $('intro');
     const vid = $('introVid');
     const hold = $('introHold');
     const bar = $('introBar');
-    if (!box || !vid || reduced) return;
+    if (!box || !vid || reduced) { fireHero(); return; }
 
     let done = false, started = false;
     const close = () => {
       if (done) return;
       done = true;
+      fireHero();                       // ההירו מתחיל את התנועה שלו ברגע שהסרטון נגמר
       clearTimeout(guard);
       try { vid.pause(); } catch {}
       box.style.transition = 'opacity .55s ease';
@@ -984,6 +1047,22 @@ tailwind.config = {
     }, 2500);
   }
 
+  /* --- הכיתוב המתחלף מתחת לכותרת --- */
+  (() => {
+    const rot = document.querySelector('.rot');
+    if (!rot) return;
+    const items = [...rot.querySelectorAll('b')];
+    if (items.length < 2 || reduced) return;
+    let k = 0;
+    const swap = () => {
+      items[k].setAttribute('data-on', 'false');
+      k = (k + 1) % items.length;
+      // חלון קצר שבו שניהם דהויים — יציאה ואז כניסה, לא החלפה חדה
+      setTimeout(() => items[k].setAttribute('data-on', 'true'), 420);
+    };
+    document.addEventListener('hero:start', () => setInterval(swap, 5200), { once: true });
+  })();
+
   /* --- ערימות מטבעות תלת־ממדיות --- */
   (() => {
     const host = $('stacks');
@@ -996,7 +1075,8 @@ tailwind.config = {
 
     cols.forEach((count, c) => {
       const stack = document.createElement('div');
-      stack.className = 'stack' + (reduced ? '' : ' rise');
+      stack.className = 'stack';
+      if (!reduced) onHero(() => stack.classList.add('rise'));
       stack.style.cssText =
         `width:${W}px;height:${H}px;left:${c * 104}px;` +
         `animation-delay:${.25 + c * .18}s`;
@@ -1114,7 +1194,7 @@ tailwind.config = {
       es.forEach((e) => { if (e.isIntersecting) { spark.classList.add('on'); io.disconnect(); } });
     }, { threshold: .3 });
     io.observe(spark);
-    setTimeout(() => spark.classList.add('on'), 2500);
+    onHero(() => spark.classList.add('on'));
   })();
 
   /* --- ספירת מספרים --- */
@@ -1137,7 +1217,10 @@ tailwind.config = {
       requestAnimationFrame(tick);
     });
   }, { threshold: .6 });
-  document.querySelectorAll('[data-count]').forEach((el) => counter.observe(el));
+  document.querySelectorAll('[data-count]').forEach((el) => {
+    if (el.closest('#top')) onHero(() => counter.observe(el));
+    else counter.observe(el);
+  });
 
   /* --- ניווט: רקע, צבע וסימון האזור הפעיל --- */
   const nav = $('nav');
