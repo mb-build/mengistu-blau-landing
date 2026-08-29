@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ציר הזמן — חמישה סגנונות תלת־ממד | מנגיסטו בלאו</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --canvas:#F7F5F0; --canvas2:#E9E7E4; --ink:#0B1220; --ink2:#1E2431;
+  --muted:#65686F; --accent:#B4892B; --accent2:#D2BA84; --accentink:#705927;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Heebo',system-ui,sans-serif;background:var(--canvas);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+
+/* ===== שלד המעבדה ===== */
+.labbar{position:sticky;top:0;z-index:60;display:flex;gap:6px;align-items:center;flex-wrap:wrap;
+  padding:10px 18px;background:#0B1220}
+.labbar b{color:var(--canvas);font-size:13px;font-weight:900;letter-spacing:.14em;margin-inline-end:12px}
+.labbar a{padding:7px 13px;border-radius:999px;font-size:12.5px;font-weight:700;text-decoration:none;
+  color:rgba(247,245,240,.62);border:1px solid rgba(210,186,132,.28);transition:.25s}
+.labbar a:hover{color:var(--canvas);border-color:var(--accent2);background:rgba(180,137,43,.16)}
+
+section.v{position:relative;padding:96px 0 116px;overflow:hidden}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;position:relative}
+.kick{font-size:11.5px;font-weight:900;letter-spacing:.34em;color:var(--accentink)}
+.h{font-weight:900;line-height:.96;letter-spacing:-.035em;text-wrap:balance;margin-top:16px}
+.sub{color:var(--muted);font-size:17px;line-height:1.65;max-width:46ch;margin-top:18px}
+.grabzone{touch-action:pan-y;cursor:grab;user-select:none}
+.grabzone.grabbing{cursor:grabbing}
+
+/* ===== סרגל גרירה משותף ===== */
+.scrub{position:relative;height:44px;margin-top:34px;display:flex;align-items:center;cursor:grab}
+.scrub.grabbing{cursor:grabbing}
+.scrub .bar{position:absolute;inset-inline:0;height:2px;background:currentColor;opacity:.18;border-radius:2px}
+.scrub .fill{position:absolute;inset-inline-start:0;height:2px;background:var(--accent);border-radius:2px}
+.scrub .knob{position:absolute;width:34px;height:34px;border-radius:50%;translate:50% 0;
+  display:grid;place-items:center;font-size:11px;font-weight:900;color:var(--ink);
+  background:radial-gradient(circle at 34% 28%,#F6E6B4,var(--accent));
+  box-shadow:0 6px 18px rgba(180,137,43,.42)}
+.scrub .nib{position:absolute;width:9px;height:9px;border-radius:50%;translate:50% 0;
+  background:currentColor;opacity:.28}
+.hint{margin-top:8px;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--muted);
+  display:flex;align-items:center;gap:8px}
+.hint i{display:block;width:26px;height:1px;background:var(--accent)}
+
+/* ===== המסר וההרשמה ===== */
+.cta{display:inline-flex;align-items:center;gap:12px;padding:16px 30px;border-radius:999px;
+  background:var(--ink);color:var(--canvas);font-weight:900;font-size:15.5px;text-decoration:none;
+  transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s}
+.cta:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(11,18,32,.28)}
+.cta.gold{background:linear-gradient(120deg,var(--accent),#D9B863);color:var(--ink)}
+.cta.gold:hover{box-shadow:0 18px 42px rgba(180,137,43,.45)}
+.cta s{text-decoration:none;transition:transform .35s}
+.cta:hover s{transform:translateX(-5px)}
+.closer{margin-top:30px;display:flex;flex-wrap:wrap;align-items:center;gap:18px}
+.closer .why{font-size:13.5px;font-weight:700;color:var(--muted)}
+#v2 .closer .why,#v5 .closer .why{color:rgba(247,245,240,.55)}
+
+.dots{display:flex;gap:9px;margin-top:24px}
+.dots b{width:30px;height:4px;border-radius:3px;background:currentColor;opacity:.2;cursor:pointer;
+  transition:opacity .35s,width .45s cubic-bezier(.2,.7,.3,1)}
+.dots b.on{opacity:1;width:62px;background:var(--accent)}
+
+/* ============================================================
+   1 · מסלול עומק
+   ============================================================ */
+#v1{background:var(--canvas)}
+#v1 .h{font-size:clamp(2.4rem,6vw,4.6rem)}
+#v1 .rail{position:relative;height:432px;margin-top:50px;perspective:1250px;perspective-origin:50% 46%}
+#v1 .card{position:absolute;inset-block:0;inset-inline-start:50%;width:min(390px,74vw);
+  translate:50% 0;transform-style:preserve-3d}
+#v1 .face{height:100%;border-radius:22px;padding:32px 30px;display:flex;flex-direction:column;
+  background:linear-gradient(158deg,#fff,var(--canvas2));border:1px solid rgba(11,18,32,.09);
+  box-shadow:0 34px 70px rgba(11,18,32,.16);position:relative;overflow:hidden}
+#v1 .card[data-on] .face{box-shadow:0 44px 90px rgba(11,18,32,.24)}
+#v1 .face::after{content:'';position:absolute;inset-inline:0;top:0;height:4px;
+  background:linear-gradient(to left,var(--accent),transparent)}
+#v1 .num{font-size:82px;font-weight:900;line-height:.8;letter-spacing:-.06em;
+  color:transparent;-webkit-text-stroke:2px rgba(180,137,43,.5)}
+#v1 .card[data-on] .num{color:var(--accent);-webkit-text-stroke:0}
+#v1 .when{margin-top:16px;font-size:11px;font-weight:900;letter-spacing:.24em;color:var(--accentink)}
+#v1 h3{margin-top:8px;font-size:29px;font-weight:900;letter-spacing:-.02em}
+#v1 p.t{margin-top:13px;color:var(--muted);line-height:1.65;font-size:15px}
+#v1 .foot{margin-top:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:800;color:var(--accentink)}
+#v1 .foot i{flex:1;height:1px;background:rgba(180,137,43,.35)}
+#v1 .shadow{position:absolute;inset-inline-start:50%;bottom:118px;width:min(340px,64vw);height:28px;translate:50% 0;
+  background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(11,18,32,.22),transparent 70%);filter:blur(9px)}
+
+/* ============================================================
+   2 · גליל לילה
+   ============================================================ */
+#v2{background:var(--ink);color:var(--canvas)}
+#v2 .kick{color:var(--accent2)}
+#v2 .sub{color:rgba(247,245,240,.58)}
+#v2 .h{font-size:clamp(2.3rem,5.6vw,4.3rem);color:var(--canvas)}
+#v2 .h em{font-style:normal;color:transparent;-webkit-text-stroke:1.5px var(--accent2)}
+#v2 .stagewrap{position:relative;height:460px;margin-top:44px;perspective:1400px}
+#v2 .stagewrap::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 54% 60% at 50% 44%,transparent,rgba(11,18,32,.55) 62%,var(--ink) 92%)}
+#v2 .floor{position:absolute;inset-inline:-26%;top:76%;height:96%;z-index:0;
+  transform-origin:50% 0;transform:rotateX(76deg);
+  background-image:repeating-linear-gradient(to right,rgba(210,186,132,.22) 0 1px,transparent 1px 120px),
+                   repeating-linear-gradient(to bottom,rgba(210,186,132,.16) 0 1px,transparent 1px 120px)}
+#v2 .cyl{position:absolute;inset:0;z-index:2;transform-style:preserve-3d}
+#v2 .card{position:absolute;inset-inline-start:50%;top:50%;width:326px;height:326px;
+  margin-top:-163px;margin-inline-start:-163px;transform-style:preserve-3d}
+#v2 .face{backface-visibility:hidden;height:100%;border-radius:20px;padding:28px 26px;display:flex;flex-direction:column;
+  background:linear-gradient(150deg,rgba(30,36,49,.97),rgba(11,18,32,.99));
+  border:1px solid rgba(210,186,132,.22);box-shadow:0 30px 60px rgba(0,0,0,.55)}
+#v2 .card[data-on] .face{border-color:rgba(210,186,132,.75);box-shadow:0 0 0 1px rgba(210,186,132,.28),0 34px 70px rgba(0,0,0,.6)}
+#v2 .badge{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:17px;
+  color:var(--accent2);border:1px solid rgba(210,186,132,.4)}
+#v2 .card[data-on] .badge{color:var(--ink);background:radial-gradient(circle at 34% 28%,#F6E6B4,var(--accent));border-color:transparent}
+#v2 .when{margin-top:18px;font-size:10.5px;font-weight:900;letter-spacing:.26em;color:var(--accent2)}
+#v2 h3{margin-top:8px;font-size:25px;font-weight:900}
+#v2 p.t{margin-top:11px;font-size:14px;line-height:1.65;color:rgba(247,245,240,.6)}
+#v2 .scrub{color:var(--canvas)}
+
+/* ============================================================
+   3 · לוחות איזומטריים
+   ============================================================ */
+#v3{background:var(--canvas2)}
+#v3 .h{font-size:clamp(2.2rem,5.4vw,4.1rem)}
+#v3 .board{position:relative;height:452px;margin-top:38px}
+#v3 .board::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:radial-gradient(ellipse 40% 44% at 50% 50%,transparent,rgba(233,231,228,.55) 58%,var(--canvas2) 92%)}
+#v3 .plane{position:absolute;inset:0;transform-style:preserve-3d;
+  transform:rotateX(56deg) rotateZ(-34deg)}
+#v3 .grid{position:absolute;inset:-16%;
+  background-image:repeating-linear-gradient(to right,rgba(11,18,32,.10) 0 1px,transparent 1px 74px),
+                   repeating-linear-gradient(to bottom,rgba(11,18,32,.10) 0 1px,transparent 1px 74px)}
+#v3 .slab{position:absolute;inset-inline-start:50%;top:50%;width:206px;height:206px;
+  margin-top:-103px;margin-inline-start:-103px;transform-style:preserve-3d}
+#v3 .slab i{position:absolute;inset:0;border-radius:16px;background:linear-gradient(150deg,#D9D5CD,#BFB9AD);
+  border:1px solid rgba(11,18,32,.10)}
+#v3 .slab i:first-child{background:linear-gradient(150deg,#FFFDF8,var(--canvas));border-color:rgba(11,18,32,.14)}
+#v3 .slab[data-on] i:first-child{background:linear-gradient(150deg,#FBEFD2,#E8CE92);border-color:rgba(180,137,43,.5)}
+#v3 .slab .cap{position:absolute;inset:0;display:grid;place-items:center;font-size:56px;font-weight:900;
+  transform:rotateZ(34deg) rotateX(-56deg) translateZ(3px);
+  color:rgba(11,18,32,.16);letter-spacing:-.05em}
+#v3 .slab[data-on] .cap{color:var(--accentink)}
+#v3 .info{margin-top:-34px;position:relative;min-height:186px}
+#v3 .step{position:absolute;inset-inline:0;top:0;opacity:0;transform:translateY(22px);pointer-events:none;
+  transition:opacity .5s ease,transform .7s cubic-bezier(.16,.84,.3,1)}
+#v3 .step[data-on]{opacity:1;transform:none;pointer-events:auto}
+#v3 .step .when{font-size:11px;font-weight:900;letter-spacing:.28em;color:var(--accentink)}
+#v3 .step h3{margin-top:10px;font-size:clamp(2rem,4.4vw,3.2rem);font-weight:900;letter-spacing:-.03em}
+#v3 .step p.t{margin-top:12px;color:var(--muted);font-size:17px;line-height:1.7;max-width:52ch}
+
+/* ============================================================
+   4 · אקורדיון מתקפל
+   ============================================================ */
+#v4{background:var(--canvas)}
+#v4 .h{font-size:clamp(2.3rem,5.6vw,4.4rem)}
+#v4 .h span{display:block}
+#v4 .h span:nth-child(2){margin-inline-start:1.2em;color:var(--accentink)}
+#v4 .fold{position:relative;height:396px;margin-top:46px;perspective:1600px}
+#v4 .leaf{position:absolute;inset-block:0;inset-inline-start:50%;width:min(298px,58vw);
+  translate:50% 0;transform-style:preserve-3d;transform-origin:100% 50%}
+#v4 .face{position:absolute;inset:0;border-radius:18px;padding:28px 26px;display:flex;flex-direction:column;
+  background:linear-gradient(160deg,#fff,#EFECE6);border:1px solid rgba(11,18,32,.1);
+  box-shadow:0 24px 54px rgba(11,18,32,.14);backface-visibility:hidden}
+#v4 .leaf[data-on] .face{background:linear-gradient(160deg,#fff,#F7EFDC);border-color:rgba(180,137,43,.42);
+  box-shadow:0 34px 70px rgba(180,137,43,.22)}
+#v4 .edge{position:absolute;inset-block:6px;inset-inline-end:0;width:9px;border-radius:0 9px 9px 0;
+  background:linear-gradient(to bottom,#CFC9BC,#B4AEA1);box-shadow:inset 2px 0 4px rgba(11,18,32,.22)}
+#v4 .leaf[data-on] .edge{background:linear-gradient(to bottom,#E3CB94,var(--accent))}
+#v4 .num{font-size:13px;font-weight:900;letter-spacing:.3em;color:var(--accentink)}
+#v4 h3{margin-top:14px;font-size:26px;font-weight:900;letter-spacing:-.02em}
+#v4 .line{margin-top:13px;width:38px;height:3px;background:var(--accent);border-radius:2px;transition:width .6s}
+#v4 .leaf[data-on] .line{width:96px}
+#v4 p.t{margin-top:15px;color:var(--muted);line-height:1.65;font-size:14.5px}
+#v4 .when{margin-top:auto;font-size:11.5px;font-weight:900;letter-spacing:.2em;color:var(--muted)}
+
+/* ============================================================
+   5 · מסלול לילה
+   ============================================================ */
+#v5{background:radial-gradient(ellipse 70% 60% at 50% 106%,rgba(180,137,43,.30),transparent 66%),var(--ink);color:var(--canvas)}
+#v5 .kick{color:var(--accent2)}
+#v5 .h{font-size:clamp(2.2rem,5.4vw,4.2rem);color:var(--canvas)}
+#v5 .sub{color:rgba(247,245,240,.58)}
+#v5 .track3d{position:relative;height:430px;margin-top:42px;perspective:1600px;perspective-origin:50% 42%}
+#v5 .track3d::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 58% 62% at 50% 40%,transparent,rgba(11,18,32,.5) 60%,var(--ink) 94%)}
+#v5 .world{position:absolute;inset:0;z-index:2;transform-style:preserve-3d;transform:rotateX(9deg)}
+#v5 .ground{position:absolute;inset-inline:-26%;top:70%;height:92%;z-index:0;transform-origin:50% 0;transform:rotateX(74deg);
+  background-image:repeating-linear-gradient(to right,rgba(210,186,132,.26) 0 1px,transparent 1px 130px),
+                   repeating-linear-gradient(to bottom,rgba(210,186,132,.2) 0 1px,transparent 1px 130px)}
+#v5 .node{position:absolute;inset-inline-start:50%;top:52%;width:148px;height:148px;
+  margin-top:-74px;margin-inline-start:-74px;transform-style:preserve-3d}
+#v5 .disc{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(74deg)}
+#v5 .disc i{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(210,186,132,.14);
+  background:radial-gradient(circle at 36% 30%,rgba(112,89,39,.9),rgba(40,34,22,.95) 72%)}
+#v5 .disc i:first-child{background:radial-gradient(circle at 36% 30%,#EBD9AC,var(--accent) 46%,var(--accentink) 84%);
+  border-color:rgba(237,229,210,.5)}
+#v5 .node[data-on] .disc i:first-child{background:radial-gradient(circle at 34% 26%,#FFF6DE,#E8C978 44%,var(--accent) 88%)}
+#v5 .halo{position:absolute;inset:-36%;border-radius:50%;transform:rotateX(74deg);
+  background:radial-gradient(circle,rgba(180,137,43,.4),transparent 66%);opacity:0;transition:opacity .5s}
+#v5 .node[data-on] .halo{opacity:1}
+#v5 .pin{position:absolute;inset-inline-start:50%;bottom:52%;width:2px;height:92px;translate:50% 0;
+  background:linear-gradient(to top,rgba(210,186,132,.7),transparent)}
+#v5 .cap{position:absolute;inset-inline-start:50%;bottom:calc(52% + 88px);translate:50% 0;white-space:nowrap;
+  font-size:12px;font-weight:900;letter-spacing:.18em;color:var(--accent2)}
+#v5 .readout{position:relative;min-height:206px;margin-top:4px}
+#v5 .step{position:absolute;inset-inline:0;top:0;opacity:0;transform:translateY(24px);pointer-events:none;
+  transition:opacity .5s ease,transform .75s cubic-bezier(.16,.84,.3,1)}
+#v5 .step[data-on]{opacity:1;transform:none;pointer-events:auto}
+#v5 .step .when{font-size:11px;font-weight:900;letter-spacing:.3em;color:var(--accent2)}
+#v5 .step h3{margin-top:10px;font-size:clamp(2rem,4.6vw,3.4rem);font-weight:900;letter-spacing:-.03em}
+#v5 .step p.t{margin-top:12px;font-size:17px;line-height:1.7;color:rgba(247,245,240,.6);max-width:52ch}
+#v5 .scrub{color:var(--canvas)}
+
+@media (max-width:820px){
+  section.v{padding:72px 0 86px}
+  #v1 .rail,#v2 .stagewrap,#v3 .board,#v4 .fold,#v5 .track3d{height:372px}
+  #v4 .leaf{width:min(256px,72vw)}
+  #v2 .card{width:264px;height:296px;margin-top:-148px;margin-inline-start:-132px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="labbar">
+  <b>ציר הזמן · 5 סגנונות</b>
+  <a href="#v1">1 · מסלול עומק</a>
+  <a href="#v2">2 · גליל לילה</a>
+  <a href="#v3">3 · לוחות איזומטריים</a>
+  <a href="#v4">4 · אקורדיון מתקפל</a>
+  <a href="#v5">5 · מסלול לילה</a>
+</nav>
+
+<section class="v" id="v1">
+  <div class="wrap">
+    <p class="kick">התהליך · שלושה מפגשים</p>
+    <h2 class="h">מבלבול לתוכנית.<br>בשלושה מפגשים.</h2>
+    <p class="sub">גרור את הכרטיסים. כל מפגש מתקרב אליך — וזה בדיוק מה שקורה גם במציאות.</p>
+    <div class="rail grabzone" id="r1" tabindex="0" aria-label="ציר הזמן — גרור כדי להתקדם"></div>
+    <div class="shadow"></div>
+    <div class="scrub" id="s1"><span class="bar"></span><span class="fill"></span></div>
+    <p class="hint"><i></i>גרור ימינה ושמאלה · או חצי המקלדת</p>
+    <div class="closer">
+      <a class="cta" href="#reg"><s>←</s> להירשם למפגש הראשון</a>
+      <span class="why">ללא עלות. ללא התחייבות. ממשיכים רק אם יש מה לשפר.</span>
+    </div>
+  </div>
+</section>
+
+<section class="v" id="v2">
+  <div class="wrap">
+    <p class="kick">התהליך</p>
+    <h2 class="h">שלושה מפגשים.<br><em>אפס ניחושים.</em></h2>
+    <p class="sub">סובב את הגליל וראה מה קורה בכל מפגש — לפני שאתה נרשם, לא אחרי.</p>
+    <div class="stagewrap grabzone" id="r2" tabindex="0" aria-label="ציר הזמן — גרור כדי לסובב">
+      <div class="floor"></div>
+      <div class="cyl"></div>
+    </div>
+    <div class="scrub" id="s2"><span class="bar"></span><span class="fill"></span></div>
+    <p class="hint"><i></i>גרור לסיבוב הגליל</p>
+    <div class="closer">
+      <a class="cta gold" href="#reg"><s>←</s> לקבוע את המפגש הראשון</a>
+      <span class="why">45 דקות שחוסכות שנים של ניחושים.</span>
+    </div>
+  </div>
+</section>
+
+<section class="v" id="v3">
+  <div class="wrap">
+    <p class="kick">התהליך · מפגש אחרי מפגש</p>
+    <h2 class="h">כל מפגש<br>מניח לבנה.</h2>
+    <p class="sub">גרור לאורך המסלול. הלוח שמתרומם הוא השלב שאתה נמצא בו.</p>
+    <div class="board grabzone" id="r3" tabindex="0" aria-label="ציר הזמן — גרור לאורך המסלול">
+      <div class="plane"><div class="grid"></div></div>
+    </div>
+    <div class="info" id="i3"></div>
+    <div class="dots" id="d3"></div>
+    <div class="scrub" id="s3"><span class="bar"></span><span class="fill"></span></div>
+    <div class="closer">
+      <a class="cta" href="#reg"><s>←</s> להתחיל מהלבנה הראשונה</a>
+      <span class="why">המפגש הראשון על חשבוני. אחריו תדע בדיוק מה השלב הבא.</span>
+    </div>
+  </div>
+</section>
+
+<section class="v" id="v4">
+  <div class="wrap">
+    <p class="kick">התהליך</p>
+    <h2 class="h"><span>שלושה מפגשים</span><span>ותוכנית אחת.</span></h2>
+    <p class="sub">גרור כדי לפתוח כל מפגש. מה שנפתח כאן — נפתח גם בפגישה.</p>
+    <div class="fold grabzone" id="r4" tabindex="0" aria-label="ציר הזמן — גרור כדי לפתוח"></div>
+    <div class="dots" id="d4"></div>
+    <div class="scrub" id="s4"><span class="bar"></span><span class="fill"></span></div>
+    <div class="closer">
+      <a class="cta" href="#reg"><s>←</s> לפתוח את המפגש הראשון</a>
+      <span class="why">בלי מונחים שאתה לא מבין, ובלי מסמך שנשכח במגירה.</span>
+    </div>
+  </div>
+</section>
+
+<section class="v" id="v5">
+  <div class="wrap">
+    <p class="kick">התהליך</p>
+    <h2 class="h">המסלול קיים.<br>נשאר רק לצעוד בו.</h2>
+    <p class="sub">גרור לאורך המסלול וראה איפה כל מפגש יושב ביחס לכסף שלך.</p>
+    <div class="track3d grabzone" id="r5" tabindex="0" aria-label="ציר הזמן — גרור לאורך המסלול">
+      <div class="ground"></div>
+      <div class="world"></div>
+    </div>
+    <div class="readout" id="i5"></div>
+    <div class="scrub" id="s5"><span class="bar"></span><span class="fill"></span></div>
+    <div class="closer">
+      <a class="cta gold" href="#reg"><s>←</s> להירשם לתוכנית</a>
+      <span class="why">מקום אחד בשבוע לשיחת אבחון. אם הוא שלך — קח אותו.</span>
+    </div>
+  </div>
+</section>
+
+<script>
+const STEPS = [
+  { n:'01', when:'מפגש ראשון · 45 דקות', t:'מיפוי',
+    d:'כמה יש, למה זה מיועד, ומתי תצטרך את זה. שאלות בלבד — בלי מכירה, בלי מוצר, בלי לחץ.',
+    foot:'יוצאים עם תמונה ברורה' },
+  { n:'02', when:'מפגש שני · שבוע אחרי', t:'תוכנית',
+    d:'מסמך אחד בעברית פשוטה: התמהיל, הסכומים, העלויות ותרחישי הקיצון. הכול על השולחן.',
+    foot:'יוצאים עם מסמך שאתה מבין' },
+  { n:'03', when:'ליווי · רבעוני', t:'ליווי',
+    d:'מבצעים יחד, ונפגשים כל רבעון לאיזון. לא נשארים לבד מול המסך ברגע שהשוק זז.',
+    foot:'יוצאים עם מלווה, לא עם דוח' },
+  { n:'04', when:'עכשיו · השלב שלך', t:'להתחיל',
+    d:'המפגש הראשון בלי עלות ובלי התחייבות. אחריו תדע בדיוק אם יש לנו מה לעשות יחד.',
+    foot:'מקומות מוגבלים החודש' }
+];
+const N = STEPS.length;
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function makeRail(zone, scrubEl, onUpdate){
+  let p=0, target=0, vel=0, drag=false, lastX=0, raf=0;
+  const STEP=250;
+  const fill=scrubEl.querySelector('.fill');
+  const knob=document.createElement('span'); knob.className='knob';
+  for(let i=0;i<N;i++){
+    const b=document.createElement('span'); b.className='nib';
+    b.style.insetInlineStart=(i/(N-1)*100)+'%'; scrubEl.appendChild(b);
+  }
+  scrubEl.appendChild(knob);
+
+  const paint=()=>{
+    const f=p/(N-1);
+    fill.style.width=(f*100)+'%';
+    knob.style.insetInlineStart=(f*100)+'%';
+    knob.textContent=STEPS[Math.round(p)].n;
+    onUpdate(p);
+  };
+  const tick=()=>{
+    if(!drag){
+      p+=(target-p)*(reduced?1:0.14);
+      if(Math.abs(target-p)<0.0015){ p=target; paint(); raf=0; return; }
+    }
+    paint(); raf=requestAnimationFrame(tick);
+  };
+  const kick=()=>{ if(!raf) raf=requestAnimationFrame(tick); };
+  const go=i=>{ target=clamp(i,0,N-1); kick(); };
+
+  const start=e=>{
+    if(e.target.closest('a,button')) return;
+    drag=true; lastX=e.clientX; vel=0;
+    e.currentTarget.classList.add('grabbing');
+    e.currentTarget.setPointerCapture(e.pointerId);
+    kick();
+  };
+  const move=e=>{ if(!drag) return;
+    const dx=e.clientX-lastX; lastX=e.clientX;
+    vel=-dx/STEP; p=clamp(p-dx/STEP,0,N-1); };
+  const stop=e=>{ if(!drag) return; drag=false;
+    e.currentTarget.classList.remove('grabbing');
+    go(Math.round(p+vel*7)); };
+
+  [zone,scrubEl].forEach(el=>{
+    el.addEventListener('pointerdown',start);
+    el.addEventListener('pointermove',move);
+    el.addEventListener('pointerup',stop);
+    el.addEventListener('pointercancel',stop);
+  });
+  scrubEl.addEventListener('pointerdown',e=>{
+    const r=scrubEl.getBoundingClientRect();
+    p=clamp((1-(e.clientX-r.left)/r.width)*(N-1),0,N-1); kick();
+  });
+  zone.addEventListener('keydown',e=>{
+    if(e.key==='ArrowLeft'){ e.preventDefault(); go(Math.round(p)+1); }
+    if(e.key==='ArrowRight'){ e.preventDefault(); go(Math.round(p)-1); }
+  });
+  zone.addEventListener('wheel',e=>{
+    if(Math.abs(e.deltaX)<=Math.abs(e.deltaY)) return;
+    e.preventDefault(); go(Math.round(clamp(p+e.deltaX/120,0,N-1)));
+  },{passive:false});
+
+  paint(); kick();
+  return { go };
+}
+const mark=(list,i)=>list.forEach((el,k)=>el.toggleAttribute('data-on',k===i));
+
+/* ---------- 1 ---------- */
+{
+  const zone=document.getElementById('r1');
+  zone.innerHTML=STEPS.map(s=>`<article class="card"><div class="face">
+      <span class="num">${s.n}</span><span class="when">${s.when}</span>
+      <h3>${s.t}</h3><p class="t">${s.d}</p>
+      <span class="foot"><i></i>${s.foot}</span></div></article>`).join('');
+  const cards=[...zone.children];
+  makeRail(zone,document.getElementById('s1'),p=>{
+    cards.forEach((c,i)=>{
+      const d=i-p, a=Math.abs(d);
+      c.style.transform=`translateX(${d*-58}%) translateZ(${-a*185}px) rotateY(${d*-19}deg)`;
+      c.style.opacity=String(clamp(1-a*0.3,0,1));
+      c.style.zIndex=String(100-Math.round(a*10));
+      c.style.filter=`brightness(${clamp(1-a*0.10,.6,1)})`;
+    });
+    mark(cards,Math.round(p));
+  });
+}
+
+/* ---------- 2 ---------- */
+{
+  const zone=document.getElementById('r2'), cyl=zone.querySelector('.cyl');
+  cyl.innerHTML=STEPS.map(s=>`<article class="card"><div class="face">
+      <span class="badge">${s.n}</span><span class="when">${s.when}</span>
+      <h3>${s.t}</h3><p class="t">${s.d}</p></div></article>`).join('');
+  const cards=[...cyl.children], SEG=360/N, R=340;
+  makeRail(zone,document.getElementById('s2'),p=>{
+    cards.forEach((c,i)=>{
+      const ang=(i-p)*SEG;
+      c.style.transform=`rotateY(${ang}deg) translateZ(${R}px) rotateY(${-ang*0.4}deg)`;
+      const f=Math.cos(ang*Math.PI/180);
+      c.style.opacity=String(clamp(0.2+f*0.9,0,1));
+      c.style.zIndex=String(Math.round(140+f*100));
+    });
+    mark(cards,Math.round(p)%N);
+  });
+}
+
+/* ---------- 3 ---------- */
+{
+  const zone=document.getElementById('r3'), plane=zone.querySelector('.plane'), L=10;
+  plane.insertAdjacentHTML('beforeend',STEPS.map(s=>`<div class="slab">
+      ${Array.from({length:L},(_,k)=>`<i style="transform:translateZ(${-k*5}px)"></i>`).join('')}
+      <span class="cap">${s.n}</span></div>`).join(''));
+  const slabs=[...plane.querySelectorAll('.slab')];
+  const info=document.getElementById('i3');
+  info.innerHTML=STEPS.map(s=>`<div class="step"><span class="when">${s.when}</span>
+      <h3>${s.t}</h3><p class="t">${s.d}</p></div>`).join('');
+  const steps=[...info.children];
+  const dots=document.getElementById('d3');
+  dots.innerHTML=STEPS.map(()=>'<b></b>').join('');
+  const bs=[...dots.children];
+  const rail=makeRail(zone,document.getElementById('s3'),p=>{
+    slabs.forEach((s,i)=>{
+      const d=i-p, a=Math.abs(d);
+      s.style.transform=`translate3d(${d*166}px, ${d*166}px, ${clamp(120-a*120,0,120)}px)`;
+      s.style.opacity=String(clamp(1-a*0.26,0,1));
+      s.style.zIndex=String(100-Math.round(a*10));
+      s.toggleAttribute('data-on',Math.round(p)===i);
+    });
+    const i=Math.round(p);
+    mark(steps,i); bs.forEach((b,k)=>b.classList.toggle('on',k===i));
+  });
+  bs.forEach((b,i)=>b.addEventListener('click',()=>rail.go(i)));
+}
+
+/* ---------- 4 ---------- */
+{
+  const zone=document.getElementById('r4');
+  zone.innerHTML=STEPS.map(s=>`<article class="leaf">
+      <div class="face"><span class="num">${s.n}</span><h3>${s.t}</h3>
+        <span class="line"></span><p class="t">${s.d}</p><span class="when">${s.when}</span></div>
+      <span class="edge"></span></article>`).join('');
+  const leaves=[...zone.children];
+  const dots=document.getElementById('d4');
+  dots.innerHTML=STEPS.map(()=>'<b></b>').join('');
+  const bs=[...dots.children];
+  const rail=makeRail(zone,document.getElementById('s4'),p=>{
+    leaves.forEach((l,i)=>{
+      const d=i-p, a=Math.abs(d);
+      l.style.transform=`translateX(${d*-76}%) rotateY(${clamp(d*-46,-62,62)}deg) translateZ(${-a*54}px)`;
+      l.style.zIndex=String(100-Math.round(a*10));
+      l.style.opacity=String(clamp(1-a*0.2,0,1));
+    });
+    const i=Math.round(p);
+    mark(leaves,i); bs.forEach((b,k)=>b.classList.toggle('on',k===i));
+  });
+  bs.forEach((b,i)=>b.addEventListener('click',()=>rail.go(i)));
+}
+
+/* ---------- 5 ---------- */
+{
+  const zone=document.getElementById('r5'), world=zone.querySelector('.world'), L=12;
+  world.insertAdjacentHTML('beforeend',STEPS.map(s=>`<div class="node">
+      <span class="halo"></span>
+      <div class="disc">${Array.from({length:L},(_,k)=>`<i style="transform:translateZ(${-k*3.6}px)"></i>`).join('')}</div>
+      <span class="pin"></span><span class="cap">${s.n} · ${s.t}</span></div>`).join(''));
+  const nodes=[...world.querySelectorAll('.node')];
+  const out=document.getElementById('i5');
+  out.innerHTML=STEPS.map(s=>`<div class="step"><span class="when">${s.when}</span>
+      <h3>${s.t}</h3><p class="t">${s.d}</p></div>`).join('');
+  const steps=[...out.children];
+  makeRail(zone,document.getElementById('s5'),p=>{
+    nodes.forEach((n,i)=>{
+      const d=i-p, a=Math.abs(d);
+      n.style.transform=`translate3d(${d*-300}px,0,${-a*300}px) scale(${clamp(1.25-a*0.22,.5,1.25)})`;
+      n.style.opacity=String(clamp(1-a*0.3,0,1));
+      n.style.zIndex=String(100-Math.round(a*10));
+      n.toggleAttribute('data-on',Math.round(p)===i);
+    });
+    mark(steps,Math.round(p));
+  });
+}
+</script>
+</body>
+</html>
