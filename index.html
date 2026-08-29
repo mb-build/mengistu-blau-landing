@@ -9,7 +9,7 @@
 <title>מנגיסטו בלאו | ייעוץ השקעות</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Karantina:wght@700&display=swap" rel="stylesheet">
 <script src="vendor/tailwind-3.4.17.js"></script>
 <script>
 /* ===== מערכת הצבע: שלושה צבעים בלבד, 70 / 30 / 10 =====
@@ -566,6 +566,84 @@ tailwind.config = {
     .rv { opacity: 1; transform: none; transition: none; }
     .card:hover { transform: none; }
   }
+  /* ============ המסדרון — ציר תהליך תלת־ממדי מונע גלילה ============ */
+  :root{
+    --cw-ink:#141C2C;
+    --cw-gold:#9A7B3F; --cw-gold2:#C9A85C;
+    --cw-navy:#0C1322; --cw-navy2:#16203A;
+  }
+  .cw-section *{margin:0;padding:0;box-sizing:border-box}
+  .cw-section{font-family:'Heebo',sans-serif;color:#fff}
+
+  .cw-wrap{position:relative;height:380vh;background:var(--cw-navy)}
+  .cw-pin{position:sticky;top:0;height:100vh;overflow:hidden;padding:96px 6vw 40px;
+    background:radial-gradient(1000px 560px at 82% 12%,var(--cw-navy2),var(--cw-navy) 62%)}
+
+  .cw-eyebrow{display:flex;align-items:center;gap:10px;color:var(--cw-gold2);font-weight:600;font-size:13px;letter-spacing:4px}
+  .cw-eyebrow::before{content:'';width:24px;height:24px;border-top:2px solid var(--cw-gold2);border-inline-start:2px solid var(--cw-gold2)}
+  .cw-h{position:relative;z-index:5}
+  .cw-h h2{font-weight:900;font-size:clamp(28px,3.4vw,46px);line-height:1.12;margin:12px 0 6px}
+  .cw-h p{color:#B9C1D4;font-size:16px}
+
+  .cw-floor{position:absolute;inset-inline:-25%;bottom:-8%;height:54%;pointer-events:none;
+    background:
+      linear-gradient(transparent,rgba(12,19,34,.92) 92%),
+      repeating-linear-gradient(90deg,rgba(201,168,92,.15) 0 1px,transparent 1px 90px),
+      repeating-linear-gradient(0deg,rgba(201,168,92,.12) 0 1px,transparent 1px 64px);
+    transform:perspective(700px) rotateX(64deg);transform-origin:top;
+    mask-image:linear-gradient(#000 55%,transparent);
+    -webkit-mask-image:linear-gradient(#000 55%,transparent);
+    background-position:0 0,0 0,0 calc(var(--p,0)*-700px)}
+
+  .cw-space{position:absolute;inset:0;perspective:800px;perspective-origin:50% 45%}
+
+  .cw-card{position:absolute;top:50%;inset-inline-start:50%;width:min(380px,74vw);
+    margin-top:-150px;margin-inline-start:max(-190px,-37vw);
+    background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
+    border:1px solid rgba(201,168,92,.3);border-radius:20px;padding:92px 28px 26px;
+    will-change:transform,opacity}
+  .cw-card .cw-ghost{position:absolute;top:4px;inset-inline-start:18px;
+    font-family:'Karantina';font-weight:700;font-size:100px;line-height:1;
+    color:transparent;-webkit-text-stroke:1.5px rgba(201,168,92,.55)}
+  .cw-card.live{border-color:var(--cw-gold2);box-shadow:0 40px 90px -30px rgba(201,168,92,.35)}
+  .cw-card.live .cw-ghost{color:var(--cw-gold2);-webkit-text-stroke:0;text-shadow:0 0 34px rgba(201,168,92,.55)}
+  .cw-card h3{font-size:23px;font-weight:800;margin-bottom:8px}
+  .cw-card p{color:#B9C1D4;line-height:1.7;font-size:15px}
+
+  .cw-gate{position:absolute;top:50%;inset-inline-start:50%;transform:translate(50%,-50%);
+    text-align:center;will-change:transform,opacity;z-index:6}
+  .cw-gate h3{font-family:'Karantina';font-size:clamp(46px,7vw,84px);color:var(--cw-gold2);
+    text-shadow:0 0 50px rgba(201,168,92,.4);margin-bottom:14px}
+  .cw-cta{display:inline-flex;align-items:center;gap:12px;border:none;cursor:pointer;
+    font-family:inherit;font-weight:700;font-size:17px;padding:17px 38px;border-radius:60px;
+    background:linear-gradient(120deg,var(--cw-gold2),var(--cw-gold));color:var(--cw-navy);
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+  .cw-cta .arr{display:inline-block;transition:transform .35s}
+  .cw-cta:hover{transform:translateY(-4px);box-shadow:0 22px 48px -14px rgba(201,168,92,.55)}
+  .cw-cta:hover .arr{transform:translateX(-6px)}
+  .cw-cta:focus-visible{outline:3px solid var(--cw-gold2);outline-offset:4px}
+
+  .cw-bar{position:absolute;bottom:56px;inset-inline:10%;z-index:5;height:3px;
+    background:rgba(255,255,255,.1);border-radius:4px}
+  .cw-bar i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:4px;
+    background:linear-gradient(to left,var(--cw-gold2),var(--cw-gold));
+    width:calc(var(--p,0)*100%);box-shadow:0 0 14px rgba(201,168,92,.6)}
+
+  .cw-hint{position:absolute;bottom:22px;inset-inline:0;text-align:center;font-size:13px;
+    letter-spacing:2px;color:#B9C1D4;opacity:.55;z-index:6;pointer-events:none;
+    animation:cwHint 2.2s ease-in-out infinite}
+  @keyframes cwHint{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+  @media(max-width:900px){ .cw-pin{padding:78px 6vw 26px} }
+  @media(prefers-reduced-motion:reduce){
+    .cw-wrap{height:auto}
+    .cw-pin{position:relative;height:auto;min-height:100vh}
+    .cw-hint{display:none}
+  }
+
+  /* גרסת התהליך הקודמת נשמרה כנפילה־לאחור לדפדפן בלי JS */
+  html.js .legacy-process{display:none}
+
 </style>
 </head>
 <body class="font-sans bg-canvas text-ink antialiased overflow-x-hidden">
@@ -967,8 +1045,47 @@ tailwind.config = {
 
 </section>
 
-<!-- ============ 3. התהליך ============ -->
-<section id="process" class="relative bg-canvas2 py-24 sm:py-32">
+<!-- ============ 3. התהליך — המסדרון ============ -->
+<section id="process" class="cw-section" data-dark>
+  <div class="cw-wrap" id="cwWrap">
+    <section class="cw-pin" id="cwPin">
+      <div class="cw-h">
+        <div class="cw-eyebrow">התהליך</div>
+        <h2>המפגשים תלויים על קירות המסדרון.</h2>
+        <p>גלול קדימה — ועבור בין הקירות עד השער.</p>
+      </div>
+      <div class="cw-floor" aria-hidden="true"></div>
+      <div class="cw-space">
+        <div class="cw-card" data-side="1">
+          <span class="cw-ghost">01</span>
+          <h3>מיפוי</h3>
+          <p>45 דקות: כמה יש, למה זה מיועד, ומתי תצטרך את זה. בלי מכירה.</p>
+        </div>
+        <div class="cw-card" data-side="-1">
+          <span class="cw-ghost">02</span>
+          <h3>תוכנית</h3>
+          <p>מסמך אחד בעברית פשוטה: התמהיל, הסכומים, העלויות ותרחישי הקיצון.</p>
+        </div>
+        <div class="cw-card" data-side="1">
+          <span class="cw-ghost">03</span>
+          <h3>ליווי</h3>
+          <p>מבצעים יחד, ונפגשים רבעונית לאיזון. לא נשארים לבד מול המסך.</p>
+        </div>
+        <div class="cw-gate">
+          <h3>השער פתוח</h3>
+          <button class="cw-cta" data-cta="corridor">להירשם לתוכנית <span class="arr">←</span></button>
+        </div>
+      </div>
+      <div class="cw-bar" aria-hidden="true"><i></i></div>
+      <div class="cw-hint">גלול ↓</div>
+    </section>
+  </div>
+</section>
+
+<div class="h-16" style="background:linear-gradient(to bottom,#0C1322,#E9E7E4)"></div>
+
+<!-- ============ 3ב. התהליך — הגרסה הקודמת, נפילה־לאחור בלי JS ============ -->
+<section id="process-legacy" class="legacy-process relative bg-canvas2 py-24 sm:py-32">
   <div class="mx-auto max-w-6xl px-5 sm:px-8">
     <p class="rv mark text-xs font-bold tracking-[.3em] text-accentink">התהליך</p>
     <h2 class="rv mt-5 max-w-3xl text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">
@@ -1669,6 +1786,55 @@ tailwind.config = {
     }
     showSuccess();
   });
+  /* ═══ המסדרון — מנוע גלילה. המתמטיקה נשארת בדיוק כפי שנמסרה ═══ */
+  (function(){
+    const clampC=(v,a,b)=>Math.min(b,Math.max(a,v));
+    const wrap=$('cwWrap');
+    if(!wrap) return;
+    const pin=$('cwPin');
+    const cards=[...wrap.querySelectorAll('.cw-card')];
+    const gate=wrap.querySelector('.cw-gate');
+
+    let target=0, p=0;
+
+    function measure(){
+      const r=wrap.getBoundingClientRect();
+      target=clampC(-r.top/(r.height-innerHeight),0,1);
+    }
+    addEventListener('scroll',measure,{passive:true});
+    addEventListener('resize',measure);
+    measure();
+
+    function render(p){
+      pin.style.setProperty('--p',p);
+      const camZ=p*2800, gap=820;
+      cards.forEach((c,i)=>{
+        const side=+c.dataset.side;
+        const z=camZ-(i+1)*gap+430;
+        const op=z>300?clampC(1-(z-300)/220,0,1):clampC((z+800)/500,.1,1);
+        c.style.transform=`translateZ(${z}px) translateX(${side*24}vw) rotateY(${side*-30}deg)`;
+        c.style.opacity=op;
+        c.classList.toggle('live',z>-260&&z<300);
+      });
+      const gz=camZ-4*gap+430;
+      gate.style.opacity=clampC((gz+900)/700,0,1);
+      gate.style.transform=`translate(50%,-50%) translateZ(${Math.min(gz,60)}px)`;
+    }
+
+    if(reduced){render(1);return;}
+    (function loop(){
+      p+=(target-p)*.09;
+      if(Math.abs(target-p)<.0005)p=target;
+      render(p);
+      requestAnimationFrame(loop);
+    })();
+
+    const cta=wrap.querySelector('[data-cta="corridor"]');
+    if(cta) cta.addEventListener('click',()=>{
+      const f=document.getElementById('contact')||document.querySelector('form');
+      if(f) f.scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'});
+    });
+  })();
 </script>
 </body>
 </html>
