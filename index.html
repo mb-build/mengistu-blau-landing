@@ -597,11 +597,13 @@ tailwind.config = {
 
   .cw-space{position:absolute;inset:0;perspective:800px;perspective-origin:50% 45%}
 
-  .cw-card{position:absolute;top:50%;inset-inline-start:50%;width:min(380px,74vw);
-    margin-top:-150px;margin-inline-start:max(-190px,-37vw);
+  .cw-card{position:absolute;top:56%;inset-inline-start:50%;width:min(392px,76vw);
+    min-height:432px;margin-top:-216px;margin-inline-start:max(-196px,-38vw);
+    display:flex;flex-direction:column;
     background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
     border:1px solid rgba(201,168,92,.3);border-radius:20px;padding:92px 28px 26px;
-    will-change:transform,opacity}
+    will-change:transform,opacity;pointer-events:none}
+  .cw-card.live{pointer-events:auto}
   .cw-card .cw-ghost{position:absolute;top:4px;inset-inline-start:18px;
     font-family:'Karantina';font-weight:700;font-size:100px;line-height:1;
     color:transparent;-webkit-text-stroke:1.5px rgba(201,168,92,.55)}
@@ -609,6 +611,33 @@ tailwind.config = {
   .cw-card.live .cw-ghost{color:var(--cw-gold2);-webkit-text-stroke:0;text-shadow:0 0 34px rgba(201,168,92,.55)}
   .cw-card h3{font-size:23px;font-weight:800;margin-bottom:8px}
   .cw-card p{color:#B9C1D4;line-height:1.7;font-size:15px}
+
+  /* גוש הקריאה לפעולה — יושב במרכז הכרטיס, בין הטקסט לתחתית */
+  .cw-act{margin-block:auto;padding-top:18px}
+  .cw-win{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:#D8DEEB}
+  .cw-win i{flex:none;width:7px;height:7px;border-radius:50%;background:var(--cw-gold2);
+    box-shadow:0 0 12px rgba(201,168,92,.95)}
+  .cw-win b{color:var(--cw-gold2);font-weight:800}
+  .cw-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .cw-b{display:inline-flex;align-items:center;gap:8px;border-radius:60px;cursor:pointer;
+    font-family:inherit;font-weight:700;font-size:14px;padding:12px 20px;text-decoration:none;
+    border:1px solid transparent;white-space:nowrap;
+    transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s,background-color .3s,border-color .3s}
+  .cw-b1{background:linear-gradient(120deg,var(--cw-gold2),var(--cw-gold));color:var(--cw-navy)}
+  .cw-b1:hover{transform:translateY(-3px);box-shadow:0 16px 34px -12px rgba(201,168,92,.6)}
+  .cw-b2{background:rgba(255,255,255,.06);border-color:rgba(201,168,92,.45);color:var(--cw-gold2)}
+  .cw-b2:hover{transform:translateY(-3px);background:rgba(201,168,92,.16);border-color:var(--cw-gold2)}
+  .cw-b:focus-visible{outline:3px solid var(--cw-gold2);outline-offset:3px}
+  .cw-b .arr{display:inline-block;transition:transform .3s}
+  .cw-b:hover .arr{transform:translateX(-5px)}
+  .cw-b svg{width:16px;height:16px;flex:none}
+  .cw-fine{margin-top:11px;font-size:12px;color:#8E97AC}
+
+  @media(max-width:520px){
+    .cw-card{padding:78px 20px 22px;min-height:452px;margin-top:-226px}
+    .cw-card .cw-ghost{font-size:80px}
+    .cw-b{font-size:13px;padding:11px 16px}
+  }
 
   .cw-gate{position:absolute;top:50%;inset-inline-start:50%;transform:translate(50%,-50%);
     text-align:center;will-change:transform,opacity;z-index:6}
@@ -1060,16 +1089,50 @@ tailwind.config = {
           <span class="cw-ghost">01</span>
           <h3>מיפוי</h3>
           <p>45 דקות: כמה יש, למה זה מיועד, ומתי תצטרך את זה. בלי מכירה.</p>
+          <div class="cw-act">
+            <span class="cw-win"><i></i>מה יוצא לך מזה: <b>תמונה ברורה של הכסף שלך</b></span>
+            <div class="cw-btns">
+              <button class="cw-b cw-b1" data-cw-go="map">לקבוע מיפוי <span class="arr">←</span></button>
+              <a class="cw-b cw-b2" data-cw-call href="#contact">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+                  <path d="M21 16.9v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.7 16.7 0 0 1-5.1-5.1A17 17 0 0 1 4 6.1 1.7 1.7 0 0 1 5.7 4.2h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.7.6 2.5a1.7 1.7 0 0 1-.4 1.8l-1.1 1.1a13.6 13.6 0 0 0 5.1 5.1l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.5.6a1.7 1.7 0 0 1 1.4 1.6z"/>
+                </svg><span data-cw-calllabel>שיחזרו אליי היום</span>
+              </a>
+            </div>
+          <p class="cw-fine">ללא עלות וללא התחייבות. אם אין לי מה לתרום — אגיד לך בסוף השיחה.</p>
+          </div>
         </div>
         <div class="cw-card" data-side="-1">
           <span class="cw-ghost">02</span>
           <h3>תוכנית</h3>
           <p>מסמך אחד בעברית פשוטה: התמהיל, הסכומים, העלויות ותרחישי הקיצון.</p>
+          <div class="cw-act">
+            <span class="cw-win"><i></i>מה יוצא לך מזה: <b>מסמך אחד שאתה באמת מבין</b></span>
+            <div class="cw-btns">
+              <button class="cw-b cw-b1" data-cw-go="plan">לבקש את התוכנית שלי <span class="arr">←</span></button>
+              <a class="cw-b cw-b2" data-cw-call href="#contact">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+                  <path d="M21 16.9v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.7 16.7 0 0 1-5.1-5.1A17 17 0 0 1 4 6.1 1.7 1.7 0 0 1 5.7 4.2h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.7.6 2.5a1.7 1.7 0 0 1-.4 1.8l-1.1 1.1a13.6 13.6 0 0 0 5.1 5.1l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.5.6a1.7 1.7 0 0 1 1.4 1.6z"/>
+                </svg><span data-cw-calllabel>שיחזרו אליי היום</span>
+              </a>
+            </div>
+          </div>
         </div>
         <div class="cw-card" data-side="1">
           <span class="cw-ghost">03</span>
           <h3>ליווי</h3>
           <p>מבצעים יחד, ונפגשים רבעונית לאיזון. לא נשארים לבד מול המסך.</p>
+          <div class="cw-act">
+            <span class="cw-win"><i></i>מה יוצא לך מזה: <b>מלווה אחד לאורך כל הדרך</b></span>
+            <div class="cw-btns">
+              <button class="cw-b cw-b1" data-cw-go="guide">להתחיל ליווי <span class="arr">←</span></button>
+              <a class="cw-b cw-b2" data-cw-call href="#contact">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+                  <path d="M21 16.9v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.7 16.7 0 0 1-5.1-5.1A17 17 0 0 1 4 6.1 1.7 1.7 0 0 1 5.7 4.2h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.7.6 2.5a1.7 1.7 0 0 1-.4 1.8l-1.1 1.1a13.6 13.6 0 0 0 5.1 5.1l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.5.6a1.7 1.7 0 0 1 1.4 1.6z"/>
+                </svg><span data-cw-calllabel>שיחזרו אליי היום</span>
+              </a>
+            </div>
+          </div>
         </div>
         <div class="cw-gate">
           <h3>השער פתוח</h3>
@@ -1829,11 +1892,39 @@ tailwind.config = {
       requestAnimationFrame(loop);
     })();
 
-    const cta=wrap.querySelector('[data-cta="corridor"]');
-    if(cta) cta.addEventListener('click',()=>{
-      const f=document.getElementById('contact')||document.querySelector('form');
-      if(f) f.scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'});
+    /* מספר הטלפון של מנגיסטו. ברגע שהוא מוזן — כפתורי השיחה הופכים לחיוג אמיתי. */
+    const CW_TEL = '';
+
+    const GOALS = {
+      map:   'אני רוצה לקבוע מפגש מיפוי — 45 דקות, בלי התחייבות.',
+      plan:  'אני רוצה לקבל תוכנית השקעה מותאמת אישית.',
+      guide: 'אני רוצה ליווי רבעוני ואיזון תיק לאורך זמן.',
+      gate:  'אני רוצה להירשם לתוכנית.'
+    };
+
+    const goToForm=(goal,focusPhone)=>{
+      const sec=$('contact');
+      if(sec) sec.scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'});
+      const msg=$('msg');
+      if(msg && goal && GOALS[goal] && !msg.value.trim()) msg.value=GOALS[goal];
+      const field=focusPhone?$('phone'):$('name');
+      if(field) setTimeout(()=>field.focus({preventScroll:true}),reduced?0:650);
+    };
+
+    wrap.querySelectorAll('[data-cw-go]').forEach(b=>
+      b.addEventListener('click',()=>goToForm(b.dataset.cwGo,false)));
+
+    wrap.querySelectorAll('[data-cw-call]').forEach(a=>{
+      if(CW_TEL){
+        a.href='tel:'+CW_TEL.replace(/[^+\d]/g,'');
+        a.querySelector('[data-cw-calllabel]').textContent='לדבר עכשיו · '+CW_TEL;
+      } else {
+        a.addEventListener('click',e=>{ e.preventDefault(); goToForm('map',true); });
+      }
     });
+
+    const cta=wrap.querySelector('[data-cta="corridor"]');
+    if(cta) cta.addEventListener('click',()=>goToForm('gate',false));
   })();
 </script>
 </body>
