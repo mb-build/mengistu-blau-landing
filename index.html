@@ -597,13 +597,11 @@ tailwind.config = {
 
   .cw-space{position:absolute;inset:0;perspective:800px;perspective-origin:50% 45%}
 
-  .cw-card{position:absolute;top:56%;inset-inline-start:50%;width:min(392px,76vw);
-    min-height:432px;margin-top:-216px;margin-inline-start:max(-196px,-38vw);
-    display:flex;flex-direction:column;
+  .cw-card{position:absolute;top:50%;inset-inline-start:50%;width:min(380px,74vw);
+    margin-top:-150px;margin-inline-start:max(-190px,-37vw);
     background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
     border:1px solid rgba(201,168,92,.3);border-radius:20px;padding:92px 28px 26px;
     will-change:transform,opacity;pointer-events:none}
-  .cw-card.live{pointer-events:auto}
   .cw-card .cw-ghost{position:absolute;top:4px;inset-inline-start:18px;
     font-family:'Karantina';font-weight:700;font-size:100px;line-height:1;
     color:transparent;-webkit-text-stroke:1.5px rgba(201,168,92,.55)}
@@ -612,13 +610,22 @@ tailwind.config = {
   .cw-card h3{font-size:23px;font-weight:800;margin-bottom:8px}
   .cw-card p{color:#B9C1D4;line-height:1.7;font-size:15px}
 
-  /* גוש הקריאה לפעולה — יושב במרכז הכרטיס, בין הטקסט לתחתית */
-  .cw-act{margin-block:auto;padding-top:18px}
-  .cw-win{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:#D8DEEB}
+  /* ── גוש הקריאה לפעולה — עומד לבד במרכז המסדרון, מתקרב מהעומק ── */
+  .cw-mid{position:absolute;top:50%;inset-inline-start:50%;transform:translate(50%,-50%);
+    width:min(432px,92vw);z-index:7;perspective:900px;text-align:center}
+  .cw-slide{position:absolute;inset-inline:0;top:50%;translate:0 -50%;
+    opacity:0;pointer-events:none;transform:translateZ(-260px) scale(.82);
+    transition:opacity .5s ease,transform .85s cubic-bezier(.2,.8,.2,1)}
+  .cw-slide[data-on]{opacity:1;pointer-events:auto;transform:translateZ(0) scale(1)}
+  .cw-slide[data-out]{opacity:0;transform:translateZ(180px) scale(1.1)}
+  .cw-slide::before{content:'';display:block;width:52px;height:2px;margin:0 auto 16px;
+    background:linear-gradient(to left,var(--cw-gold2),transparent)}
+
+  .cw-win{display:flex;justify-content:center;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:#D8DEEB}
   .cw-win i{flex:none;width:7px;height:7px;border-radius:50%;background:var(--cw-gold2);
     box-shadow:0 0 12px rgba(201,168,92,.95)}
   .cw-win b{color:var(--cw-gold2);font-weight:800}
-  .cw-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .cw-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:16px}
   .cw-b{display:inline-flex;align-items:center;gap:8px;border-radius:60px;cursor:pointer;
     font-family:inherit;font-weight:700;font-size:14px;padding:12px 20px;text-decoration:none;
     border:1px solid transparent;white-space:nowrap;
@@ -633,10 +640,12 @@ tailwind.config = {
   .cw-b svg{width:16px;height:16px;flex:none}
   .cw-fine{margin-top:11px;font-size:12px;color:#8E97AC}
 
+  /* מתחת ל-1200px הכרטיסים על הקירות מתקרבים למרכז — הגוש יורד מתחתם */
+  @media(max-width:1200px){ .cw-mid{top:78%;width:min(420px,92vw)} }
   @media(max-width:520px){
-    .cw-card{padding:78px 20px 22px;min-height:452px;margin-top:-226px}
-    .cw-card .cw-ghost{font-size:80px}
     .cw-b{font-size:13px;padding:11px 16px}
+    .cw-mid{top:74%}
+    .cw-fine{display:none}
   }
 
   .cw-gate{position:absolute;top:50%;inset-inline-start:50%;transform:translate(50%,-50%);
@@ -1089,56 +1098,61 @@ tailwind.config = {
           <span class="cw-ghost">01</span>
           <h3>מיפוי</h3>
           <p>45 דקות: כמה יש, למה זה מיועד, ומתי תצטרך את זה. בלי מכירה.</p>
-          <div class="cw-act">
-            <span class="cw-win"><i></i>מה יוצא לך מזה: <b>תמונה ברורה של הכסף שלך</b></span>
-            <div class="cw-btns">
-              <button class="cw-b cw-b1" data-cw-go="map">לקבוע מיפוי <span class="arr">←</span></button>
-              <a class="cw-b cw-b2" data-cw-call href="#contact">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
-                  <path d="M21 16.9v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.7 16.7 0 0 1-5.1-5.1A17 17 0 0 1 4 6.1 1.7 1.7 0 0 1 5.7 4.2h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.7.6 2.5a1.7 1.7 0 0 1-.4 1.8l-1.1 1.1a13.6 13.6 0 0 0 5.1 5.1l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.5.6a1.7 1.7 0 0 1 1.4 1.6z"/>
-                </svg><span data-cw-calllabel>שיחזרו אליי היום</span>
-              </a>
-            </div>
-          <p class="cw-fine">ללא עלות וללא התחייבות. אם אין לי מה לתרום — אגיד לך בסוף השיחה.</p>
-          </div>
         </div>
         <div class="cw-card" data-side="-1">
           <span class="cw-ghost">02</span>
           <h3>תוכנית</h3>
           <p>מסמך אחד בעברית פשוטה: התמהיל, הסכומים, העלויות ותרחישי הקיצון.</p>
-          <div class="cw-act">
-            <span class="cw-win"><i></i>מה יוצא לך מזה: <b>מסמך אחד שאתה באמת מבין</b></span>
-            <div class="cw-btns">
-              <button class="cw-b cw-b1" data-cw-go="plan">לבקש את התוכנית שלי <span class="arr">←</span></button>
-              <a class="cw-b cw-b2" data-cw-call href="#contact">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
-                  <path d="M21 16.9v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.7 16.7 0 0 1-5.1-5.1A17 17 0 0 1 4 6.1 1.7 1.7 0 0 1 5.7 4.2h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.7.6 2.5a1.7 1.7 0 0 1-.4 1.8l-1.1 1.1a13.6 13.6 0 0 0 5.1 5.1l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.5.6a1.7 1.7 0 0 1 1.4 1.6z"/>
-                </svg><span data-cw-calllabel>שיחזרו אליי היום</span>
-              </a>
-            </div>
-          </div>
         </div>
         <div class="cw-card" data-side="1">
           <span class="cw-ghost">03</span>
           <h3>ליווי</h3>
           <p>מבצעים יחד, ונפגשים רבעונית לאיזון. לא נשארים לבד מול המסך.</p>
-          <div class="cw-act">
-            <span class="cw-win"><i></i>מה יוצא לך מזה: <b>מלווה אחד לאורך כל הדרך</b></span>
-            <div class="cw-btns">
-              <button class="cw-b cw-b1" data-cw-go="guide">להתחיל ליווי <span class="arr">←</span></button>
-              <a class="cw-b cw-b2" data-cw-call href="#contact">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
-                  <path d="M21 16.9v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.7 16.7 0 0 1-5.1-5.1A17 17 0 0 1 4 6.1 1.7 1.7 0 0 1 5.7 4.2h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.7.6 2.5a1.7 1.7 0 0 1-.4 1.8l-1.1 1.1a13.6 13.6 0 0 0 5.1 5.1l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.5.6a1.7 1.7 0 0 1 1.4 1.6z"/>
-                </svg><span data-cw-calllabel>שיחזרו אליי היום</span>
-              </a>
-            </div>
-          </div>
         </div>
         <div class="cw-gate">
           <h3>השער פתוח</h3>
           <button class="cw-cta" data-cta="corridor">להירשם לתוכנית <span class="arr">←</span></button>
         </div>
       </div>
+
+      <!-- הקריאה לפעולה עומדת לבד במרכז, ומתחלפת עם הכרטיס הפעיל -->
+      <div class="cw-mid" id="cwMid">
+        <div class="cw-slide">
+          <span class="cw-win"><i></i>מה יוצא לך מזה: <b>תמונה ברורה של הכסף שלך</b></span>
+          <div class="cw-btns">
+            <button class="cw-b cw-b1" data-cw-go="map">לקבוע מיפוי <span class="arr">←</span></button>
+            <a class="cw-b cw-b2" data-cw-call href="#contact">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+                <path d="M21 16.9v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.7 16.7 0 0 1-5.1-5.1A17 17 0 0 1 4 6.1 1.7 1.7 0 0 1 5.7 4.2h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.7.6 2.5a1.7 1.7 0 0 1-.4 1.8l-1.1 1.1a13.6 13.6 0 0 0 5.1 5.1l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.5.6a1.7 1.7 0 0 1 1.4 1.6z"/>
+              </svg><span data-cw-calllabel>שיחזרו אליי היום</span>
+            </a>
+          </div>
+          <p class="cw-fine">ללא עלות וללא התחייבות. אם אין לי מה לתרום — אגיד לך בסוף השיחה.</p>
+        </div>
+        <div class="cw-slide">
+          <span class="cw-win"><i></i>מה יוצא לך מזה: <b>מסמך אחד שאתה באמת מבין</b></span>
+          <div class="cw-btns">
+            <button class="cw-b cw-b1" data-cw-go="plan">לבקש את התוכנית שלי <span class="arr">←</span></button>
+            <a class="cw-b cw-b2" data-cw-call href="#contact">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+                <path d="M21 16.9v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.7 16.7 0 0 1-5.1-5.1A17 17 0 0 1 4 6.1 1.7 1.7 0 0 1 5.7 4.2h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.7.6 2.5a1.7 1.7 0 0 1-.4 1.8l-1.1 1.1a13.6 13.6 0 0 0 5.1 5.1l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.5.6a1.7 1.7 0 0 1 1.4 1.6z"/>
+              </svg><span data-cw-calllabel>שיחזרו אליי היום</span>
+            </a>
+          </div>
+        </div>
+        <div class="cw-slide">
+          <span class="cw-win"><i></i>מה יוצא לך מזה: <b>מלווה אחד לאורך כל הדרך</b></span>
+          <div class="cw-btns">
+            <button class="cw-b cw-b1" data-cw-go="guide">להתחיל ליווי <span class="arr">←</span></button>
+            <a class="cw-b cw-b2" data-cw-call href="#contact">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+                <path d="M21 16.9v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.7 16.7 0 0 1-5.1-5.1A17 17 0 0 1 4 6.1 1.7 1.7 0 0 1 5.7 4.2h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.7.6 2.5a1.7 1.7 0 0 1-.4 1.8l-1.1 1.1a13.6 13.6 0 0 0 5.1 5.1l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.5.6a1.7 1.7 0 0 1 1.4 1.6z"/>
+              </svg><span data-cw-calllabel>שיחזרו אליי היום</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
       <div class="cw-bar" aria-hidden="true"><i></i></div>
       <div class="cw-hint">גלול ↓</div>
     </section>
@@ -1868,17 +1882,33 @@ tailwind.config = {
     addEventListener('resize',measure);
     measure();
 
+    const slides=[...wrap.querySelectorAll('.cw-slide')];
+    let midOn=-1;
+    const setMid=(i)=>{
+      if(i===midOn) return;
+      slides.forEach((el,k)=>{
+        const was=el.hasAttribute('data-on');
+        el.toggleAttribute('data-on',k===i);
+        el.toggleAttribute('data-out',was&&k!==i);
+      });
+      midOn=i;
+    };
+
     function render(p){
       pin.style.setProperty('--p',p);
       const camZ=p*2800, gap=820;
+      let live=-1;
       cards.forEach((c,i)=>{
         const side=+c.dataset.side;
         const z=camZ-(i+1)*gap+430;
         const op=z>300?clampC(1-(z-300)/220,0,1):clampC((z+800)/500,.1,1);
         c.style.transform=`translateZ(${z}px) translateX(${side*24}vw) rotateY(${side*-30}deg)`;
         c.style.opacity=op;
-        c.classList.toggle('live',z>-260&&z<300);
+        const on=z>-260&&z<300;
+        c.classList.toggle('live',on);
+        if(on) live=i;
       });
+      setMid(live);
       const gz=camZ-4*gap+430;
       gate.style.opacity=clampC((gz+900)/700,0,1);
       gate.style.transform=`translate(50%,-50%) translateZ(${Math.min(gz,60)}px)`;
