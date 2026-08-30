@@ -682,6 +682,139 @@ tailwind.config = {
   /* גרסת התהליך הקודמת נשמרה כנפילה־לאחור לדפדפן בלי JS */
   html.js .legacy-process{display:none}
 
+  /* ============ עמוד השדרה של התיק — ארבעה מסלולים שנדלקים בגלילה ============ */
+  .tr-spine{position:relative;margin-top:70px;perspective:1200px}
+  .tr-track{position:relative}
+  /* חוליית חיבור דוהה מהגזע אל החותם */
+  .tr-root::before{content:'';position:absolute;top:0;left:50%;translate:-50% 0;
+    width:2px;height:52px;background:linear-gradient(to bottom,rgba(180,137,43,.6),rgba(180,137,43,0))}
+
+  /* הגזע: מסילה אנכית שמתמלאת עם הגלילה */
+  .tr-rail{position:absolute;inset-block:0;inset-inline-start:50%;translate:-50% 0;
+    width:2px;background:rgba(11,18,32,.10);border-radius:3px;pointer-events:none}
+  .tr-rail i{position:absolute;inset-inline:0;top:0;height:0;border-radius:3px;
+    background:linear-gradient(to bottom,#B4892B,#D2BA84)}
+  .tr-rail b{position:absolute;inset-inline-start:50%;top:0;width:9px;height:9px;
+    translate:-50% -50%;border-radius:50%;background:#B4892B;opacity:0;
+    box-shadow:0 0 0 6px rgba(180,137,43,.16),0 0 22px rgba(180,137,43,.75)}
+  .tr-rail b.on{opacity:1}
+
+  /* שורת מסלול */
+  .tr-node{position:relative;display:grid;align-items:center;
+    grid-template-columns:1fr 128px 1fr;min-height:248px}
+  .tr-node:first-child{padding-block-start:8px}
+
+  /* הספרה על הגזע */
+  .tr-mark{grid-column:2;grid-row:1;justify-self:center;position:relative;display:grid;place-items:center;
+    width:128px;height:128px}
+  .tr-num{position:relative;z-index:2;font-size:60px;font-weight:900;line-height:1;letter-spacing:-.06em;
+    color:rgba(11,18,32,.16);transition:color .6s ease,transform .8s cubic-bezier(.2,.8,.2,1);
+    transform:translateY(10px)}
+  .tr-node[data-on] .tr-num{color:#B4892B;transform:none}
+  .tr-dot{position:absolute;inset:14px;z-index:1;border-radius:50%;
+    background:#F7F5F0;border:2px solid rgba(11,18,32,.12);
+    transition:border-color .5s,box-shadow .5s,transform .7s cubic-bezier(.2,.8,.2,1)}
+  .tr-node[data-on] .tr-dot{border-color:#B4892B;transform:scale(1.06);
+    box-shadow:0 0 0 8px rgba(180,137,43,.10),0 14px 34px -14px rgba(180,137,43,.9)}
+  .tr-halo{position:absolute;inset:0;z-index:0;border-radius:50%;border:1px solid rgba(180,137,43,.35);
+    opacity:0;transform:scale(.6);transition:opacity .7s ease,transform 1s cubic-bezier(.2,.8,.2,1)}
+  .tr-node[data-on] .tr-halo{opacity:1;transform:scale(1)}
+
+  /* הכרטיס */
+  .tr-card{position:relative;max-width:27rem;border-radius:20px;padding:30px 30px 26px;
+    background:linear-gradient(158deg,#FFFFFF,#F2EFE9);
+    border:1px solid rgba(11,18,32,.08);box-shadow:0 26px 60px -30px rgba(11,18,32,.35);
+    opacity:0;transform-style:preserve-3d;
+    transform:translateZ(-150px) translateY(30px) rotateY(var(--ry,0deg));
+    transition:opacity .7s ease,transform 1.05s cubic-bezier(.2,.8,.2,1),
+               box-shadow .5s,border-color .5s}
+  .tr-node[data-on] .tr-card{opacity:1;transform:translateZ(0) rotateY(0deg)}
+  .tr-node[data-on] .tr-card:hover{box-shadow:0 34px 74px -30px rgba(180,137,43,.55);
+    border-color:rgba(180,137,43,.4)}
+  /* השן שמצביעה אל הגזע */
+  .tr-card::after{content:'';position:absolute;top:50%;width:16px;height:16px;
+    background:#FFFFFF;border:1px solid rgba(11,18,32,.08);rotate:45deg;translate:0 -50%}
+  .tr-node[data-side="a"] .tr-card{grid-column:1;grid-row:1;justify-self:start;--ry:-11deg}
+  .tr-node[data-side="b"] .tr-card{grid-column:3;grid-row:1;justify-self:end;--ry:11deg}
+  .tr-node[data-side="a"] .tr-card::after{left:-9px;border-top:0;border-right:0}
+  .tr-node[data-side="b"] .tr-card::after{right:-9px;border-bottom:0;border-left:0}
+
+  .tr-top{display:flex;align-items:center;gap:12px}
+  .tr-ico{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;
+    background:rgba(180,137,43,.10);border:1px solid rgba(180,137,43,.28);color:#705927;
+    transition:background-color .5s,color .5s,transform .7s cubic-bezier(.2,.8,.2,1)}
+  .tr-node[data-on] .tr-ico{background:linear-gradient(140deg,#D2BA84,#B4892B);color:#0B1220;
+    transform:rotate(-4deg)}
+  .tr-ico svg{width:22px;height:22px}
+  .tr-name{font-size:1.4rem;font-weight:900;letter-spacing:-.02em}
+  .tr-when{margin-inline-start:auto;font-size:11.5px;font-weight:800;letter-spacing:.1em;
+    color:#705927;background:rgba(180,137,43,.12);border-radius:999px;padding:6px 12px;white-space:nowrap}
+  .tr-txt{margin-top:16px;color:#65686F;line-height:1.75;font-size:15.5px}
+
+  /* נתח בתיק */
+  .tr-share{margin-top:20px}
+  .tr-sharehead{display:flex;align-items:baseline;justify-content:space-between;
+    font-size:12px;font-weight:700;letter-spacing:.05em;color:#65686F}
+  .tr-sharehead b{font-size:15px;font-weight:900;color:#705927;letter-spacing:0}
+  .tr-bar{display:block;margin-top:8px;height:6px;border-radius:6px;
+    background:rgba(11,18,32,.08);overflow:hidden}
+  .tr-bar i{display:block;height:100%;width:0;border-radius:6px;
+    background:linear-gradient(to left,#B4892B,#D2BA84);
+    transition:width 1.15s cubic-bezier(.2,.8,.2,1) .3s}
+  .tr-node[data-on] .tr-bar i{width:var(--w)}
+
+  /* קריאה לפעולה בכרטיס */
+  .tr-go{margin-top:22px;display:inline-flex;align-items:center;gap:9px;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:800;color:#0B1220;
+    background:none;border:0;padding:0;border-block-end:2px solid rgba(180,137,43,.45);
+    transition:color .3s,border-color .3s}
+  .tr-go:hover{color:#705927;border-color:#B4892B}
+  .tr-go span{transition:transform .3s}
+  .tr-go:hover span{transform:translateX(-5px)}
+  .tr-go:focus-visible{outline:2px solid #B4892B;outline-offset:5px;border-radius:3px}
+
+  /* השורש: הסגירה שמבקשת פעולה */
+  .tr-root{position:relative;margin-top:26px;display:grid;justify-items:center;text-align:center;
+    padding:52px 24px 8px}
+  .tr-seal{display:grid;place-items:center;width:76px;height:76px;border-radius:50%;
+    background:radial-gradient(circle at 34% 28%,#F6E6B4,#B4892B);color:#0B1220;
+    font-weight:900;font-size:22px;box-shadow:0 0 0 10px rgba(180,137,43,.12),0 22px 44px -18px rgba(180,137,43,.8);
+    opacity:0;transform:scale(.7);transition:opacity .6s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+  .tr-root[data-on] .tr-seal{opacity:1;transform:none}
+  .tr-rootin{opacity:0;transform:translateY(26px);
+    transition:opacity .7s ease .15s,transform .9s cubic-bezier(.2,.8,.2,1) .15s}
+  .tr-root[data-on] .tr-rootin{opacity:1;transform:none}
+  .tr-root h3{margin-top:24px;font-size:clamp(1.7rem,3.6vw,2.6rem);font-weight:900;
+    letter-spacing:-.03em;line-height:1.1;text-wrap:balance}
+  .tr-root p{margin-top:14px;max-width:44ch;color:#65686F;font-size:16.5px;line-height:1.7}
+  .tr-cta{margin-top:26px;display:inline-flex;align-items:center;gap:12px;cursor:pointer;
+    font-family:inherit;font-weight:900;font-size:16px;padding:17px 34px;border:0;border-radius:999px;
+    background:#0B1220;color:#F7F5F0;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s,background-color .35s}
+  .tr-cta:hover{transform:translateY(-4px);background:#B4892B;color:#0B1220;
+    box-shadow:0 22px 46px -18px rgba(180,137,43,.9)}
+  .tr-cta span{transition:transform .35s}
+  .tr-cta:hover span{transform:translateX(-6px)}
+  .tr-cta:focus-visible{outline:3px solid #B4892B;outline-offset:4px}
+  .tr-note{margin-top:14px;font-size:13px;font-weight:600;color:#65686F}
+
+  @media(max-width:900px){
+    .tr-spine{margin-top:48px}
+    .tr-rail{inset-inline-start:26px;translate:0 0}
+    .tr-node{grid-template-columns:52px 1fr;min-height:0;padding-block:22px;align-items:start}
+    .tr-mark{grid-column:1;width:52px;height:52px;justify-self:start}
+    .tr-num{font-size:18px;transform:none}
+    .tr-dot{inset:0}
+    .tr-halo{inset:-7px}
+    .tr-node[data-side="a"] .tr-card,.tr-node[data-side="b"] .tr-card{
+      grid-column:2;justify-self:stretch;max-width:none;--ry:0deg}
+    .tr-card{padding:24px 22px 22px}
+    .tr-card::after{display:none}
+    .tr-root{justify-items:start;text-align:start;padding:40px 0 0}
+    .tr-root::before{left:26px;translate:0 0;height:40px}
+  }
+
+  html.js .legacy-tracks{display:none}
 </style>
 </head>
 <body class="font-sans bg-canvas text-ink antialiased overflow-x-hidden">
@@ -1159,7 +1292,7 @@ tailwind.config = {
   </div>
 </section>
 
-<div class="h-16" style="background:linear-gradient(to bottom,#0C1322,#E9E7E4)"></div>
+<div class="h-16" style="background:linear-gradient(to bottom,#0C1322,#F7F5F0)"></div>
 
 <!-- ============ 3ב. התהליך — הגרסה הקודמת, נפילה־לאחור בלי JS ============ -->
 <section id="process-legacy" class="legacy-process relative bg-canvas2 py-24 sm:py-32">
@@ -1192,8 +1325,127 @@ tailwind.config = {
   </div>
 </section>
 
-<!-- ============ 4. המסלולים ============ -->
-<section id="tracks" class="py-24 sm:py-32">
+<!-- ============ 4. המסלולים — עמוד השדרה של התיק ============ -->
+<section id="tracks" class="relative py-24 sm:py-32">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <p class="rv mark text-xs font-bold tracking-[.3em] text-accentink">המסלולים</p>
+    <h2 class="rv mt-5 max-w-3xl text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">
+      התמהיל נבנה ממך, לא מתבנית.
+    </h2>
+    <p class="rv mt-5 max-w-2xl text-lg text-muted">
+      ארבעה עולמות על ציר אחד. גלול — וכל שכבה נדלקת בתורה. הפרופורציה ביניהם היא כל ההבדל.
+    </p>
+
+    <div class="tr-spine" id="trSpine">
+      <div class="tr-track">
+        <div class="tr-rail" aria-hidden="true"><i id="trFill"></i><b id="trSpark"></b></div>
+        <ol class="tr-list">
+      <li class="tr-node" data-side="a">
+        <div class="tr-mark" aria-hidden="true">
+          <span class="tr-halo"></span><span class="tr-num">01</span><span class="tr-dot"></span>
+        </div>
+        <article class="tr-card">
+          <div class="tr-top">
+            <span class="tr-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round"><path d="M3 17.5 9 11l3.5 3.5L21 6"/><path d="M15 6h6v6"/></svg>
+            </span>
+            <h3 class="tr-name">שוק ההון</h3>
+            <span class="tr-when">5+ שנים</span>
+          </div>
+          <p class="tr-txt">תיק מדדי רחב עם פיזור גלובלי אמיתי. הליבה של רוב התוכניות — כאן הכסף עובד הכי הרבה זמן.</p>
+          <div class="tr-share">
+            <span class="tr-sharehead">נתח טיפוסי בתיק<b>40–70%</b></span>
+            <span class="tr-bar"><i style="--w:55%"></i></span>
+          </div>
+          <button class="tr-go" data-tr-go="שוק ההון">לבדוק אם זה מתאים לי <span>←</span></button>
+        </article>
+      </li>
+      <li class="tr-node" data-side="b">
+        <div class="tr-mark" aria-hidden="true">
+          <span class="tr-halo"></span><span class="tr-num">02</span><span class="tr-dot"></span>
+        </div>
+        <article class="tr-card">
+          <div class="tr-top">
+            <span class="tr-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-6h4v6"/></svg>
+            </span>
+            <h3 class="tr-name">נדל״ן מניב</h3>
+            <span class="tr-when">7+ שנים</span>
+          </div>
+          <p class="tr-txt">תזרים חודשי לצד עליית ערך, עם בדיקת היתכנות לפני כל שקל. לא כל עסקה שנראית טוב היא טובה.</p>
+          <div class="tr-share">
+            <span class="tr-sharehead">נתח טיפוסי בתיק<b>10–30%</b></span>
+            <span class="tr-bar"><i style="--w:20%"></i></span>
+          </div>
+          <button class="tr-go" data-tr-go="נדל״ן מניב">לבדוק אם זה מתאים לי <span>←</span></button>
+        </article>
+      </li>
+      <li class="tr-node" data-side="a">
+        <div class="tr-mark" aria-hidden="true">
+          <span class="tr-halo"></span><span class="tr-num">03</span><span class="tr-dot"></span>
+        </div>
+        <article class="tr-card">
+          <div class="tr-top">
+            <span class="tr-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6.4v5.2c0 4.6 3.3 8.4 8 9.4 4.7-1 8-4.8 8-9.4V6.4z"/><path d="m9 12 2 2 4-4"/></svg>
+            </span>
+            <h3 class="tr-name">אג״ח וסולידי</h3>
+            <span class="tr-when">1–3 שנים</span>
+          </div>
+          <p class="tr-txt">הכרית שמאפשרת לך לא לברוח בירידות. לכסף שצריך להישאר יציב ונגיש כשצריך אותו.</p>
+          <div class="tr-share">
+            <span class="tr-sharehead">נתח טיפוסי בתיק<b>10–30%</b></span>
+            <span class="tr-bar"><i style="--w:20%"></i></span>
+          </div>
+          <button class="tr-go" data-tr-go="אג״ח וסולידי">לבדוק אם זה מתאים לי <span>←</span></button>
+        </article>
+      </li>
+      <li class="tr-node" data-side="b">
+        <div class="tr-mark" aria-hidden="true">
+          <span class="tr-halo"></span><span class="tr-num">04</span><span class="tr-dot"></span>
+        </div>
+        <article class="tr-card">
+          <div class="tr-top">
+            <span class="tr-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round"><path d="m12 2.6 2.5 5.5 5.9.7-4.4 4 1.2 5.8L12 15.7 6.8 18.6 8 12.8l-4.4-4 5.9-.7z"/></svg>
+            </span>
+            <h3 class="tr-name">אלטרנטיבי</h3>
+            <span class="tr-when">5–10 שנים</span>
+          </div>
+          <p class="tr-txt">נתח קטן ומחושב מהתיק — שם לוקחים סיכון מודע, בעיניים פקוחות ובגודל שלא מסכן את התוכנית.</p>
+          <div class="tr-share">
+            <span class="tr-sharehead">נתח טיפוסי בתיק<b>0–10%</b></span>
+            <span class="tr-bar"><i style="--w:8%"></i></span>
+          </div>
+          <button class="tr-go" data-tr-go="אלטרנטיבי">לבדוק אם זה מתאים לי <span>←</span></button>
+        </article>
+      </li>
+        </ol>
+      </div>
+
+      <div class="tr-root" id="trRoot">
+        <span class="tr-seal" aria-hidden="true">מב</span>
+        <div class="tr-rootin">
+          <h3>התמהיל שלך עדיין לא נכתב.</h3>
+          <p>הפרופורציה בין הארבעה לא נקבעת מטבלה — היא נקבעת מהסכום שלך, מהזמן שיש לך, ומהשינה שלך בלילה.</p>
+          <button class="tr-cta" data-tr-go="all">לבנות את התמהיל שלי <span>←</span></button>
+          <p class="tr-note">שיחת אבחון של 45 דקות. ללא עלות, ללא התחייבות.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="rv mt-12 max-w-3xl text-xs leading-relaxed text-muted">
+      האמור אינו מהווה ייעוץ השקעות אישי ואינו מתחשב בנתוניו ובצרכיו של כל אדם. הנתחים המוצגים הם טווחים להמחשה בלבד. אין באמור התחייבות לתשואה. כל השקעה כרוכה בסיכון, לרבות אובדן חלק מהקרן.
+    </p>
+  </div>
+</section>
+
+<!-- ============ 4ב. המסלולים — הגרסה הקודמת, נפילה־לאחור בלי JS ============ -->
+<section id="tracks-legacy" class="legacy-tracks py-24 sm:py-32">
   <div class="mx-auto max-w-6xl px-5 sm:px-8">
     <p class="rv mark text-xs font-bold tracking-[.3em] text-accentink">המסלולים</p>
     <h2 class="rv mt-5 max-w-3xl text-[clamp(1.9rem,4.5vw,3.25rem)] font-black leading-tight">
@@ -1955,6 +2207,62 @@ tailwind.config = {
 
     const cta=wrap.querySelector('[data-cta="corridor"]');
     if(cta) cta.addEventListener('click',()=>goToForm('gate',false));
+  })();
+  /* ═══ המסלולים: הגזע מתמלא, וכל מסלול נדלק בתורו ═══ */
+  (function(){
+    const spine=$('trSpine');
+    if(!spine) return;
+    const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+    const rail=spine.querySelector('.tr-rail');
+    const fill=$('trFill'), spark=$('trSpark');
+    const stops=[...spine.querySelectorAll('.tr-node'),$('trRoot')];
+
+    const light=new IntersectionObserver((es)=>{
+      es.forEach(e=>{ if(e.isIntersecting){ e.target.setAttribute('data-on',''); light.unobserve(e.target); } });
+    },{rootMargin:'0px 0px -34% 0px',threshold:.2});
+    /* מי שכבר מעל קו הצפייה בטעינה — נדלק מיד, לא מחכה לחיתוך שלא יגיע */
+    const catchUp=()=>stops.forEach(el=>{
+      if(el.hasAttribute('data-on')) return;
+      if(el.getBoundingClientRect().bottom < innerHeight*0.66){ el.setAttribute('data-on',''); light.unobserve(el); }
+    });
+    stops.forEach(el=>light.observe(el));
+    addEventListener('scroll',catchUp,{passive:true});
+    catchUp();
+
+    let want=0, have=0, raf=0;
+    const measure=()=>{
+      const r=rail.getBoundingClientRect();
+      const anchor=innerHeight*0.62;
+      want=clamp((anchor-r.top)/(r.height||1),0,1);
+      if(!raf) raf=requestAnimationFrame(step);
+    };
+    const step=()=>{
+      have+=(want-have)*(reduced?1:0.16);
+      if(Math.abs(want-have)<0.0008) have=want;
+      const pc=(have*100).toFixed(2)+'%';
+      fill.style.height=pc; spark.style.top=pc;
+      spark.classList.toggle('on',have>0.005&&have<0.995);
+      raf=(have===want)?0:requestAnimationFrame(step);
+    };
+    addEventListener('scroll',measure,{passive:true});
+    addEventListener('resize',measure);
+    measure();
+
+    const WHY={
+      'שוק ההון':'אני רוצה לבדוק אם מסלול שוק ההון מתאים לי.',
+      'נדל״ן מניב':'אני רוצה לבדוק אם נדל״ן מניב מתאים לי.',
+      'אג״ח וסולידי':'אני רוצה לבדוק אם אפיק סולידי מתאים לי.',
+      'אלטרנטיבי':'אני רוצה לבדוק אם אפיק אלטרנטיבי מתאים לי.',
+      'all':'אני רוצה לבנות תמהיל שמתאים לי.'
+    };
+    spine.querySelectorAll('[data-tr-go]').forEach(b=>b.addEventListener('click',()=>{
+      const sec=$('contact');
+      if(sec) sec.scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'});
+      const msg=$('msg'), key=b.dataset.trGo;
+      if(msg && WHY[key] && !msg.value.trim()) msg.value=WHY[key];
+      const nm=$('name');
+      if(nm) setTimeout(()=>nm.focus({preventScroll:true}),reduced?0:650);
+    }));
   })();
 </script>
 </body>
