@@ -1,226 +1,291 @@
-# רינדור סרטון הפתיחה של מנגיסטו בלאו — פריים אחר פריים.
-# אין raqm במערכת, לכן הכיווניות של העברית מטופלת ידנית ב-rtl().
-import math, os, unicodedata
-from PIL import Image, ImageDraw, ImageFont
+# פתיח־סיפור, גרסה מהודקת: קצב קצר יותר, האטה על רגע השיא,
+# מד תיק שנופל ועולה, ריזר וחבטה בפסקול, וכרטיס סיום עם הוכחות.
+import os, math, wave, subprocess as sp
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
-W, H, FPS, DUR = 1920, 1080, 30, 9.0
-N = int(FPS * DUR)
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frames")
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+SRCDIR = os.path.join(ROOT, "וידאו שלי")
+C2 = os.path.join(SRCDIR, "Robot_superhero_stabilizing_fina…_202609021649 (2).mp4")
+C3 = os.path.join(SRCDIR, "Robot_superhero_stabilizing_fina…_202609021649 (3).mp4")
+C4 = os.path.join(SRCDIR, "Robot_superhero_stabilizing_fina…_202609021649.mp4")
+OUT = os.path.join(ROOT, "media", "intro-v2.mp4")
+SFX = os.path.join(HERE, "story_sfx.wav")
+AUD = os.path.join(HERE, "story_audio.m4a")
 
-INK = (11, 18, 32)
-CANVAS = (247, 245, 240)
-GOLD = (180, 137, 43)
-GOLD_LT = (210, 186, 132)
-GOLD_PALE = (237, 229, 210)
-GOLD_DK = (112, 89, 39)
-MUTED = (101, 104, 111)
+W, H, FPS = 1280, 720, 24
+CARD_SEC = 2.6
+N_CARD = int(FPS * CARD_SEC)
 
-FDIR = "C:/Windows/Fonts/"
-def font(px, bold=True):
-    for name in (("arialbd.ttf", "seguibl.ttf") if bold else ("arial.ttf", "segoeui.ttf")):
-        p = FDIR + name
-        if os.path.exists(p):
-            return ImageFont.truetype(p, px)
-    raise SystemExit("no font")
+# (קלט, פריים־התחלה, פריים־סיום, האטה)
+CUTS = [
+    (0,   0,  26, 1),   # פריצה דרך הזכוכית
+    (0,  46,  90, 1),   # העיר ומערבולת הכסף
+    (0, 120, 140, 1),   # השוק נופל — הגרף האדום
+    (1, 136, 162, 1),   # היריב האדום מופיע
+    (2,  24,  76, 1),   # הדו־קרב נפתח
+    (2, 168, 192, 2),   # השיא — התנגשות הקרניים, בהאטה
+    (2, 200, 238, 1),   # ניצחון — הגרפים עולים
+]
+SRCS = [C4, C2, C3]
+N_SRC = sum(b-a for (_, a, b, _) in CUTS)
+N_OUT_SRC = sum((b-a)*r for (_, a, b, r) in CUTS)
+N = N_OUT_SRC + N_CARD
 
-# ---------- כיווניות ----------
-def _heb(ch):
-    return "\u0590" <= ch <= "\u05FF"
+# תוכנית פריימים: לכל פריים־קלט מספר החזרות, וסימון האם הוא בקטע הניצחון
+REPS, ISWIN = [], []
+for (_, a, b, r) in CUTS:
+    win = (a == 200)
+    REPS += [r]*(b-a); ISWIN += [win]*(b-a)
 
-def rtl(s):
-    """סידור מחדש לתצוגה: רצפי עברית מתהפכים, מספרים ולטינית נשארים."""
-    runs, cur, cur_is = [], "", None
-    for ch in s:
-        is_h = _heb(ch) or ch in "\u05F3\u05F4"
-        if cur and is_h != cur_is:
-            runs.append((cur_is, cur)); cur = ""
-        cur_is, cur = is_h, cur + ch
-    if cur:
-        runs.append((cur_is, cur))
-    out = []
-    for is_h, run in reversed(runs):
-        out.append(run[::-1] if is_h else run)
-    return "".join(out)
+INK = (11, 18, 32); CANVAS = (247, 245, 240)
+GOLD = (180, 137, 43); GOLD_LT = (210, 186, 132); MUTED = (142, 151, 172)
 
-# ---------- עזרי ציור ----------
-def ease_out(t):   return 1 - (1 - t) ** 3
-def ease_in_out(t): return 4*t*t*t if t < .5 else 1 - (-2*t + 2) ** 3 / 2
+FD = "C:/Windows/Fonts/"
+def font(px, bold=True): return ImageFont.truetype(FD + ("arialbd.ttf" if bold else "arial.ttf"), px)
+f_big = font(56); f_mid = font(46); f_sub = font(26, False); f_brand = font(30); f_role = font(13, False)
+f_mono = font(28); f_card = font(52); f_cardsub = font(23); f_pill = font(24)
+f_hud = font(15, False); f_hudn = font(30); f_hudd = font(15); f_stat = font(27); f_statl = font(12, False)
 
-def seg(f, a, b):
-    """התקדמות 0..1 של קטע בין פריים a ל-b."""
-    if f <= a: return 0.0
-    if f >= b: return 1.0
-    return (f - a) / float(b - a)
+def _heb(c): return "֐" <= c <= "׿"
+def rtl(s): return " ".join((w[::-1] if any(_heb(c) for c in w) else w) for w in reversed(s.split(" ")))
+def eo(t): return 1 - (1 - t) ** 3
+def eio(t): return 4*t*t*t if t < .5 else 1 - (-2*t+2)**3/2
+def seg(t, a, b): return 0.0 if t <= a else (1.0 if t >= b else (t-a)/float(b-a))
+def mix(c1, c2, a): return tuple(int(c2[i] + (c1[i]-c2[i])*a) for i in range(3))
 
-def blend(c, bg, a):
-    return tuple(int(bg[i] + (c[i] - bg[i]) * a) for i in range(3))
-
-def text_ls(d, xy, s, fnt, fill, ls=0, anchor_right=False):
-    """טקסט עם ריווח אותיות. anchor_right — הקצה הימני ב-x."""
+def txt(d, xy, s, fnt, fill, ls=0, right=False, center=False):
     s = rtl(s)
-    if ls == 0:
-        w = d.textlength(s, font=fnt)
-        x = xy[0] - w if anchor_right else xy[0]
+    tot = (sum(d.textlength(c, font=fnt)+ls for c in s)-ls) if ls else d.textlength(s, font=fnt)
+    x = xy[0]-tot if right else (xy[0]-tot/2 if center else xy[0])
+    if ls:
+        for c in s:
+            d.text((x, xy[1]), c, font=fnt, fill=fill); x += d.textlength(c, font=fnt)+ls
+    else:
         d.text((x, xy[1]), s, font=fnt, fill=fill)
-        return w
-    total = sum(d.textlength(c, font=fnt) + ls for c in s) - ls
-    x = xy[0] - total if anchor_right else xy[0]
-    for c in s:
-        d.text((x, xy[1]), c, font=fnt, fill=fill)
-        x += d.textlength(c, font=fnt) + ls
-    return total
 
-# הילת זהב תחתונה — נבנית פעם אחת בקטן ונמתחת
-def build_glow():
-    sw, sh = 96, 54
-    g = Image.new("L", (sw, sh), 0)
-    px = g.load()
-    cx, cy = sw / 2.0, sh * 1.02
+INKn = np.array(INK, dtype=np.float32); GOLDn = np.array(GOLD, dtype=np.float32)
+def grade(a, gold_push=0.0):
+    lum = (a[..., 0]*.2126 + a[..., 1]*.7152 + a[..., 2]*.0722)[..., None]
+    a = lum + (a-lum)*(0.58 - gold_push*0.30)          # הניצחון מאבד רוויה כדי לא להישאר ירוק
+    w_s = (1.0 - lum/255.0)**1.5 * 0.44
+    a = a*(1-w_s) + INKn*w_s
+    w_h = (lum/255.0)**2.0 * (0.28 + gold_push*0.34)   # ואז נמשך אל הזהב
+    a = a*(1-w_h) + GOLDn*w_h
+    return np.clip((a-9)*1.12 + 6, 0, 255)
+
+def radial(cx, cy, rx, ry, p=1.15):
+    sw, sh = 128, 72
+    g = Image.new("L", (sw, sh), 0); px = g.load()
     for y in range(sh):
         for x in range(sw):
-            dx = (x - cx) / (sw * 0.52)
-            dy = (y - cy) / (sh * 0.62)
-            r = math.sqrt(dx * dx + dy * dy)
-            v = max(0.0, 1.0 - r)
-            px[x, y] = int(255 * (v ** 1.7))
+            dx = (x/sw-cx)/rx; dy = (y/sh-cy)/ry
+            px[x, y] = int(255*max(0.0, 1-math.sqrt(dx*dx+dy*dy))**p)
     return g.resize((W, H), Image.BICUBIC)
 
-GLOW = build_glow()
+VIGN = Image.eval(radial(.5, .5, .82, .90), lambda v: 255-v)
+SCRIM = Image.new("L", (1, H))
+for y in range(H):
+    SCRIM.putpixel((0, y), int(255*max(0.0, min(1.0, (y/H-0.44)/0.56))**1.45*0.90))
+SCRIM = SCRIM.resize((W, H))
+TOPSCRIM = Image.new("L", (1, H))
+for y in range(H):
+    TOPSCRIM.putpixel((0, y), int(255*max(0.0, 1-y/190.0)**1.3*0.55))
+TOPSCRIM = TOPSCRIM.resize((W, H))
+VIG_L = Image.new("RGB", (W, H), (0, 0, 0)); INK_L = Image.new("RGB", (W, H), INK)
 
-def dotgrid(img):
-    d = ImageDraw.Draw(img, "RGBA")
-    for y in range(0, H, 40):
-        for x in range(0, W, 40):
-            d.point((x, y), fill=(210, 186, 132, 30))
+def brandbar(d, a=1.0):
+    ccx, ccy, r = W-118, 56, 25
+    d.ellipse([ccx-r, ccy-r, ccx+r, ccy+r], fill=mix(GOLD, INK, a))
+    m = rtl("מב"); bb = d.textbbox((0, 0), m, font=f_mono)
+    d.text((ccx-(bb[2]-bb[0])/2-bb[0], ccy-(bb[3]-bb[1])/2-bb[1]), m, font=f_mono, fill=mix(INK, GOLD, a))
+    txt(d, (W-156, 36), "מנגיסטו בלאו", f_brand, mix(CANVAS, INK, a), right=True)
+    txt(d, (W-156, 72), "ייעוץ וליווי השקעות", f_role, mix(GOLD_LT, INK, a*.85), ls=4, right=True)
 
-def corners(d, inset, a):
-    if a <= 0: return
-    L = 34
-    c = (int(210*a + INK[0]*(1-a)), int(186*a + INK[1]*(1-a)), int(132*a + INK[2]*(1-a)))
-    for (x, y, sx, sy) in ((inset, inset, 1, 1), (W-inset, inset, -1, 1),
-                           (inset, H-inset, 1, -1), (W-inset, H-inset, -1, -1)):
-        d.line([(x, y), (x + L*sx, y)], fill=c, width=2)
-        d.line([(x, y), (x, y + L*sy)], fill=c, width=2)
+def marks(d, a=.42):
+    L, ins = 26, 36; c = mix(GOLD_LT, INK, a)
+    for (x, y, sx, sy) in ((ins, ins, 1, 1), (W-ins, ins, -1, 1), (ins, H-ins, 1, -1), (W-ins, H-ins, -1, -1)):
+        d.line([(x, y), (x+L*sx, y)], fill=c, width=2); d.line([(x, y), (x, y+L*sy)], fill=c, width=2)
 
-def coin_stack(d, cx, base_y, count, rise, rw=132, rh=46, thick=17):
-    """ערימת מטבעות איזומטרית — דיסקה כהה מתחת ובהירה מעל."""
-    shown = count * rise
-    for i in range(count):
-        k = shown - i
-        if k <= 0: break
-        a = min(1.0, k)
-        y = base_y - i * thick - (1 - ease_out(a)) * 26
-        e = blend(GOLD_DK, INK, a)
-        d.ellipse([cx - rw/2, y - rh/2 + 6, cx + rw/2, y + rh/2 + 6], fill=e)
-        f = blend(GOLD, INK, a)
-        d.ellipse([cx - rw/2, y - rh/2, cx + rw/2, y + rh/2], fill=f)
-        hl = blend(GOLD_PALE, f, .45 * a)
-        d.ellipse([cx - rw/2 + 18, y - rh/2 + 7, cx - rw/2 + 62, y - rh/2 + 20], fill=hl)
+# ---------- מד התיק: הכסף שעליו נלחמים ----------
+START_V = 412000.0
+def portfolio(t):
+    if t < 2.90:  return START_V, 0
+    if t < 4.85:  return START_V - 74000*eio(seg(t, 2.90, 4.85)), -1
+    if t < 8.95:  return 338000 + 5000*math.sin((t-4.85)*4.2), -1
+    return 338000 + 209000*eo(seg(t, 8.95, 10.55)), 1
 
-SPARK = [(0,124),(62,110),(124,116),(186,78),(248,88),(310,40),(368,18)]
+def hud(d, t, a):
+    if a <= .01: return
+    x0, y0 = 56, 46
+    txt(d, (x0, y0), "התיק שלך", f_hud, mix(GOLD_LT, INK, a*.85))
+    v, dirn = portfolio(t)
+    d.text((x0, y0+22), "%s%s" % ("\u20aa", "{:,.0f}".format(v)), font=f_hudn, fill=mix(CANVAS, INK, a))
+    pct = (v/START_V - 1) * 100
+    col = GOLD_LT if pct >= 0 else (196, 122, 106)
+    arw = "\u25b2" if pct >= 0 else "\u25bc"
+    d.text((x0, y0+60), "%s %+.1f%%" % (arw, pct), font=f_hudd, fill=mix(col, INK, a*.95))
+    # ספארקליין קטן
+    pts = []
+    for k in range(34):
+        tk = max(0.0, t - (33-k)*0.09)
+        vv, _ = portfolio(tk)
+        pts.append((x0+k*4.6, y0+118 - (vv-320000)/240000.0*42))
+    if len(pts) > 1:
+        d.line(pts, fill=mix(col, INK, a*.75), width=2)
 
-def sparkline(d, ox, oy, sx, sy, prog, a):
-    if prog <= 0 or a <= 0: return
-    pts = [(ox + p[0]*sx, oy + p[1]*sy) for p in SPARK]
-    segs = len(pts) - 1
-    total = prog * segs
-    drawn = [pts[0]]
-    for i in range(segs):
-        t = min(1.0, max(0.0, total - i))
-        if t <= 0: break
-        x = pts[i][0] + (pts[i+1][0] - pts[i][0]) * t
-        y = pts[i][1] + (pts[i+1][1] - pts[i][1]) * t
-        drawn.append((x, y))
-    if len(drawn) > 1:
-        d.line(drawn, fill=blend(GOLD, INK, a), width=5, joint="curve")
-    hx, hy = drawn[-1]
-    r = 9 * a
-    d.ellipse([hx-r, hy-r, hx+r, hy+r], fill=blend(GOLD_PALE, INK, a))
+# ---------- הכיתובים ----------
+CAPS = [
+    (0.55, 2.80, "בשוק יש מלחמה על הכסף שלך", "כל יום. גם כשאתה לא מסתכל.", "r"),
+    (3.10, 4.75, "מי שלא שומר עליו — מאבד אותו", "עמלות, פאניקה, ועצות של אחרים", "r"),
+    (5.15, 6.90, "צריך מישהו בצד שלך", "שיודע מתי נלחמים ומתי מוותרים", "c"),
+    (9.25, 10.55, "וזה מה שנשאר בסוף", "תוכנית שמחזיקה גם כשהשוק זז", "r"),
+]
+def caption(d, t):
+    for (a, b, title, sub, pos) in CAPS:
+        if not (a - .01 <= t <= b + .01): continue
+        al = eo(seg(t, a, a+.45)) * (1 - seg(t, b-.35, b))
+        if al <= 0.001: continue
+        off = int((1-eo(seg(t, a, a+.45)))*20)
+        if pos == "c":
+            txt(d, (W//2, 452+off), title, f_big, mix(CANVAS, INK, al), center=True)
+            txt(d, (W//2, 528+off), sub, f_sub, mix(GOLD_LT, INK, al*.92), center=True)
+            wln = int(180*eo(seg(t, a+.16, a+.8)))
+            if wln > 2: d.rectangle([W//2-wln//2, 572+off, W//2+wln//2, 574+off], fill=mix(GOLD, INK, al))
+        else:
+            txt(d, (W-92, 492+off), title, f_mid, mix(CANVAS, INK, al), right=True)
+            txt(d, (W-92, 558+off), sub, f_sub, mix(GOLD_LT, INK, al*.92), right=True)
+            wln = int(140*eo(seg(t, a+.16, a+.8)))
+            if wln > 2: d.rectangle([W-92-wln, 602+off, W-92, 604+off], fill=mix(GOLD, INK, al))
 
-# ---------- הפריים ----------
-F_BRAND, F_NAME = 14, 30
-F_H1, F_H2 = 52, 78
-F_STACK, F_SPARK = 104, 128
-F_CTA = 190
+STATS = [("12+", "שנות ניסיון"), ("1,400+", "תוכניות"), ("\u20aa380M", "בליווי")]
+def card(d, t):
+    a = eo(seg(t, .08, .74))
+    ccx, ccy, r = W//2, 208, 50*a
+    if r > 1: d.ellipse([ccx-r, ccy-r, ccx+r, ccy+r], fill=mix(GOLD, INK, a))
+    if a > .55:
+        m = rtl("מב"); bb = d.textbbox((0, 0), m, font=f_card)
+        d.text((ccx-(bb[2]-bb[0])/2-bb[0], ccy-(bb[3]-bb[1])/2-bb[1]), m,
+               font=f_card, fill=mix(INK, GOLD, (a-.55)/.45))
+    b = eo(seg(t, .34, 1.00))
+    if b > 0:
+        txt(d, (W//2, 288), "מנגיסטו בלאו", f_big, mix(CANVAS, INK, b), center=True)
+        txt(d, (W//2, 360), "ייעוץ וליווי השקעות", f_cardsub, mix(GOLD_LT, INK, b*.9), ls=6, center=True)
+    s = eo(seg(t, .62, 1.28))
+    if s > 0:
+        d.line([(W//2-190, 404), (W//2+190, 404)], fill=mix(GOLD, INK, s*.4), width=1)
+        for k, (num, lab) in enumerate(STATS):
+            cx = W//2 + (1-k)*168
+            txt(d, (cx, 420), num, f_stat, mix(GOLD_LT, INK, s), center=True)
+            txt(d, (cx, 456), lab, f_statl, mix(MUTED, INK, s), center=True)
+    c = eo(seg(t, .95, 1.62))
+    if c > 0:
+        lab = "לשיחת אבחון ללא עלות"
+        tw = sum(d.textlength(ch, font=f_pill) for ch in rtl(lab))
+        pw, ph = tw+72, 56
+        d.rounded_rectangle([W//2-pw/2, 512, W//2+pw/2, 512+ph], radius=ph/2, fill=mix(GOLD, INK, c))
+        if c > .6: txt(d, (W//2, 525), lab, f_pill, mix(INK, GOLD, (c-.6)/.4), center=True)
 
-f_head = font(132); f_sub = font(40, False); f_brand = font(52)
-f_name = font(44); f_role = font(22, False); f_cta = font(34); f_eyebrow = font(22)
+# ---------- פסקול: מקור + ריזר לשיא + חבטה לניצחון ----------
+SR = 44100
+DUR = N/float(FPS)
+n = int(SR*DUR); tt = np.arange(n)/SR
+sfx = np.zeros(n)
+def place(sig, t0, amp=1.0):
+    i0 = int(t0*SR); i1 = min(n, i0+len(sig))
+    if i0 < n: sfx[i0:i1] += sig[:i1-i0]*amp
 
-def frame(i):
-    img = Image.new("RGB", (W, H), INK)
+k = np.arange(int(SR*1.15))/SR                       # ריזר אל השיא בשנייה 7.0
+sweep = 150*(1500/150.0)**(k/1.15)
+rng = np.random.default_rng(11)
+noise = np.convolve(rng.normal(0, 1, len(k)), np.ones(40)/40, mode="same")
+place((0.55*np.sin(2*np.pi*np.cumsum(sweep)/SR) + 0.45*noise) * (k/1.15)**2.3, 5.85, 0.34)
 
-    glow_a = 0.34 + 0.06 * math.sin(i / 26.0)
-    img.paste(Image.new("RGB", (W, H), GOLD), (0, 0), GLOW.point(lambda v: int(v * glow_a)))
-    dotgrid(img)
-    d = ImageDraw.Draw(img, "RGBA")
+k = np.arange(int(SR*2.6))/SR                        # חבטה על חיתוך הניצחון
+body = np.sin(2*np.pi*np.cumsum(140*np.exp(-4.2*k)+32)/SR)*np.exp(-1.9*k)
+crack = np.random.default_rng(5).normal(0, 1, len(k))*np.exp(-24*k)*0.30
+place(body+crack, 8.95, 0.55)
 
-    corners(d, 54, ease_out(seg(i, 6, 34)) * .5)
+fade = np.ones(n); fo = int(SR*1.0)
+fade[-fo:] = np.linspace(1, 0, fo)
+sfx = np.tanh(sfx*1.2)*0.8*fade
+with wave.open(SFX, "w") as wv:
+    wv.setnchannels(1); wv.setsampwidth(2); wv.setframerate(SR)
+    wv.writeframes((sfx*32767).astype(np.int16).tobytes())
 
-    # קו זהב עליון שנמתח
-    hl = ease_in_out(seg(i, 0, 46))
-    if hl > 0:
-        d.line([(W/2 - (W/2 - 54) * hl, 150), (W/2 + (W/2 - 54) * hl, 150)],
-               fill=blend(GOLD_LT, INK, .35), width=1)
+sp.run(["ffmpeg", "-y", "-v", "error", "-i", C4, "-i", C3, "-i", SFX,
+        "-filter_complex",
+        "[0:a]atrim=0:4.6,asetpts=N/SR/TB[a1];"
+        "[1:a]atrim=0.6:8.4,asetpts=N/SR/TB[a2];"
+        "[a1][a2]acrossfade=d=0.5:c1=tri:c2=tri[src];"
+        "[src]afade=t=in:st=0:d=0.4,afade=t=out:st=%.2f:d=1.2,volume=0.85[sv];"
+        "[2:a]volume=1.0[fx];"
+        "[sv][fx]amix=inputs=2:duration=longest:normalize=0[ao]" % (DUR-1.5),
+        "-map", "[ao]", "-c:a", "aac", "-b:a", "128k", AUD], check=True)
 
-    # לוגו ושם
-    a = ease_out(seg(i, F_BRAND, F_BRAND + 26))
-    if a > 0:
-        ccx, ccy, r = W - 200, 92, 46 * a
-        d.ellipse([ccx - r, ccy - r, ccx + r, ccy + r], fill=blend(GOLD, INK, a))
-        if a > .55:
-            mono = rtl("מב")
-            bb = d.textbbox((0, 0), mono, font=f_brand)
-            d.text((ccx - (bb[2] - bb[0]) / 2 - bb[0], ccy - (bb[3] - bb[1]) / 2 - bb[1]),
-                   mono, font=f_brand, fill=blend(INK, GOLD, (a - .55) / .45))
-    a = ease_out(seg(i, F_NAME, F_NAME + 26))
-    if a > 0:
-        off = int((1 - a) * 22)
-        text_ls(d, (W - 268 + off, 62), "מנגיסטו בלאו", f_name, blend(CANVAS, INK, a), anchor_right=True)
-        text_ls(d, (W - 268 + off, 116), "ייעוץ וליווי השקעות", f_role,
-                blend(GOLD_LT, INK, a * .8), ls=6, anchor_right=True)
+# ---------- הרכבה ----------
+fc = ""
+for i, (src, a, b, _) in enumerate(CUTS):
+    fc += "[%d:v]trim=start_frame=%d:end_frame=%d,setpts=PTS-STARTPTS[v%d];" % (src, a, b, i)
+fc += "".join("[v%d]" % i for i in range(len(CUTS))) + "concat=n=%d:v=1:a=0[out]" % len(CUTS)
 
-    # כותרת
-    a = ease_out(seg(i, F_H1, F_H1 + 30))
-    if a > 0:
-        text_ls(d, (W - 150, 372 + int((1 - a) * 40)), "הכסף שלך צריך תוכנית.",
-                f_head, blend(CANVAS, INK, a), anchor_right=True)
-    a = ease_out(seg(i, F_H2, F_H2 + 30))
-    if a > 0:
-        text_ls(d, (W - 150, 520 + int((1 - a) * 40)), "לא עוד דעה.",
-                f_head, blend(MUTED, INK, a), anchor_right=True)
+dec_cmd = ["ffmpeg", "-v", "error"]
+for s in SRCS: dec_cmd += ["-i", s]
+dec_cmd += ["-filter_complex", fc, "-map", "[out]", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
 
-    # ערימות מטבעות
-    for k, (cx, cnt, st) in enumerate(((360, 4, 0), (530, 7, 12), (700, 11, 24))):
-        rise = ease_out(seg(i, F_STACK + st, F_STACK + st + 46))
-        if rise > 0:
-            coin_stack(d, cx, 830, cnt, rise)
+dec = sp.Popen(dec_cmd, stdout=sp.PIPE)
+enc = sp.Popen(["ffmpeg", "-y", "-v", "error",
+                "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", "%dx%d" % (W, H), "-r", str(FPS), "-i", "-",
+                "-i", AUD, "-map", "0:v", "-map", "1:a",
+                "-c:v", "libx264", "-preset", "slow", "-crf", "23", "-pix_fmt", "yuv420p",
+                "-profile:v", "high", "-movflags", "+faststart",
+                "-c:a", "aac", "-b:a", "128k", "-t", str(DUR), OUT], stdin=sp.PIPE)
 
-    # גרף
-    sp = ease_out(seg(i, F_SPARK, F_SPARK + 62))
-    sparkline(d, 980, 700, 1.6, 1.35, sp, ease_out(seg(i, F_SPARK, F_SPARK + 20)))
+BOUNDS, _acc = [], 0
+for (_, a, b, r) in CUTS[:-1]:
+    _acc += (b-a)*r; BOUNDS.append(_acc)
 
-    # קריאה לפעולה
-    a = ease_out(seg(i, F_CTA, F_CTA + 30))
-    if a > 0:
-        label = "לשיחת אבחון ללא עלות"
-        tw = sum(d.textlength(c, font=f_cta) for c in rtl(label))
-        pw, ph = tw + 92, 84
-        x1 = W - 150; x0 = x1 - pw * a
-        y0 = 900
-        d.rounded_rectangle([x0, y0, x1, y0 + ph], radius=ph/2, fill=blend(GOLD, INK, a))
-        if a > .6:
-            text_ls(d, ((x0 + x1)/2 - tw/2, y0 + 22), label, f_cta,
-                    blend(INK, GOLD, (a-.6)/.4))
+FRAME = W*H*3
+out_i = 0; last = None
+for src_i in range(N_SRC):
+    raw = dec.stdout.read(FRAME)
+    if len(raw) < FRAME: break
+    a = np.frombuffer(raw, dtype=np.uint8).reshape(H, W, 3).astype(np.float32)
+    gp = 0.50 if ISWIN[src_i] else 0.0
+    base = Image.fromarray(grade(a, gp).astype(np.uint8))
+    for _ in range(REPS[src_i]):
+        t = out_i/float(FPS)
+        img = base.copy()
+        img.paste(INK_L, (0, 0), Image.eval(SCRIM, lambda v: int(v*0.9)))
+        img.paste(INK_L, (0, 0), Image.eval(TOPSCRIM, lambda v: int(v*0.85)))
+        img.paste(VIG_L, (0, 0), Image.eval(VIGN, lambda v: int(v*0.46)))
+        for bfr in BOUNDS:
+            kk = out_i - bfr
+            if 0 <= kk < 4:
+                img = Image.blend(img, Image.new("RGB", (W, H), GOLD_LT), (4-kk)/4.0*0.20)
+        d = ImageDraw.Draw(img)
+        marks(d); brandbar(d, eo(seg(t, .25, .95)))
+        hud(d, t, eo(seg(t, .8, 1.6)))
+        caption(d, t)
+        fade_v = eio(seg(out_i, 0, 9))
+        if fade_v < 1:
+            img = Image.blend(Image.new("RGB", (W, H), (0, 0, 0)), img, max(0.0, fade_v))
+        enc.stdin.write(img.tobytes())
+        out_i += 1
+        last = base
+    if src_i % 40 == 0: print("src", src_i, "/", N_SRC, "out", out_i, flush=True)
 
-    # החשכה בכניסה וביציאה
-    fade = min(ease_in_out(seg(i, 0, 12)), 1 - seg(i, N - 14, N))
-    if fade < 1:
-        img = Image.blend(Image.new("RGB", (W, H), (0, 0, 0)), img, max(0.0, fade))
-    return img
+for j in range(N_CARD):
+    k = j/float(FPS)
+    img = last.filter(ImageFilter.GaussianBlur(min(15, 3+k*12)))
+    img = Image.blend(img, Image.new("RGB", (W, H), INK), min(.76, .30+k*.32))
+    img.paste(VIG_L, (0, 0), Image.eval(VIGN, lambda v: int(v*0.46)))
+    d = ImageDraw.Draw(img)
+    marks(d); brandbar(d, 1.0); card(d, k)
+    f = 1 - seg(j, N_CARD-7, N_CARD)
+    if f < 1: img = Image.blend(Image.new("RGB", (W, H), (0, 0, 0)), img, max(0.0, f))
+    enc.stdin.write(img.tobytes())
 
-os.makedirs(OUT, exist_ok=True)
-for i in range(N):
-    frame(i).save(os.path.join(OUT, "f%04d.png" % i))
-    if i % 30 == 0:
-        print("frame", i, "/", N, flush=True)
-print("done", N, "frames")
+enc.stdin.close(); enc.wait(); dec.wait()
+print("done", OUT, round(DUR, 2), "s")
