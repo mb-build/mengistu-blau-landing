@@ -815,6 +815,101 @@ tailwind.config = {
   }
 
   html.js .legacy-tracks{display:none}
+  /* ── מי מוביל אותך: לוח מנגיסטו בכניסה למסדרון ── */
+  .cw-intro{background:var(--cw-navy);padding:78px 6vw 66px}
+  .cw-introin{max-width:1180px;margin:0 auto}
+  .cw-introkick{display:flex;align-items:center;gap:11px;margin-bottom:22px;
+    font-size:11.5px;font-weight:800;letter-spacing:.32em;color:var(--cw-gold2)}
+  .cw-introkick::before{content:'';width:34px;height:1px;background:var(--cw-gold2)}
+  .cw-who{position:relative;width:min(760px,100%);
+    display:grid;grid-template-columns:auto 1fr;gap:18px 20px;align-items:start;
+    border-radius:20px;padding:26px 26px 22px;
+    background:linear-gradient(158deg,rgba(255,255,255,.075),rgba(255,255,255,.02));
+    border:1px solid rgba(201,168,92,.26);backdrop-filter:blur(3px);
+    opacity:0;transform:translateY(22px);animation:cwWhoIn 1s cubic-bezier(.2,.8,.2,1) .2s forwards}
+  @keyframes cwWhoIn{to{opacity:1;transform:none}}
+  .cw-whotop{display:flex;align-items:center;gap:13px;grid-column:1}
+  .cw-quote{grid-column:2;grid-row:1}
+  .cw-proof{grid-column:1/-1}
+  .cw-seal{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;
+    background:radial-gradient(circle at 34% 28%,#F6E6B4,var(--cw-gold));color:var(--cw-navy);
+    font-weight:900;font-size:17px;box-shadow:0 0 0 6px rgba(201,168,92,.12),0 0 30px rgba(201,168,92,.45)}
+  .cw-whoname{font-size:19px;font-weight:900;letter-spacing:-.01em;color:#fff}
+  .cw-whorole{margin-top:3px;font-size:11.5px;font-weight:700;letter-spacing:.13em;color:var(--cw-gold2)}
+  .cw-quote{margin-top:0;font-size:clamp(15px,1.5vw,18px);line-height:1.68;color:#C7CEDD;
+    padding-inline-start:13px;border-inline-start:2px solid rgba(201,168,92,.55)}
+  .cw-proof{margin-top:6px;display:flex;flex-wrap:wrap;gap:10px 34px;
+    padding-top:16px;border-top:1px solid rgba(201,168,92,.16)}
+  .cw-proof div{text-align:start}
+  .cw-proof b{display:block;font-size:22px;font-weight:900;color:var(--cw-gold2);letter-spacing:-.02em}
+  .cw-proof span{display:block;margin-top:3px;font-size:10px;font-weight:700;letter-spacing:.04em;color:#8E97AC}
+
+  /* ── תוצאות ומסר בשער ── */
+  .cw-wins{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:20px}
+  .cw-wins i{font-style:normal;display:inline-flex;align-items:center;gap:7px;
+    font-size:12.5px;font-weight:700;color:#C7CEDD;
+    padding:8px 15px;border-radius:999px;border:1px solid rgba(201,168,92,.3);
+    background:rgba(255,255,255,.04)}
+  .cw-wins i::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--cw-gold2);
+    box-shadow:0 0 9px rgba(201,168,92,.9)}
+  .cw-msg{max-width:34ch;margin:0 auto 22px;font-size:16.5px;line-height:1.7;color:#C7CEDD}
+  .cw-msg b{color:#fff;font-weight:800}
+  .cw-btns2{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+  .cw-cta2{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-family:inherit;
+    font-weight:700;font-size:15.5px;padding:16px 28px;border-radius:60px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(201,168,92,.45);color:var(--cw-gold2);
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),background-color .35s,border-color .35s}
+  .cw-cta2:hover{transform:translateY(-4px);background:rgba(201,168,92,.16);border-color:var(--cw-gold2)}
+  .cw-cta2 svg{width:16px;height:16px}
+  .cw-fine2{margin-top:16px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:#8E97AC}
+
+  /* ── קישוטים ── */
+  .cw-corners span{position:absolute;width:26px;height:26px;border:1px solid rgba(201,168,92,.4)}
+  .cw-corners span:nth-child(1){top:26px;left:26px;border-right:0;border-bottom:0}
+  .cw-corners span:nth-child(2){top:26px;right:26px;border-left:0;border-bottom:0}
+  .cw-corners span:nth-child(3){bottom:26px;left:26px;border-right:0;border-top:0}
+  .cw-corners span:nth-child(4){bottom:26px;right:26px;border-left:0;border-top:0}
+
+  /* אלומות אור רכות שנושמות */
+  .cw-shaft{position:absolute;top:-14%;height:96%;width:var(--w,220px);left:var(--x);
+    pointer-events:none;transform:rotate(var(--r,10deg));transform-origin:50% 0;
+    background:linear-gradient(to bottom,rgba(201,168,92,.15),rgba(201,168,92,.04) 46%,transparent 78%);
+    filter:blur(22px);opacity:.7;animation:cwBreathe var(--t,9s) ease-in-out var(--d,0s) infinite}
+  @keyframes cwBreathe{0%,100%{opacity:.32}50%{opacity:.85}}
+
+  /* זוהר בנקודת המגוז + טבעת שמסתובבת לאט */
+  .cw-vanish{position:absolute;left:50%;top:46%;width:min(46vw,540px);aspect-ratio:1;
+    translate:-50% -50%;pointer-events:none}
+  .cw-vanish::before{content:'';position:absolute;inset:22%;border-radius:50%;
+    background:radial-gradient(circle,rgba(201,168,92,.24),transparent 68%);filter:blur(16px);
+    animation:cwPulse 6.5s ease-in-out infinite}
+  @keyframes cwPulse{0%,100%{opacity:.45;transform:scale(.94)}50%{opacity:1;transform:scale(1.06)}}
+  .cw-vanish i{position:absolute;inset:0;border-radius:50%;
+    border:1px dashed rgba(201,168,92,.16);animation:cwSpin 64s linear infinite}
+  .cw-vanish i:nth-child(2){inset:16%;border-style:dotted;border-color:rgba(201,168,92,.12);
+    animation-duration:44s;animation-direction:reverse}
+
+  /* אבק זהב שעולה */
+  .cw-motes i{position:absolute;left:var(--x);top:var(--y);width:var(--s,3px);height:var(--s,3px);
+    border-radius:50%;background:var(--cw-gold2);opacity:0;
+    box-shadow:0 0 8px rgba(201,168,92,.8);
+    animation:cwMote var(--t,13s) ease-in-out var(--d,0s) infinite}
+  @keyframes cwMote{
+    0%{opacity:0;transform:translateY(26px)}
+    16%{opacity:.75}
+    64%{opacity:.35}
+    100%{opacity:0;transform:translateY(-130px)}}
+
+  @media(max-width:1100px){
+    .cw-intro{padding:56px 6vw 48px}
+    .cw-who{grid-template-columns:1fr;gap:16px}
+    .cw-quote{grid-column:1;grid-row:auto}
+    .cw-shaft{display:none}
+  }
+  @media(max-width:520px){
+    .cw-proof b{font-size:16px}
+    .cw-quote{font-size:13.5px}
+  }
 </style>
 </head>
 <body class="font-sans bg-canvas text-ink antialiased overflow-x-hidden">
@@ -1218,6 +1313,29 @@ tailwind.config = {
 
 <!-- ============ 3. התהליך — המסדרון ============ -->
 <section id="process" class="cw-section" data-dark>
+
+  <!-- מי מוביל אותך — נקרא לפני שנכנסים למסדרון -->
+  <div class="cw-intro">
+    <div class="cw-introin">
+      <p class="cw-introkick">מי מוביל אותך</p>
+      <aside class="cw-who">
+        <div class="cw-whotop">
+          <span class="cw-seal" aria-hidden="true">מב</span>
+          <div>
+            <div class="cw-whoname">מנגיסטו בלאו</div>
+            <div class="cw-whorole">ייעוץ וליווי השקעות</div>
+          </div>
+        </div>
+        <p class="cw-quote">״אני לא מוכר מוצרים. אני בונה איתך מסגרת שאתה מבין — ונשאר איתך גם כשהשוק זז.״</p>
+        <div class="cw-proof">
+          <div><b>12+</b><span>שנות ניסיון</span></div>
+          <div><b>1,400+</b><span>תוכניות</span></div>
+          <div><b>₪380M</b><span>בליווי</span></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
   <div class="cw-wrap" id="cwWrap">
     <section class="cw-pin" id="cwPin">
       <div class="cw-h">
@@ -1225,7 +1343,14 @@ tailwind.config = {
         <h2>המפגשים תלויים על קירות המסדרון.</h2>
         <p>גלול קדימה — ועבור בין הקירות עד השער.</p>
       </div>
+
       <div class="cw-floor" aria-hidden="true"></div>
+      <div class="cw-corners" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div class="cw-vanish" aria-hidden="true"><i></i><i></i></div>
+      <span class="cw-shaft" style="--x:8%;--w:260px;--r:12deg;--t:9s;--d:0s"></span>
+      <span class="cw-shaft" style="--x:62%;--w:200px;--r:-9deg;--t:11s;--d:2.4s"></span>
+      <span class="cw-shaft" style="--x:86%;--w:170px;--r:7deg;--t:13s;--d:4.8s"></span>
+      <div class="cw-motes" aria-hidden="true"><i style="--x:12%;--y:78%;--s:3px;--t:13s;--d:0s"></i><i style="--x:19%;--y:64%;--s:2px;--t:16s;--d:2.1s"></i><i style="--x:27%;--y:86%;--s:4px;--t:11s;--d:4.7s"></i><i style="--x:34%;--y:58%;--s:2.5px;--t:15s;--d:1.3s"></i><i style="--x:42%;--y:80%;--s:3px;--t:12s;--d:6.2s"></i><i style="--x:49%;--y:66%;--s:2px;--t:17s;--d:3.4s"></i><i style="--x:56%;--y:88%;--s:3.5px;--t:14s;--d:8.1s"></i><i style="--x:63%;--y:60%;--s:2px;--t:12s;--d:5.5s"></i><i style="--x:70%;--y:82%;--s:3px;--t:16s;--d:1.8s"></i><i style="--x:77%;--y:70%;--s:2.5px;--t:13s;--d:7.3s"></i><i style="--x:84%;--y:90%;--s:3px;--t:15s;--d:3.9s"></i><i style="--x:91%;--y:62%;--s:2px;--t:18s;--d:9.6s"></i><i style="--x:16%;--y:92%;--s:2px;--t:14s;--d:6.8s"></i><i style="--x:45%;--y:94%;--s:3px;--t:17s;--d:10.4s"></i><i style="--x:73%;--y:96%;--s:2.5px;--t:12s;--d:2.7s"></i><i style="--x:96%;--y:84%;--s:3px;--t:16s;--d:5.1s"></i></div>
       <div class="cw-space">
         <div class="cw-card" data-side="1">
           <span class="cw-ghost">01</span>
@@ -1244,7 +1369,19 @@ tailwind.config = {
         </div>
         <div class="cw-gate">
           <h3>השער פתוח</h3>
-          <button class="cw-cta" data-cta="corridor">להירשם לתוכנית <span class="arr">←</span></button>
+          <div class="cw-wins" aria-hidden="true">
+            <i>תוכנית אחת בעברית</i><i>עלויות גלויות</i><i>איזון רבעוני</i>
+          </div>
+          <p class="cw-msg">שלושה מפגשים, ואתה יוצא עם תוכנית שאתה מבין — <b>ועם מלווה אחד שנשאר איתך</b> גם כשהשוק זז.</p>
+          <div class="cw-btns2">
+            <button class="cw-cta" data-cta="corridor">להירשם לתוכנית <span class="arr">←</span></button>
+            <a class="cw-cta2" data-cw-call href="#contact">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+                <path d="M21 16.9v2.6a1.7 1.7 0 0 1-1.9 1.7 17 17 0 0 1-7.4-2.6 16.7 16.7 0 0 1-5.1-5.1A17 17 0 0 1 4 6.1 1.7 1.7 0 0 1 5.7 4.2h2.6a1.7 1.7 0 0 1 1.7 1.5c.1.8.3 1.7.6 2.5a1.7 1.7 0 0 1-.4 1.8l-1.1 1.1a13.6 13.6 0 0 0 5.1 5.1l1.1-1.1a1.7 1.7 0 0 1 1.8-.4c.8.3 1.6.5 2.5.6a1.7 1.7 0 0 1 1.4 1.6z"/>
+              </svg><span data-cw-calllabel>לדבר עם מנגיסטו</span>
+            </a>
+          </div>
+          <p class="cw-fine2">45 דקות · ללא עלות · ללא התחייבות</p>
         </div>
       </div>
 
